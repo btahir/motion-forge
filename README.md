@@ -4,7 +4,11 @@
 
 An open-source toolkit for interactive vector animation. Author visually in Studio, edit the portable JSON with code or an agent, and play it in React or your own JavaScript host. No account, cloud dependency, or model API.
 
-![Scout, an original editable Motion Forge character](docs/assets/scout.svg)
+[![Watch the Motion Forge showcase: interactive artwork and the real visual editor](https://raw.githubusercontent.com/btahir/motion-forge/main/videos/motion-forge/renders/motion-forge-preview.gif)](https://github.com/btahir/motion-forge/blob/main/videos/motion-forge/renders/motion-forge-launch.mp4)
+
+[Watch the 45-second showcase](https://github.com/btahir/motion-forge/blob/main/videos/motion-forge/renders/motion-forge-launch.mp4) · [Editable video source](https://github.com/btahir/motion-forge/tree/main/videos/motion-forge)
+
+See Scout respond to an event, edit its artwork and keyframes in Studio, then connect animations to app events and numeric inputs. Silent, with explanatory text.
 
 ## What’s inside
 
@@ -15,7 +19,7 @@ An open-source toolkit for interactive vector animation. Author visually in Stud
 - **CLI:** validate, inspect, sample, render, schema and editable presets, with structured diagnostics.
 - **Original examples:** Scout (character), Made it (interface feedback), Signal (data-driven instrument).
 
-The initial release is built and verified locally: 73 package tests, 13 production browser journeys, a clean-checkout build, and packed consumers on React 18/19. It has not been published or deployed. See the [verification report](docs/VERIFICATION.md) and [release checklist](RELEASE.md) for evidence, limitations, and publication steps.
+The initial release is built and verified locally: 73 package tests, 13 production browser journeys, a clean-checkout build, and packed consumers on React 18/19. The source is on GitHub; npm publication and site deployment are still pending. See the [verification report](docs/VERIFICATION.md) and [release checklist](RELEASE.md) for evidence, limitations, and publication steps.
 
 ## Run the project
 

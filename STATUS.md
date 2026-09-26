@@ -2,7 +2,7 @@
 
 ## Local release readiness
 
-The full initial local release in PRODUCT.md is implemented and verified. This is a complete scoped vector-animation toolkit and editor, not a claim of arbitrary commercial animation-suite compatibility. Publication, deployment, distribution and demand are separate and have not occurred.
+The full initial local release in PRODUCT.md is implemented and verified. This is a complete scoped vector-animation toolkit and editor, not a claim of arbitrary commercial animation-suite compatibility. Source is available at github.com/btahir/motion-forge. npm publication, site deployment and demand validation remain separate pending steps.
 
 ## Delivered
 
@@ -39,4 +39,10 @@ Open http://127.0.0.1:4176, or /studio/ for the editor. Build output is reproduc
 
 ## Before public release
 
-See RELEASE.md and DEPLOYMENT.md. Choose the actual repository/npm ownership, configure the real security-reporting channel, set the real production SITE_URL, and publish/deploy as explicit follow-up actions. No remote, npm release, donation account or deployed site was created. The npm name availability check does not reserve a name.
+See RELEASE.md and DEPLOYMENT.md. Repository origin is git@github.com:btahir/motion-forge.git. Confirm npm ownership, configure the real security-reporting channel, set the real production SITE_URL, and publish/deploy as explicit follow-up actions. No npm release, donation account or deployed site was created. The npm name availability check does not reserve a name.
+
+## Product showcase
+
+A 45-second silent HyperFrames showcase lives in videos/motion-forge, with editable scenes, original source recordings, capture/preview/verification scripts and final delivery assets. The README embeds a short GIF preview linking to the full MP4. Real Studio footage changes Scout's fill and a body keyframe, plays the animation and exports JSON; the exported edits are verified. Engine-generated footage demonstrates wave/confirm events and the numeric intensity binding.
+
+The final composition passed HyperFrames lint, runtime, layout and contrast checks with zero errors or warnings. Scene and cut snapshots were reviewed. Render metadata and decoded-frame checks are recorded in videos/motion-forge/VERIFICATION.json. HyperFrames remains pinned to 0.8.73: the suggested 0.8.78 upgrade could not be verified because the local npm release-age policy rejected it, so the pin was restored.
