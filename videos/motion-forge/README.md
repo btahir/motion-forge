@@ -11,7 +11,7 @@ The video shows original Motion Forge artwork rendered by the actual package, fo
 - `assets/`: original engine renders and Studio recording; event logs and the exported edited document preserve the demonstrated inputs.
 - `scripts/capture.mjs`: recaptures the actual product at a fixed frame rate.
 - `renders/motion-forge-launch.mp4`: finished showcase.
-- `renders/motion-forge-preview.gif`: short README preview linked to the full film.
+- `renders/motion-forge-preview.gif`: full-length animated README preview linked to the MP4.
 
 ## Rebuild
 

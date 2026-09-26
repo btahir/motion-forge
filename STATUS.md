@@ -43,6 +43,6 @@ See RELEASE.md and DEPLOYMENT.md. Repository origin is git@github.com:btahir/mot
 
 ## Product showcase
 
-A 45-second silent HyperFrames showcase lives in videos/motion-forge, with editable scenes, original source recordings, capture/preview/verification scripts and final delivery assets. The README embeds a short GIF preview linking to the full MP4. Real Studio footage changes Scout's fill and a body keyframe, plays the animation and exports JSON; the exported edits are verified. Engine-generated footage demonstrates wave/confirm events and the numeric intensity binding.
+A 45-second silent HyperFrames showcase lives in videos/motion-forge, with editable scenes, original source recordings, capture/preview/verification scripts and final delivery assets. The README embeds a full-length GIF preview linking to the MP4 download. Real Studio footage changes Scout's fill and a body keyframe, plays the animation and exports JSON; the exported edits are verified. Engine-generated footage demonstrates wave/confirm events and the numeric intensity binding.
 
 The final composition passed HyperFrames lint, runtime, layout and contrast checks with zero errors or warnings. Scene and cut snapshots were reviewed. Render metadata and decoded-frame checks are recorded in videos/motion-forge/VERIFICATION.json. HyperFrames remains pinned to 0.8.73: the suggested 0.8.78 upgrade could not be verified because the local npm release-age policy rejected it, so the pin was restored.

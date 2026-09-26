@@ -4,9 +4,9 @@
 
 An open-source toolkit for interactive vector animation. Author visually in Studio, edit the portable JSON with code or an agent, and play it in React or your own JavaScript host. No account, cloud dependency, or model API.
 
-[![Watch the Motion Forge showcase: interactive artwork and the real visual editor](https://raw.githubusercontent.com/btahir/motion-forge/main/videos/motion-forge/renders/motion-forge-preview.gif)](https://github.com/btahir/motion-forge/blob/main/videos/motion-forge/renders/motion-forge-launch.mp4)
+[![Watch the Motion Forge showcase: interactive artwork and the real visual editor](https://raw.githubusercontent.com/btahir/motion-forge/main/videos/motion-forge/renders/motion-forge-preview.gif)](https://raw.githubusercontent.com/btahir/motion-forge/main/videos/motion-forge/renders/motion-forge-launch.mp4)
 
-[Watch the 45-second showcase](https://github.com/btahir/motion-forge/blob/main/videos/motion-forge/renders/motion-forge-launch.mp4) · [Editable video source](https://github.com/btahir/motion-forge/tree/main/videos/motion-forge)
+[Download the 45-second showcase (MP4)](https://raw.githubusercontent.com/btahir/motion-forge/main/videos/motion-forge/renders/motion-forge-launch.mp4) · [Editable video source](https://github.com/btahir/motion-forge/tree/main/videos/motion-forge)
 
 See Scout respond to an event, edit its artwork and keyframes in Studio, then connect animations to app events and numeric inputs. Silent, with explanatory text.
 
