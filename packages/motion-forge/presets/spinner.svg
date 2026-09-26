@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="loaders">
+  <title>Spinner</title>
+  <desc>Material-style arc that spins while it grows and shrinks; loops forever with no host code (no events or inputs needed).</desc>
+  <circle id="track" cx="100" cy="100" r="66" fill="none" stroke="#efeae0" stroke-width="14"/>
+  <g id="spin">
+    <circle id="arc" cx="100" cy="100" r="66" fill="none" stroke="#ff5a1f" stroke-width="14" stroke-linecap="round"/>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "states": {
+      "spinning": {
+        "duration": 5600,
+        "loop": true,
+        "animate": {
+          "#spin": { "rotate": { "0%": 0, "100%": 1080 }, "ease": "linear", "origin": "100 100" },
+          "#arc": {
+            "origin": "100 100",
+            "ease": "cubic-bezier(0.4, 0, 0.2, 1)",
+            "draw": {
+              "0%": [0, 0.03],
+              "12.5%": [0, 0.78], "25%": [0, 0.03],
+              "37.5%": [0, 0.78], "50%": [0, 0.03],
+              "62.5%": [0, 0.78], "75%": [0, 0.03],
+              "87.5%": [0, 0.78], "100%": [0, 0.03]
+            },
+            "rotate": {
+              "0%": 0,
+              "12.5%": 0, "25%": 270,
+              "37.5%": 270, "50%": 540,
+              "62.5%": 540, "75%": 810,
+              "87.5%": 810, "100%": 1080
+            },
+            "stroke": {
+              "0%": "#ff5a1f", "20%": "#ff5a1f",
+              "25%": "#ff4d6d", "45%": "#ff4d6d",
+              "50%": "#8b7cf6", "70%": "#8b7cf6",
+              "75%": "#4c8dff", "95%": "#4c8dff",
+              "100%": "#ff5a1f"
+            }
+          }
+        }
+      }
+    }
+  }
+  ]]></metadata>
+</svg>

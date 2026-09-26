@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="icons">
+  <title>Play pause</title>
+  <desc>Play button that morphs into pause bars: boolean input playing, click toggles it; the triangle splits into two bars with a small twist and a press squish.</desc>
+  <g id="button">
+    <circle id="disc" cx="100" cy="100" r="72" fill="#ff5a1f"/>
+    <g id="glyph" fill="#fbf8f1" stroke="#fbf8f1" stroke-width="7" stroke-linejoin="round">
+      <path id="left"  d="M 83 69 L 111 84.6 L 111 115.4 L 83 131 Z"/>
+      <path id="right" d="M 110 84 L 138 100 L 138 100 L 110 116 Z"/>
+    </g>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": { "playing": false },
+    "states": {
+      "paused": {
+        "when": { "playing": { "to": "toPlaying", "blend": 60 } }
+      },
+      "toPlaying": {
+        "duration": 440,
+        "animate": {
+          "#left":  { "d": { "0%": "M 83 69 L 111 84.6 L 111 115.4 L 83 131 Z", "80%": { "value": "M 77 72 L 93 72 L 93 128 L 77 128 Z", "ease": "in-out" } } },
+          "#right": { "d": { "0%": "M 110 84 L 138 100 L 138 100 L 110 116 Z", "80%": { "value": "M 107 72 L 123 72 L 123 128 L 107 128 Z", "ease": "in-out" } } },
+          "#glyph": { "rotate": { "0%": 0, "30%": { "value": -10, "ease": "out" }, "100%": { "value": 0, "ease": "spring" } }, "origin": "100 100" },
+          "#disc":  { "scale":  { "0%": 1, "25%": { "value": 0.93, "ease": "out" }, "100%": { "value": 1, "ease": "spring-bouncy" } } }
+        },
+        "next": { "to": "playing", "blend": 0 },
+        "when": { "!playing": { "to": "toPaused", "blend": 60 } }
+      },
+      "playing": {
+        "animate": {
+          "#left":  { "d": "M 77 72 L 93 72 L 93 128 L 77 128 Z" },
+          "#right": { "d": "M 107 72 L 123 72 L 123 128 L 107 128 Z" }
+        },
+        "when": { "!playing": { "to": "toPaused", "blend": 60 } }
+      },
+      "toPaused": {
+        "duration": 440,
+        "animate": {
+          "#left":  { "d": { "0%": "M 77 72 L 93 72 L 93 128 L 77 128 Z", "80%": { "value": "M 83 69 L 111 84.6 L 111 115.4 L 83 131 Z", "ease": "in-out" } } },
+          "#right": { "d": { "0%": "M 107 72 L 123 72 L 123 128 L 107 128 Z", "80%": { "value": "M 110 84 L 138 100 L 138 100 L 110 116 Z", "ease": "in-out" } } },
+          "#glyph": { "rotate": { "0%": 0, "30%": { "value": 10, "ease": "out" }, "100%": { "value": 0, "ease": "spring" } }, "origin": "100 100" },
+          "#disc":  { "scale":  { "0%": 1, "25%": { "value": 0.93, "ease": "out" }, "100%": { "value": 1, "ease": "spring-bouncy" } } }
+        },
+        "next": { "to": "paused", "blend": 0 },
+        "when": { "playing": { "to": "toPlaying", "blend": 60 } }
+      }
+    },
+    "interactions": [
+      { "on": "click", "target": "#button", "toggle": "playing" }
+    ]
+  }
+  ]]></metadata>
+</svg>

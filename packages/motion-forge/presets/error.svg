@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="feedback">
+  <title>Error</title>
+  <desc>Error badge that turns rose, draws an X and shakes with decaying amplitude. Send "error" to show it (again to re-shake) and "reset" to clear. Emits "error".</desc>
+  <g id="badge">
+    <circle id="track" cx="100" cy="100" r="60" fill="none" stroke="#d8d2c6" stroke-width="8" opacity="0.6"/>
+    <circle id="disc" cx="100" cy="100" r="64" fill="#ff4d6d" opacity="0"/>
+    <g id="mark">
+      <path class="x-stroke" d="M79 79 L121 121" fill="none" stroke="#fbf8f1" stroke-width="12" stroke-linecap="round" opacity="0"/>
+      <path class="x-stroke" d="M121 79 L79 121" fill="none" stroke="#fbf8f1" stroke-width="12" stroke-linecap="round" opacity="0"/>
+    </g>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "on": { "reset": "idle" },
+    "states": {
+      "idle": {
+        "animate": { ".x-stroke": { "draw": 0 } },
+        "on": { "error": "error" }
+      },
+      "error": {
+        "duration": 640,
+        "emit": "error",
+        "animate": {
+          "#disc": {
+            "scale": { "0%": 0.3, "30%": { "value": 1, "ease": "back" } },
+            "opacity": { "0%": 0, "12%": 1 },
+            "origin": "center"
+          },
+          "#track": {
+            "opacity": { "0%": 0.6, "20%": 0 }
+          },
+          ".x-stroke": {
+            "opacity": { "0%": 1 },
+            "draw": { "0%": 0, "18%": 0, "46%": { "value": 1, "ease": "out" } },
+            "stagger": 70
+          },
+          "#badge": {
+            "translateX": { "0%": 0, "10%": -16, "22%": 13, "34%": -9, "46%": 5.5, "58%": -2.5, "70%": 1, "80%": 0 },
+            "rotate": { "0%": 0, "10%": -4, "22%": 3, "34%": -2, "46%": 1, "58%": 0 },
+            "ease": "in-out",
+            "origin": "50% 80%"
+          }
+        },
+        "on": { "error": "shake" }
+      },
+      "shake": {
+        "duration": 460,
+        "animate": {
+          "#disc": { "opacity": { "0%": 1 } },
+          "#track": { "opacity": { "0%": 0 } },
+          ".x-stroke": { "opacity": { "0%": 1 }, "draw": { "0%": 1 } },
+          "#mark": {
+            "scale": { "0%": 1, "12%": { "value": 0.86, "ease": "out" }, "60%": { "value": 1, "ease": "spring" } },
+            "origin": "center"
+          },
+          "#badge": {
+            "translateX": { "0%": 0, "12%": -12, "28%": 10, "44%": -7, "60%": 4, "76%": -1.5, "90%": 0 },
+            "rotate": { "0%": 0, "12%": -3, "28%": 2.5, "44%": -1.5, "60%": 0.5, "76%": 0 },
+            "ease": "in-out",
+            "origin": "50% 80%"
+          }
+        },
+        "on": { "error": "shake" }
+      }
+    }
+  }
+  ]]></metadata>
+</svg>

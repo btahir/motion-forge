@@ -1,0 +1,20 @@
+{
+  "measured": "2026-09-26",
+  "results": {
+    "web component (motion-forge/element)": {
+      "minified": 76294,
+      "gzip": 30005,
+      "brotli": 26900
+    },
+    "vanilla mount (motion-forge)": {
+      "minified": 73714,
+      "gzip": 29094,
+      "brotli": 26010
+    },
+    "React (motion-forge/react, excl. React)": {
+      "minified": 76580,
+      "gzip": 30218,
+      "brotli": 27082
+    }
+  }
+}

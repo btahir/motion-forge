@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="data">
+  <title>Volume</title>
+  <desc>Speaker volume: input volume 0-1 (smoothed) reveals three sound waves in turn, a mute cross pops in at 0, waves breathe while playing; drag horizontally to set volume.</desc>
+  <path id="speaker" d="M 50 87 H 64 L 86 67 V 133 L 64 113 H 50 Z" fill="#1b1a17" stroke="#1b1a17" stroke-width="8" stroke-linejoin="round"/>
+  <g id="waves" fill="none" stroke="#1b1a17" stroke-width="8" stroke-linecap="round">
+    <g class="wave-g"><path id="wave1" d="M 104.7 87.3 A 18 18 0 0 1 104.7 112.7"/></g>
+    <g class="wave-g"><path id="wave2" d="M 116 76 A 34 34 0 0 1 116 124"/></g>
+    <g class="wave-g"><path id="wave3" d="M 127.3 64.7 A 50 50 0 0 1 127.3 135.3"/></g>
+  </g>
+  <g id="mute" stroke="#ff4d6d" stroke-width="8" stroke-linecap="round" opacity="0">
+    <line x1="108" y1="88" x2="132" y2="112"/>
+    <line x1="132" y1="88" x2="108" y2="112"/>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": {
+      "volume": { "type": "number", "min": 0, "max": 1, "default": 0.6, "smooth": 260 }
+    },
+    "states": {
+      "sound": {
+        "animate": { "#mute": { "scale": 0.3, "rotate": -90, "origin": "120 100" } },
+        "when": { "volume <= 0": { "to": "muted", "blend": 380, "ease": "spring-bouncy" } }
+      },
+      "muted": {
+        "animate": {
+          "#mute": { "opacity": 1, "scale": 1, "rotate": 0, "origin": "120 100" }
+        },
+        "when": { "volume > 0": { "to": "sound", "blend": 180, "ease": "in" } }
+      }
+    },
+    "layers": {
+      "pulse": {
+        "states": {
+          "still": {
+            "when": { "volume > 0": "breathing" }
+          },
+          "breathing": {
+            "duration": 1600,
+            "loop": true,
+            "animate": {
+              ".wave-g": { "scale": { "0%": 1, "35%": { "value": 1.07, "ease": "out" }, "100%": { "value": 1, "ease": "in-out" } }, "origin": "90 100", "stagger": 110 }
+            },
+            "when": { "volume <= 0": "still" }
+          }
+        }
+      }
+    },
+    "bind": {
+      "#wave1": { "opacity": { "input": "volume", "map": { "0": 0, "0.02": 0, "0.2": 1 } },
+                  "scale":   { "input": "volume", "map": { "0": 0.5, "0.02": 0.5, "0.2": { "value": 1, "ease": "back" } } }, "origin": "90 100" },
+      "#wave2": { "opacity": { "input": "volume", "map": { "0": 0, "0.34": 0, "0.52": 1 } },
+                  "scale":   { "input": "volume", "map": { "0": 0.6, "0.34": 0.6, "0.52": { "value": 1, "ease": "back" } } }, "origin": "90 100" },
+      "#wave3": { "opacity": { "input": "volume", "map": { "0": 0, "0.67": 0, "0.85": 1 } },
+                  "scale":   { "input": "volume", "map": { "0": 0.7, "0.67": 0.7, "0.85": { "value": 1, "ease": "back" } } }, "origin": "90 100" }
+    },
+    "interactions": [
+      { "on": "drag", "x": "volume" }
+    ]
+  }
+  ]]></metadata>
+</svg>

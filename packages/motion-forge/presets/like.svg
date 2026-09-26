@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="feedback">
+  <title>Like</title>
+  <desc>Heart button that pops, rings and bursts when liked. Input: liked (boolean), click toggles it. Emits "liked" on like. Input hovered is set by the built-in hover.</desc>
+  <g id="button">
+    <circle id="ring" cx="100" cy="104" r="30" fill="none" stroke="#ff4d6d" stroke-width="14" opacity="0"/>
+    <g id="sparks">
+      <g transform="rotate(0 100 104)"><g class="orbit"><circle class="spark far" cx="100" cy="104" r="5" fill="#ff4d6d" opacity="0"/></g></g>
+      <g transform="rotate(45 100 104)"><g class="orbit"><circle class="spark near" cx="100" cy="104" r="3.5" fill="#ffb020" opacity="0"/></g></g>
+      <g transform="rotate(90 100 104)"><g class="orbit"><circle class="spark far" cx="100" cy="104" r="5" fill="#8b7cf6" opacity="0"/></g></g>
+      <g transform="rotate(135 100 104)"><g class="orbit"><circle class="spark near" cx="100" cy="104" r="3.5" fill="#ff5a1f" opacity="0"/></g></g>
+      <g transform="rotate(180 100 104)"><g class="orbit"><circle class="spark far" cx="100" cy="104" r="5" fill="#ff4d6d" opacity="0"/></g></g>
+      <g transform="rotate(225 100 104)"><g class="orbit"><circle class="spark near" cx="100" cy="104" r="3.5" fill="#ffb020" opacity="0"/></g></g>
+      <g transform="rotate(270 100 104)"><g class="orbit"><circle class="spark far" cx="100" cy="104" r="5" fill="#8b7cf6" opacity="0"/></g></g>
+      <g transform="rotate(315 100 104)"><g class="orbit"><circle class="spark near" cx="100" cy="104" r="3.5" fill="#ff5a1f" opacity="0"/></g></g>
+    </g>
+    <g id="heart">
+      <circle id="hit" cx="100" cy="104" r="48" fill="#fbf8f1" fill-opacity="0"/>
+      <path id="fill" d="M100 146 C94 141 60 118 60 88 C60 73 71 63 84 63 C92 63 97 67 100 73 C103 67 108 63 116 63 C129 63 140 73 140 88 C140 118 106 141 100 146 Z" fill="#ff4d6d" opacity="0"/>
+      <path id="outline" d="M100 146 C94 141 60 118 60 88 C60 73 71 63 84 63 C92 63 97 67 100 73 C103 67 108 63 116 63 C129 63 140 73 140 88 C140 118 106 141 100 146 Z" fill="none" stroke="#d8d2c6" stroke-width="7" stroke-linejoin="round"/>
+      <path id="shine" d="M73 86 C73 80 77 75 83 74" fill="none" stroke="#fbf8f1" stroke-width="5" stroke-linecap="round" opacity="0"/>
+    </g>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": { "liked": false, "hovered": false },
+    "states": {
+      "idle": {
+        "when": { "liked": "liking" }
+      },
+      "liking": {
+        "duration": 760,
+        "emit": "liked",
+        "animate": {
+          "#heart": {
+            "scaleX": { "0%": 1, "14%": { "value": 1.06, "ease": "in-out" }, "40%": { "value": 0.97, "ease": "out" }, "100%": { "value": 1, "ease": "spring-bouncy" } },
+            "scaleY": { "0%": 1, "14%": { "value": 0.88, "ease": "in-out" }, "40%": { "value": 1.05, "ease": "out" }, "100%": { "value": 1, "ease": "spring-bouncy" } },
+            "scale":  { "0%": 1, "14%": 0.84, "40%": { "value": 1.2, "ease": "out" }, "100%": { "value": 1, "ease": "spring-bouncy" } },
+            "origin": "50% 70%"
+          },
+          "#fill": {
+            "scale": { "0%": 0, "14%": 0, "42%": { "value": 1, "ease": "back" } },
+            "opacity": { "0%": 0, "12%": 0, "20%": 1 },
+            "origin": "50% 55%"
+          },
+          "#outline": {
+            "stroke": { "0%": "#d8d2c6", "14%": "#d8d2c6", "26%": "#ff4d6d" }
+          },
+          "#shine": {
+            "opacity": { "0%": 0, "40%": 0, "60%": { "value": 0.85, "ease": "out" } },
+            "draw": { "0%": 0, "40%": 0, "70%": { "value": 1, "ease": "out" } }
+          },
+          "#ring": {
+            "r": { "0%": 30, "16%": 30, "66%": { "value": 76, "ease": "out" } },
+            "stroke-width": { "0%": 16, "16%": 16, "66%": { "value": 0, "ease": "out" } },
+            "opacity": { "0%": 0, "16%": 0, "22%": 1, "66%": 0 }
+          },
+          ".orbit": {
+            "rotate": { "0%": 0, "20%": 0, "82%": { "value": 16, "ease": "out" } },
+            "origin": "100 104"
+          },
+          ".spark.far": {
+            "translateY": { "0%": -20, "20%": -36, "82%": { "value": -76, "ease": "out" } },
+            "scale": { "0%": 1, "24%": 1.3, "82%": { "value": 0.2, "ease": "in" } },
+            "opacity": { "0%": 0, "20%": 0, "27%": 1, "58%": 1, "82%": { "value": 0, "ease": "in" } },
+            "stagger": 16
+          },
+          ".spark.near": {
+            "translateY": { "0%": -20, "24%": -34, "84%": { "value": -60, "ease": "out" } },
+            "scale": { "0%": 1, "28%": 1.2, "84%": { "value": 0.2, "ease": "in" } },
+            "opacity": { "0%": 0, "24%": 0, "31%": 1, "60%": 1, "84%": { "value": 0, "ease": "in" } },
+            "stagger": 16
+          }
+        },
+        "next": "liked",
+        "when": { "!liked": "unliking" }
+      },
+      "liked": {
+        "animate": {
+          "#fill": { "scale": 1, "opacity": 1, "origin": "50% 55%" },
+          "#outline": { "stroke": "#ff4d6d" },
+          "#shine": { "opacity": 0.85, "draw": 1 }
+        },
+        "when": { "!liked": "unliking" }
+      },
+      "unliking": {
+        "duration": 300,
+        "animate": {
+          "#heart": {
+            "scaleX": { "0%": 1, "35%": { "value": 1.04, "ease": "out" }, "100%": { "value": 1, "ease": "spring-soft" } },
+            "scaleY": { "0%": 1, "35%": { "value": 0.9, "ease": "out" }, "100%": { "value": 1, "ease": "spring-soft" } },
+            "origin": "50% 70%"
+          },
+          "#fill": {
+            "scale": { "0%": 1, "70%": { "value": 0, "ease": "in" } },
+            "opacity": { "0%": 1, "45%": 1, "70%": 0 },
+            "origin": "50% 55%"
+          },
+          "#outline": {
+            "stroke": { "0%": "#ff4d6d", "70%": { "value": "#d8d2c6", "ease": "in-out" } }
+          },
+          "#shine": { "opacity": { "0%": 0.85, "30%": 0 } }
+        },
+        "next": "idle",
+        "when": { "liked": "liking" }
+      }
+    },
+    "layers": {
+      "hover": {
+        "states": {
+          "rest": { "when": { "hovered": "over" } },
+          "over": {
+            "animate": { "#button": { "scale": 1.06, "origin": "100 104" } },
+            "when": { "!hovered": "rest" }
+          }
+        }
+      }
+    },
+    "interactions": [
+      { "on": "click", "target": "#heart", "toggle": "liked" },
+      { "on": "hover", "target": "#heart", "set": "hovered" }
+    ]
+  }
+  ]]></metadata>
+</svg>

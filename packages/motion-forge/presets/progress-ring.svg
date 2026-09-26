@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="progress">
+  <title>Progress ring</title>
+  <desc>Circular progress: set input progress (0-100, glides over 300ms); at 100 it turns mint, pops and shows a check (state done, emits "complete"), and returns when progress drops below 100.</desc>
+  <g id="ring">
+    <circle id="track" cx="100" cy="100" r="64" fill="none" stroke="#efeae0" stroke-width="14"/>
+    <circle id="arc" cx="100" cy="100" r="64" fill="none" stroke="#4c8dff" stroke-width="14" stroke-linecap="round" transform="rotate(-90 100 100)"/>
+  </g>
+  <g id="sparks" opacity="0">
+    <line class="spark" x1="130.5" y1="26.4" x2="135.9" y2="13.4" stroke="#ffb020" stroke-width="5" stroke-linecap="round"/>
+    <line class="spark" x1="173.6" y1="69.5" x2="186.6" y2="64.1" stroke="#2fbf8f" stroke-width="5" stroke-linecap="round"/>
+    <line class="spark" x1="173.6" y1="130.5" x2="186.6" y2="135.9" stroke="#ff4d6d" stroke-width="5" stroke-linecap="round"/>
+    <line class="spark" x1="130.5" y1="173.6" x2="135.9" y2="186.6" stroke="#4c8dff" stroke-width="5" stroke-linecap="round"/>
+    <line class="spark" x1="69.5" y1="173.6" x2="64.1" y2="186.6" stroke="#ffb020" stroke-width="5" stroke-linecap="round"/>
+    <line class="spark" x1="26.4" y1="130.5" x2="13.4" y2="135.9" stroke="#2fbf8f" stroke-width="5" stroke-linecap="round"/>
+    <line class="spark" x1="26.4" y1="69.5" x2="13.4" y2="64.1" stroke="#ff4d6d" stroke-width="5" stroke-linecap="round"/>
+    <line class="spark" x1="69.5" y1="26.4" x2="64.1" y2="13.4" stroke="#4c8dff" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <text id="label" x="100" y="112" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="34" font-weight="700" fill="#1b1a17">0%</text>
+  <path id="check" d="M76 101 L93 118 L126 84" fill="none" stroke="#2fbf8f" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": {
+      "progress": { "type": "number", "min": 0, "max": 100, "default": 0, "smooth": 300 }
+    },
+    "bind": {
+      "#arc": {
+        "draw": { "input": "progress", "from": 0, "to": 1 },
+        "stroke": { "input": "progress", "map": { "0": "#4c8dff", "80": "#4c8dff", "100": "#2fbf8f" } }
+      },
+      "#label": { "text": "{progress:0}%" }
+    },
+    "states": {
+      "active": {
+        "when": { "progress >= 100": "done" }
+      },
+      "done": {
+        "duration": 1200,
+        "emit": "complete",
+        "animate": {
+          "#ring": {
+            "scale": { "0%": 1, "22%": { "value": 1.1, "ease": "out" }, "70%": { "value": 1, "ease": "spring-bouncy" } },
+            "origin": "100 100",
+            "delay": 280
+          },
+          "#label": {
+            "opacity": { "0%": 1, "18%": { "value": 0, "ease": "in" } },
+            "scale": { "0%": 1, "18%": { "value": 0.6, "ease": "in" } },
+            "origin": "100 100",
+            "delay": 280
+          },
+          "#check": {
+            "opacity": { "0%": 0, "18%": 0, "24%": 1 },
+            "draw": { "0%": 0, "18%": 0, "55%": { "value": 1, "ease": "out" } },
+            "delay": 280
+          },
+          "#sparks": { "opacity": { "0%": 0, "16%": 0, "20%": 1 }, "delay": 280 },
+          ".spark": {
+            "draw": { "0%": [0, 0], "18%": [0, 0], "34%": { "value": [0, 1], "ease": "out" }, "62%": { "value": [1, 1], "ease": "in-out" } },
+            "delay": 280
+          }
+        },
+        "when": { "progress < 100": "active" }
+      }
+    }
+  }
+  ]]></metadata>
+</svg>

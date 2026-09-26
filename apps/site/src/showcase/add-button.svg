@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <title>Add to garden</title>
+  <desc>A round plus button that morphs into a check with a small burst of leaves when a plant is added.</desc>
+
+  <!-- Burst leaves sit behind the button; each wrapper points one leaf outward -->
+  <g id="burst">
+    <g transform="rotate(30 60 60)"><path class="burst" d="M60 25 C 55 21 55 15 60 11 C 65 15 65 21 60 25 Z" fill="#7bc47f" opacity="0"/></g>
+    <g transform="rotate(90 60 60)"><path class="burst" d="M60 25 C 55 21 55 15 60 11 C 65 15 65 21 60 25 Z" fill="#1f7a4d" opacity="0"/></g>
+    <g transform="rotate(150 60 60)"><path class="burst" d="M60 25 C 55 21 55 15 60 11 C 65 15 65 21 60 25 Z" fill="#7bc47f" opacity="0"/></g>
+    <g transform="rotate(210 60 60)"><path class="burst" d="M60 25 C 55 21 55 15 60 11 C 65 15 65 21 60 25 Z" fill="#1f7a4d" opacity="0"/></g>
+    <g transform="rotate(270 60 60)"><path class="burst" d="M60 25 C 55 21 55 15 60 11 C 65 15 65 21 60 25 Z" fill="#7bc47f" opacity="0"/></g>
+    <g transform="rotate(330 60 60)"><path class="burst" d="M60 25 C 55 21 55 15 60 11 C 65 15 65 21 60 25 Z" fill="#1f7a4d" opacity="0"/></g>
+  </g>
+
+  <g id="hoverWrap">
+    <g id="button">
+      <circle id="bg" cx="60" cy="60" r="33" fill="#fff8ec" stroke="#1f7a4d" stroke-width="3"/>
+      <circle id="fill" cx="60" cy="60" r="0" fill="#1f7a4d"/>
+      <path id="icon" d="M44 60 L76 60 M60 76 L60 44" fill="none" stroke="#1f7a4d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "version": 1,
+    "inputs": {
+      "added": false,
+      "hovered": false
+    },
+    "initial": "plus",
+    "states": {
+      "plus": {
+        "when": { "added": "adding" }
+      },
+      "adding": {
+        "duration": 700,
+        "emit": "added",
+        "animate": {
+          "#button": {
+            "scale": { "0": 1, "90": { "value": 0.86, "ease": "out" }, "300": { "value": 1.08, "ease": "out" }, "520": { "value": 1, "ease": "in-out" } },
+            "origin": "60 60"
+          },
+          "#fill": { "r": { "0": 0, "40": 0, "280": { "value": 34.5, "ease": "out" } } },
+          "#icon": {
+            "d": { "0": "M44 60 L76 60 M60 76 L60 44", "100": "M44 60 L76 60 M60 76 L60 44", "420": { "value": "M45 61 L55 71 M55 71 L76 49", "ease": "spring" } },
+            "stroke": { "0": "#1f7a4d", "48": { "value": "#fff8ec", "ease": "hold" } }
+          },
+          ".burst": {
+            "translateY": { "0": 10, "180": 10, "600": { "value": -5, "ease": "out" } },
+            "scale": { "0": 0.4, "180": 0.4, "400": { "value": 1, "ease": "out" }, "650": 0.6 },
+            "rotate": { "0": -20, "180": -20, "650": { "value": 18, "ease": "out" } },
+            "opacity": { "0": 0, "180": 0, "240": 1, "470": 1, "650": 0 },
+            "stagger": 25
+          }
+        },
+        "next": "checked",
+        "when": { "!added": "cancel" }
+      },
+      "cancel": {
+        "emit": "removed",
+        "next": { "to": "plus", "blend": 300, "ease": "in-out" }
+      },
+      "checked": {
+        "animate": {
+          "#fill": { "r": 34.5 },
+          "#icon": { "d": "M45 61 L55 71 M55 71 L76 49", "stroke": "#fff8ec" }
+        },
+        "when": { "!added": "removing" }
+      },
+      "removing": {
+        "duration": 320,
+        "emit": "removed",
+        "animate": {
+          "#fill": { "r": { "0%": 34.5, "100%": { "value": 0, "ease": "in-out" } } },
+          "#icon": {
+            "d": { "0%": "M45 61 L55 71 M55 71 L76 49", "100%": { "value": "M44 60 L76 60 M60 76 L60 44", "ease": "in-out" } },
+            "stroke": { "0%": "#fff8ec", "58%": { "value": "#1f7a4d", "ease": "hold" } }
+          },
+          "#button": { "scale": { "0%": 1, "40%": 0.92, "100%": { "value": 1, "ease": "out" } } }
+        },
+        "next": "plus",
+        "when": { "added": "adding" }
+      }
+    },
+    "layers": {
+      "hover": {
+        "states": {
+          "rest": { "when": { "hovered": "lift" } },
+          "lift": {
+            "animate": { "#hoverWrap": { "scale": 1.06, "origin": "60 60" } },
+            "when": { "!hovered": "rest" }
+          }
+        }
+      }
+    },
+    "interactions": [
+      { "on": "click", "target": "#button", "toggle": "added" },
+      { "on": "hover", "target": "#button", "set": "hovered" }
+    ]
+  }
+  ]]></metadata>
+</svg>

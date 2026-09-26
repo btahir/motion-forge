@@ -1,1 +1,0 @@
-Motion Forge. Create and embed interactive vector animations. Edit visually. Animate with keyframes. Respond to events and data. Portable JSON. React player. Open source, MIT.

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="controls">
+  <title>Copy</title>
+  <desc>Copy button: the sheets merge and pop into a check, hold for a moment, then return on their own. Click (or send "copy") to play. Emits "copied".</desc>
+  <g id="button">
+    <circle id="hit" cx="100" cy="100" r="62" fill="#fbf8f1" fill-opacity="0"/>
+    <circle id="pulse" cx="100" cy="100" r="44" fill="none" stroke="#2fbf8f" stroke-width="10" opacity="0"/>
+    <g id="sheets">
+      <rect id="back-sheet" x="58" y="50" width="64" height="76" rx="14" fill="none" stroke="#1b1a17" stroke-width="9"/>
+      <rect id="front-sheet" x="78" y="72" width="64" height="76" rx="14" fill="#fbf8f1" stroke="#1b1a17" stroke-width="9"/>
+    </g>
+    <path id="check" d="M68 102 L90 123 L133 79" fill="none" stroke="#2fbf8f" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "states": {
+      "idle": {
+        "animate": { "#check": { "draw": 0 } },
+        "on": { "copy": "copied" }
+      },
+      "copied": {
+        "duration": 1500,
+        "emit": "copied",
+        "animate": {
+          "#button": {
+            "scale": { "0": 1, "70ms": { "value": 0.9, "ease": "out" }, "240ms": { "value": 1, "ease": "in-out" } },
+            "origin": "100 100"
+          },
+          "#front-sheet": {
+            "translateX": { "0": 0, "60ms": 0, "200ms": { "value": -20, "ease": "in-out" } },
+            "translateY": { "0": 0, "60ms": 0, "200ms": { "value": -22, "ease": "in-out" } }
+          },
+          "#sheets": {
+            "scale": { "0": 1, "170ms": 1, "270ms": { "value": 0.3, "ease": "in" } },
+            "opacity": { "0": 1, "190ms": 1, "270ms": { "value": 0, "ease": "in" } },
+            "origin": "90 88"
+          },
+          "#check": {
+            "opacity": { "0": 1 },
+            "draw": { "0": 0, "220ms": 0, "420ms": { "value": 1, "ease": "out" } },
+            "scale": { "0": 0.6, "220ms": 0.6, "380ms": { "value": 1.14, "ease": "out" }, "560ms": { "value": 1, "ease": "spring" } },
+            "origin": "100 100"
+          },
+          "#pulse": {
+            "r": { "0": 44, "240ms": 44, "640ms": { "value": 76, "ease": "out" } },
+            "stroke-width": { "0": 10, "240ms": 10, "640ms": { "value": 0, "ease": "out" } },
+            "opacity": { "0": 0, "240ms": 0, "300ms": 0.5, "640ms": 0 }
+          }
+        },
+        "next": { "to": "idle", "blend": 380, "ease": "back" }
+      }
+    },
+    "interactions": [
+      { "on": "click", "target": "#button", "send": "copy" }
+    ]
+  }
+  ]]></metadata>
+</svg>

@@ -1,3 +1,5 @@
-#!/usr/bin/env node
-import { nodeHost, runCLI } from './main';
-runCLI(process.argv.slice(2), nodeHost).then(code => { process.exitCode = code; });
+import { main } from './main';
+
+main(process.argv.slice(2)).then(code => {
+  if (code !== undefined) process.exitCode = code;
+});

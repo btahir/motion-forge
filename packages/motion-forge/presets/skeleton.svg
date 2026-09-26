@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="loaders">
+  <title>Skeleton card</title>
+  <desc>Content placeholder card (avatar + three lines) with a soft shimmer sweep; loops forever with no host code (no events or inputs needed).</desc>
+  <defs>
+    <linearGradient id="sheen-fill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fbf8f1" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#fbf8f1" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#fbf8f1" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="bones-clip">
+      <circle cx="54" cy="100" r="20"/>
+      <rect x="86" y="78" width="76" height="10" rx="5"/>
+      <rect x="86" y="95" width="60" height="10" rx="5"/>
+      <rect x="86" y="112" width="38" height="10" rx="5"/>
+    </clipPath>
+  </defs>
+  <rect id="card" x="20" y="54" width="160" height="92" rx="18" fill="#fbf8f1" stroke="#d8d2c6" stroke-width="1.5"/>
+  <g id="bones">
+    <circle id="avatar" cx="54" cy="100" r="20" fill="#d8d2c6" fill-opacity="0.75"/>
+    <rect class="line" x="86" y="78" width="76" height="10" rx="5" fill="#d8d2c6" fill-opacity="0.75"/>
+    <rect class="line" x="86" y="95" width="60" height="10" rx="5" fill="#d8d2c6" fill-opacity="0.75"/>
+    <rect class="line" x="86" y="112" width="38" height="10" rx="5" fill="#d8d2c6" fill-opacity="0.75"/>
+  </g>
+  <g clip-path="url(#bones-clip)">
+    <g transform="skewX(-18)">
+      <rect id="sheen" x="-10" y="60" width="56" height="80" fill="url(#sheen-fill)"/>
+    </g>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "states": {
+      "loading": {
+        "duration": 1600,
+        "loop": true,
+        "animate": {
+          "#sheen": {
+            "translateX": {
+              "0%": 0,
+              "75%": { "value": 228, "ease": "ease-in-out" },
+              "100%": { "value": 0, "ease": "hold" }
+            }
+          },
+          "#bones": {
+            "opacity": { "0%": 1, "40%": { "value": 0.78, "ease": "in-out" }, "100%": { "value": 1, "ease": "in-out" } }
+          }
+        }
+      }
+    }
+  }
+  ]]></metadata>
+</svg>

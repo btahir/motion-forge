@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="data">
+  <title>Battery</title>
+  <desc>Battery meter: input level 0-100 (smoothed) sets fill width and color, boolean input charging shows a glowing bolt; pulses below 15% when not charging.</desc>
+  <defs>
+    <filter id="soft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur id="soft-blur" stdDeviation="6"/>
+    </filter>
+  </defs>
+  <rect id="shell-bg" x="30" y="52" width="128" height="68" rx="16" fill="#efeae0"/>
+  <rect id="fill" x="38" y="60" width="80" height="52" rx="8" fill="#2fbf8f"/>
+  <rect id="shell" x="30" y="52" width="128" height="68" rx="16" fill="none" stroke="#1b1a17" stroke-width="5"/>
+  <rect id="nub" x="162" y="74" width="9" height="24" rx="3.5" fill="#1b1a17"/>
+  <g id="charge">
+    <path id="glow" d="M 99 63 L 79 91 L 93 91 L 88 109 L 109 80 L 96 80 Z" fill="#ffb020" filter="url(#soft)" opacity="0"/>
+    <path id="bolt" d="M 99 63 L 79 91 L 93 91 L 88 109 L 109 80 L 96 80 Z" fill="#ffb020" stroke="#1b1a17" stroke-width="3" stroke-linejoin="round" opacity="0"/>
+  </g>
+  <text id="label" x="100" y="160" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="24" font-weight="700" fill="#1b1a17" letter-spacing="-0.5">72%</text>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": {
+      "level":    { "type": "number", "min": 0, "max": 100, "default": 72, "smooth": 500 },
+      "charging": false
+    },
+    "states": {
+      "normal": {
+        "when": { "level < 15 && !charging": "low" }
+      },
+      "low": {
+        "duration": 1200,
+        "loop": true,
+        "animate": { "#fill": { "opacity": { "0%": 1, "50%": { "value": 0.35, "ease": "in-out" }, "100%": { "value": 1, "ease": "in-out" } } } },
+        "when": { "level >= 15 || charging": "normal" }
+      }
+    },
+    "layers": {
+      "charge": {
+        "states": {
+          "off": {
+            "animate": {
+              "#bolt": { "opacity": 0, "scale": 0.4, "rotate": -12, "origin": "94 86" },
+              "#glow": { "opacity": 0, "scale": 0.6, "origin": "94 86" }
+            },
+            "when": { "charging": { "to": "on", "blend": 420, "ease": "spring-bouncy" } }
+          },
+          "on": {
+            "duration": 1800,
+            "loop": true,
+            "ease": "in-out",
+            "animate": {
+              "#bolt": { "opacity": { "0%": 1 }, "scale": { "0%": 1, "50%": 1.06, "100%": 1 } },
+              "#glow": { "opacity": { "0%": 0.45, "50%": 1, "100%": 0.45 }, "scale": { "0%": 1, "50%": 1.4, "100%": 1 } }
+            },
+            "when": { "!charging": { "to": "off", "blend": 220, "ease": "in" } }
+          }
+        }
+      }
+    },
+    "bind": {
+      "#fill":  { "width": { "input": "level", "from": 0, "to": 112 },
+                  "fill":  { "input": "level", "map": { "0": "#ff4d6d", "18": "#ff4d6d", "28": "#ffb020", "46": "#ffb020", "52": "#2fbf8f", "100": "#2fbf8f" } } },
+      "#label": { "text": "{level}%" }
+    }
+  }
+  ]]></metadata>
+</svg>

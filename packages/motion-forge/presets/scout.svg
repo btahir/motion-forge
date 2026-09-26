@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" data-category="characters">
+  <title>Scout</title>
+  <desc>Motion Forge mascot robot: breathes, blinks and watches the pointer (lookX/lookY); click or send wave to wave, send celebrate for a hop with sparkles.</desc>
+  <ellipse id="shadow" cx="120" cy="207" rx="40" ry="6" fill="#d8d2c6"/>
+  <g id="rig" transform="translate(120 207) scale(0.86) translate(-120 -207)">
+  <g id="sparkles">
+    <path class="spark" transform="translate(58 78)" d="M0 -11 C1.6 -3 3 -1.6 11 0 C3 1.6 1.6 3 0 11 C-1.6 3 -3 1.6 -11 0 C-3 -1.6 -1.6 -3 0 -11Z" fill="#ffb020" opacity="0"/>
+    <path class="spark" transform="translate(186 62)" d="M0 -9 C1.3 -2.5 2.5 -1.3 9 0 C2.5 1.3 1.3 2.5 0 9 C-1.3 2.5 -2.5 1.3 -9 0 C-2.5 -1.3 -1.3 -2.5 0 -9Z" fill="#ff4d6d" opacity="0"/>
+    <path class="spark" transform="translate(190 140)" d="M0 -10 C1.5 -2.8 2.8 -1.5 10 0 C2.8 1.5 1.5 2.8 0 10 C-1.5 2.8 -2.8 1.5 -10 0 C-2.8 -1.5 -1.5 -2.8 0 -10Z" fill="#2fbf8f" opacity="0"/>
+    <path class="spark" transform="translate(48 146)" d="M0 -8 C1.2 -2.2 2.2 -1.2 8 0 C2.2 1.2 1.2 2.2 0 8 C-1.2 2.2 -2.2 1.2 -8 0 C-2.2 -1.2 -1.2 -2.2 0 -8Z" fill="#4c8dff" opacity="0"/>
+  </g>
+  <g id="scout">
+    <g id="legs" fill="#1b1a17">
+      <rect x="101" y="178" width="14" height="24" rx="7"/>
+      <rect x="125" y="178" width="14" height="24" rx="7"/>
+      <rect x="95" y="196" width="23" height="11" rx="5.5"/>
+      <rect x="122" y="196" width="23" height="11" rx="5.5"/>
+    </g>
+    <g id="torso">
+      <g id="arm-l" stroke="#1b1a17" stroke-linecap="round" fill="#1b1a17">
+        <line x1="92" y1="146" x2="84" y2="162" stroke-width="12"/>
+        <g id="fore-l">
+          <line x1="84" y1="162" x2="80" y2="176" stroke-width="11"/>
+          <circle cx="80" cy="178" r="8" stroke="none"/>
+        </g>
+      </g>
+      <g id="arm-r" stroke="#1b1a17" stroke-linecap="round" fill="#1b1a17">
+        <line x1="148" y1="146" x2="156" y2="162" stroke-width="12"/>
+        <g id="fore-r">
+          <line x1="156" y1="162" x2="160" y2="176" stroke-width="11"/>
+          <circle cx="160" cy="178" r="8" stroke="none"/>
+        </g>
+      </g>
+      <rect x="110" y="116" width="20" height="14" rx="4" fill="#1b1a17"/>
+      <rect x="86" y="126" width="68" height="64" rx="24" fill="#ff5a1f"/>
+      <rect x="102" y="143" width="36" height="28" rx="11" fill="#fbf8f1"/>
+      <circle id="core" cx="113" cy="157" r="5" fill="#2fbf8f"/>
+      <rect x="122" y="152" width="10" height="3.5" rx="1.75" fill="#d8d2c6"/>
+      <rect x="122" y="159" width="7" height="3.5" rx="1.75" fill="#d8d2c6"/>
+    </g>
+    <g id="headg">
+      <g id="head-act">
+        <g id="head-look">
+          <g id="antenna">
+            <g id="antenna-wob">
+              <line x1="120" y1="58" x2="120" y2="36" stroke="#1b1a17" stroke-width="4" stroke-linecap="round"/>
+              <circle id="glow" cx="120" cy="31" r="12" fill="#ffb020" opacity="0.28"/>
+              <circle id="tip" cx="120" cy="31" r="6.5" fill="#ffb020"/>
+            </g>
+          </g>
+          <rect x="66" y="76" width="12" height="26" rx="5" fill="#1b1a17"/>
+          <rect x="162" y="76" width="12" height="26" rx="5" fill="#1b1a17"/>
+          <rect x="74" y="54" width="92" height="68" rx="28" fill="#ff5a1f"/>
+          <rect x="88" y="60" width="20" height="6" rx="3" fill="#fbf8f1" opacity="0.4"/>
+          <rect x="86" y="70" width="68" height="40" rx="19" fill="#1b1a17"/>
+          <ellipse cx="97" cy="102" rx="5" ry="2.6" fill="#ff4d6d" opacity="0.85"/>
+          <ellipse cx="143" cy="102" rx="5" ry="2.6" fill="#ff4d6d" opacity="0.85"/>
+          <g id="eyes">
+            <g class="eye">
+              <ellipse cx="108" cy="89" rx="6.5" ry="8" fill="#2fbf8f"/>
+              <circle cx="110.2" cy="86" r="2.2" fill="#fbf8f1"/>
+            </g>
+            <g class="eye">
+              <ellipse cx="132" cy="89" rx="6.5" ry="8" fill="#2fbf8f"/>
+              <circle cx="134.2" cy="86" r="2.2" fill="#fbf8f1"/>
+            </g>
+            <path id="mouth" d="M115 100 Q120 104 125 100" fill="none" stroke="#2fbf8f" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": {
+      "lookX": { "type": "number", "min": -1, "max": 1, "default": 0, "smooth": 220 },
+      "lookY": { "type": "number", "min": -1, "max": 1, "default": 0, "smooth": 220 }
+    },
+    "initial": "idle",
+    "on": { "wave": "wave", "celebrate": "celebrate" },
+    "states": {
+      "idle": { "animate": {} },
+      "wave": {
+        "duration": 1800,
+        "animate": {
+          "#scout": {
+            "rotate": { "0": 0, "150ms": -1.5, "420ms": { "value": 2.5, "ease": "out" }, "1350ms": 2, "1750ms": { "value": 0, "ease": "in-out" } },
+            "scaleY": { "0": 1, "150ms": 0.97, "380ms": { "value": 1.02, "ease": "out" }, "600ms": 1 },
+            "origin": "120 207"
+          },
+          "#arm-r": {
+            "rotate": {
+              "0": 0,
+              "160ms": { "value": 14, "ease": "in-out" },
+              "440ms": { "value": -112, "ease": "back" },
+              "620ms": -106, "800ms": -113, "980ms": -106, "1160ms": -112,
+              "1620ms": { "value": 0, "ease": "in-out" }
+            },
+            "origin": "148 146"
+          },
+          "#fore-r": {
+            "rotate": {
+              "0": 0,
+              "200ms": 12,
+              "500ms": { "value": -6, "ease": "out" },
+              "640ms": -34, "800ms": 12, "960ms": -34, "1120ms": 12, "1280ms": -26,
+              "1500ms": 22,
+              "1800ms": { "value": 0, "ease": "spring-soft" }
+            },
+            "origin": "156 162"
+          },
+          "#arm-l": { "rotate": { "0": 0, "200ms": -6, "500ms": 8, "1400ms": 8, "1750ms": 0 }, "origin": "92 146" },
+          "#fore-l": { "rotate": { "0": 0, "260ms": -6, "560ms": 10, "1450ms": 10, "1800ms": 0 }, "origin": "84 162" },
+          "#head-act": {
+            "rotate": { "0": 0, "180ms": 2, "520ms": { "value": -6, "ease": "out" }, "1300ms": -5, "1720ms": { "value": 0, "ease": "in-out" } },
+            "origin": "120 122"
+          },
+          "#antenna-wob": {
+            "rotate": { "0": 0, "220ms": 8, "560ms": -16, "720ms": 11, "880ms": -8, "1040ms": 6, "1200ms": -4, "1400ms": 3, "1600ms": -1, "1800ms": 0 },
+            "origin": "120 58"
+          },
+          "#eyes": { "scaleY": { "0": 1, "300ms": 1, "420ms": 0.55, "1400ms": 0.55, "1560ms": 1 } }
+        },
+        "next": "idle"
+      },
+      "celebrate": {
+        "duration": 1500,
+        "animate": {
+          "#scout": {
+            "translateY": { "0": 0, "200ms": 0, "480ms": { "value": -34, "ease": "out" }, "760ms": { "value": 0, "ease": "in" }, "1500ms": 0 },
+            "scaleY": { "0": 1, "200ms": { "value": 0.84, "ease": "in-out" }, "290ms": { "value": 1.09, "ease": "out" }, "480ms": 1, "700ms": 1.07, "760ms": 1.07, "830ms": { "value": 0.82, "ease": "out" }, "1000ms": { "value": 1.04, "ease": "in-out" }, "1150ms": 1 },
+            "scaleX": { "0": 1, "200ms": { "value": 1.12, "ease": "in-out" }, "290ms": { "value": 0.92, "ease": "out" }, "480ms": 1, "700ms": 0.95, "760ms": 0.95, "830ms": { "value": 1.14, "ease": "out" }, "1000ms": { "value": 0.97, "ease": "in-out" }, "1150ms": 1 },
+            "origin": "120 207"
+          },
+          "#shadow": {
+            "scale": { "0": 1, "200ms": 1.08, "480ms": { "value": 0.55, "ease": "out" }, "760ms": { "value": 1, "ease": "in" }, "830ms": 1.12, "1100ms": 1 },
+            "opacity": { "0": 1, "480ms": { "value": 0.45, "ease": "out" }, "760ms": { "value": 1, "ease": "in" } }
+          },
+          "#arm-r": { "rotate": { "0": 0, "200ms": 18, "420ms": { "value": -104, "ease": "out" }, "900ms": -98, "1300ms": { "value": 0, "ease": "in-out" } }, "origin": "148 146" },
+          "#arm-l": { "rotate": { "0": 0, "220ms": -18, "440ms": { "value": 104, "ease": "out" }, "920ms": 98, "1320ms": { "value": 0, "ease": "in-out" } }, "origin": "92 146" },
+          "#fore-r": { "rotate": { "0": 0, "260ms": 16, "500ms": -34, "680ms": -10, "830ms": 8, "1000ms": -14, "1420ms": { "value": 0, "ease": "out" } }, "origin": "156 162" },
+          "#fore-l": { "rotate": { "0": 0, "280ms": -16, "520ms": 34, "700ms": 10, "850ms": -8, "1020ms": 14, "1440ms": { "value": 0, "ease": "out" } }, "origin": "84 162" },
+          "#head-act": {
+            "translateY": { "0": 0, "200ms": 3, "320ms": 4, "520ms": -3, "800ms": 0, "870ms": 5, "1050ms": -1, "1200ms": 0 },
+            "rotate": { "0": 0, "500ms": -4, "900ms": 3, "1200ms": 0 },
+            "origin": "120 122"
+          },
+          "#antenna-wob": {
+            "scaleY": { "0": 1, "200ms": 1.05, "320ms": 0.78, "540ms": 1.12, "780ms": 1.08, "860ms": 0.76, "1000ms": 1.1, "1120ms": 0.96, "1250ms": 1 },
+            "rotate": { "0": 0, "320ms": -6, "560ms": 10, "860ms": -12, "1020ms": 7, "1180ms": -3, "1350ms": 0 },
+            "origin": "120 58"
+          },
+          "#tip": { "fill": { "0": "#ffb020", "440ms": "#fff3c9", "1100ms": "#ffb020" } },
+          "#eyes": { "scaleY": { "0": 1, "200ms": 1, "300ms": 0.5, "1100ms": 0.5, "1260ms": 1 } },
+          ".spark": {
+            "scale": { "0": 0, "380ms": 0, "560ms": { "value": 1.25, "ease": "back" }, "800ms": 0.9, "1100ms": { "value": 0, "ease": "in" } },
+            "rotate": { "0": 0, "380ms": 0, "1100ms": { "value": 120, "ease": "out" } },
+            "opacity": { "0": 0, "380ms": 0, "480ms": 1, "900ms": 1, "1100ms": 0 },
+            "stagger": 70
+          }
+        },
+        "next": "idle"
+      }
+    },
+    "bind": {
+      "#head-look": {
+        "translateX": { "input": "lookX", "from": -5, "to": 5 },
+        "translateY": { "input": "lookY", "from": -3, "to": 3 },
+        "rotate": { "input": "lookX", "from": -3, "to": 3 },
+        "origin": "120 122"
+      },
+      "#eyes": {
+        "translateX": { "input": "lookX", "from": -9, "to": 9 },
+        "translateY": { "input": "lookY", "from": -5, "to": 5 }
+      }
+    },
+    "interactions": [
+      { "on": "pointer", "x": "lookX", "y": "lookY" },
+      { "on": "click", "target": "#scout", "send": "wave" }
+    ],
+    "layers": {
+      "breathe": {
+        "states": {
+          "idle": {
+            "duration": 3600,
+            "loop": true,
+            "ease": "in-out",
+            "animate": {
+              "#torso": { "scaleY": [1, 1.03, 1], "scaleX": [1, 0.99, 1], "origin": "120 190" },
+              "#headg": {
+                "translateY": { "0%": 0, "50%": -2.5, "100%": 0 },
+                "rotate": { "0%": -1.5, "50%": 1.5, "100%": -1.5 },
+                "origin": "120 122",
+                "delay": 140
+              },
+              "#antenna": { "rotate": { "0%": -4, "50%": 4, "100%": -4 }, "origin": "120 58", "delay": 520 },
+              "#glow": { "scale": [1, 1.3, 1, 1.3, 1], "opacity": [0.22, 0.5, 0.22, 0.5, 0.22] }
+            }
+          }
+        }
+      },
+      "blink": {
+        "states": {
+          "open": {
+            "duration": 5200,
+            "loop": true,
+            "animate": {
+              ".eye": { "scaleY": { "0%": 1, "58%": 1, "59.5%": 0.1, "61.5%": 1, "91%": 1, "92.5%": 0.1, "94.5%": 1, "100%": 1 } }
+            }
+          }
+        }
+      }
+    }
+  }
+  ]]></metadata>
+</svg>

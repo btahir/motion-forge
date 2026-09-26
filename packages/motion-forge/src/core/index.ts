@@ -1,7 +1,10 @@
-export * from './schema';
-export * from './easing';
-export * from './sample';
-export * from './render';
-export * from './player';
-export * from './history';
-export * from './interchange';
+export { loadScene, resolveOrigin, type Scene, type LoadOptions, type RState, type RLayer, type Channel } from './scene';
+export { Player, type PlayerEvent, type PlayerOptions } from './player';
+export { renderSVG, renderFrameTree, frameAttributes, prefixIds, TEXT, type RenderOptions } from './render';
+export { sampleState, interpolate, type Frame } from './sample';
+export { parseEasing, easingNames, spring } from './easing';
+export { parseColor, formatColor, mixColor } from './color';
+export { parseXML, serializeXML, XMLError } from './xml';
+export type { Diagnostic } from './sanitize';
+export type { Value, NInput as InputDefinition } from './motion';
+export { PROPS as properties } from './props';

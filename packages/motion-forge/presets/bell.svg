@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" data-category="feedback">
+  <title>Notification bell</title>
+  <desc>Notification bell: send notify (or click) to ring it with a lagging clapper and pop the badge; the badge shows the count input and hides at 0.</desc>
+  <ellipse id="shadow" cx="120" cy="206" rx="46" ry="6.5" fill="#d8d2c6"/>
+  <g id="waves" fill="none" stroke="#ff5a1f" stroke-width="5" stroke-linecap="round">
+    <path class="wave" d="M66 84 Q56 104 66 124" opacity="0"/>
+    <path class="wave" d="M174 84 Q184 104 174 124" opacity="0"/>
+    <path class="wave" d="M52 76 Q38 104 52 132" opacity="0"/>
+    <path class="wave" d="M188 76 Q202 104 188 132" opacity="0"/>
+  </g>
+  <g id="bell">
+    <g id="clapper">
+      <rect x="116" y="140" width="8" height="24" rx="4" fill="#1b1a17"/>
+      <circle cx="120" cy="168" r="11" fill="#ff5a1f"/>
+    </g>
+    <circle cx="120" cy="48" r="8" fill="#ff5a1f"/>
+    <path d="M120 54 C96 54 84 72 84 96 V122 C84 133 78 141 70 147 Q66 151 70 153 H170 Q174 151 170 147 C162 141 156 133 156 122 V96 C156 72 144 54 120 54Z" fill="#ffb020"/>
+    <path d="M100 74 C95 82 94 92 94 106" fill="none" stroke="#fbf8f1" stroke-width="6" stroke-linecap="round" opacity="0.55"/>
+    <rect x="64" y="148" width="112" height="13" rx="6.5" fill="#ff5a1f"/>
+  </g>
+  <g id="badge-vis">
+    <g id="badge-pop">
+      <rect id="badge-bg" x="143" y="52" width="30" height="30" rx="15" fill="#ff4d6d" stroke="#fbf8f1" stroke-width="4"/>
+      <text id="badge-text" x="158" y="72.5" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="16" font-weight="700" fill="#fbf8f1">3</text>
+    </g>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": {
+      "count": { "type": "number", "min": 0, "max": 99, "default": 3, "smooth": 320 }
+    },
+    "initial": "quiet",
+    "on": { "notify": "ring" },
+    "states": {
+      "quiet": {
+        "animate": {},
+        "when": { "count > 0": "waiting" }
+      },
+      "waiting": {
+        "duration": 4200,
+        "loop": true,
+        "animate": {
+          "#bell": { "rotate": { "0%": 0, "82%": 0, "85%": -5, "88.5%": 4, "92%": -2, "95.5%": 1, "100%": 0 }, "origin": "120 44" },
+          "#clapper": { "rotate": { "0%": 0, "83%": 0, "86.5%": 6, "90%": -5, "93.5%": 3, "97%": -1, "100%": 0 }, "origin": "120 142" }
+        },
+        "when": { "count <= 0": "quiet" }
+      },
+      "ring": {
+        "duration": 1400,
+        "animate": {
+          "#bell": {
+            "rotate": { "0": 0, "110ms": { "value": 7, "ease": "in-out" }, "240ms": { "value": -22, "ease": "out" }, "390ms": 17, "540ms": -12, "680ms": 8, "810ms": -5, "930ms": 3, "1050ms": -1.5, "1180ms": 0 },
+            "scale": { "0": 1, "110ms": 0.96, "260ms": { "value": 1.05, "ease": "out" }, "600ms": 1 },
+            "origin": "120 44"
+          },
+          "#clapper": {
+            "rotate": { "0": 0, "140ms": -6, "300ms": 22, "460ms": -26, "610ms": 19, "750ms": -13, "880ms": 8, "1000ms": -5, "1130ms": 2, "1280ms": 0 },
+            "origin": "120 142"
+          },
+          "#shadow": {
+            "translateX": { "0": 0, "110ms": -3.5, "240ms": { "value": 11, "ease": "out" }, "390ms": -8.5, "540ms": 6, "680ms": -4, "810ms": 2.5, "930ms": -1.5, "1050ms": 0.7, "1180ms": 0 },
+            "scaleX": { "0": 1, "240ms": 0.9, "700ms": 0.97, "1180ms": 1 }
+          },
+          ".wave": {
+            "opacity": { "0": 0, "220ms": 0, "320ms": 1, "700ms": 0 },
+            "scale": { "0": 0.8, "220ms": 0.8, "700ms": { "value": 1.15, "ease": "out" } },
+            "origin": "120 104",
+            "stagger": 60
+          },
+          "#badge-pop": {
+            "scale": { "0": 1, "160ms": { "value": 0, "ease": "in" }, "460ms": { "value": 1.22, "ease": "out" }, "680ms": { "value": 1, "ease": "in-out" } },
+            "origin": "158 67"
+          }
+        },
+        "next": "quiet"
+      }
+    },
+    "bind": {
+      "#badge-vis": { "scale": { "input": "count", "map": { "0": 0, "1": 1 } }, "origin": "158 67" },
+      "#badge-bg": {
+        "width": { "input": "count", "map": { "9": 30, "10": 40 } },
+        "x": { "input": "count", "map": { "9": 143, "10": 138 } }
+      },
+      "#badge-text": { "text": "{count}" }
+    },
+    "interactions": [
+      { "on": "click", "target": "#bell", "send": "notify" }
+    ]
+  }
+  ]]></metadata>
+</svg>

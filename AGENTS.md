@@ -1,12 +1,9 @@
-# Motion Forge
+# Motion Forge (repo guide for agents)
 
-Build the full product described in `PRODUCT.md`. Keep answers concise. Read `STATUS.md` before resuming work and update it with verified progress and concrete remaining work.
+Read `PRODUCT.md` for the thesis and `STATUS.md` for current state. The format spec is `packages/motion-forge/skills/motion-forge/reference.md`; the agent workflow is `SKILL.md` next to it. Keep them accurate when behavior changes.
 
-- One versioned document is shared by core, React, Studio, CLI, and examples. No editor-only animation semantics.
-- Pure core must run without browser globals. Untrusted documents must be validated before use. Render only allowlisted vector nodes and properties.
-- Preserve user work. Check Git state before committing. Do not publish or deploy as part of local verification.
-- UI controls must do real work. No placeholder buttons, fabricated usage claims, fake testimonials, or unsupported compatibility claims.
-- Use independent expectations, failure fixtures, and browser journeys. Test outputs are evidence only for the behavior they actually exercise.
-- Review desktop and mobile visually. Check keyboard and reduced motion. Keep the runtime separate from the editor bundle.
-- Run targeted checks after each change, then the documented release gates. Remove disposable captures/build reports and stop servers started for verification; retain source assets and permanent tests.
-- Never mark the goal complete while any release requirement in `PRODUCT.md` is missing or unverified.
+- Engine code lives in `packages/motion-forge/src/core` and must run without browser globals. Untrusted SVG always goes through `sanitize` and validation.
+- Every diagnostic should say where (JSON path or element), what, and how to fix it.
+- Presets in `packages/motion-forge/presets` must pass `pnpm check:presets` and be reviewed with `motion-forge preview` (look at the PNG) after any engine change that could affect them.
+- Run `pnpm check` after changes; `pnpm test:e2e` for site changes; `pnpm verify:package` before a release. Stop dev servers you start.
+- Don't publish, deploy, or push without the maintainer asking.

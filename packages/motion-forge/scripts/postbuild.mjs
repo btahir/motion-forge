@@ -1,15 +1,23 @@
-import { mkdir, writeFile, readFile, copyFile, chmod } from 'node:fs/promises';
-import { getJSONSchema } from '../dist/core.js';
-await mkdir(new URL('../schema/', import.meta.url), { recursive: true });
-await writeFile(new URL('../schema/document.schema.json', import.meta.url), JSON.stringify(getJSONSchema(), null, 2) + '\n');
-await copyFile(new URL('../src/studio/studio.css', import.meta.url), new URL('../dist/studio.css', import.meta.url));
-for (const name of ['react.js', 'react.cjs', 'studio.js', 'studio.cjs']) {
-  const path = new URL(`../dist/${name}`, import.meta.url);
-  await writeFile(path, '"use client";\n' + await readFile(path, 'utf8'));
-}
-await chmod(new URL('../dist/cli.js', import.meta.url), 0o755);
-const { cp } = await import('node:fs/promises');
-await cp(new URL('../../../docs/', import.meta.url), new URL('../docs/', import.meta.url), { recursive: true });
-for (const name of ['LICENSE', 'CHANGELOG.md', 'CONTRIBUTING.md', 'SECURITY.md', 'SUPPORT.md', 'THIRD_PARTY.md', 'DEPLOYMENT.md', 'RELEASE.md', 'STATUS.md']) await copyFile(new URL(`../../../${name}`, import.meta.url), new URL(`../${name}`, import.meta.url));
-const readme = (await readFile(new URL('../../../README.md', import.meta.url), 'utf8')).replaceAll('packages/motion-forge/skills/', 'skills/');
-await writeFile(new URL('../README.md', import.meta.url), readme);
+import { chmod, readFile, writeFile } from 'node:fs/promises';
+
+const cli = new URL('../dist/cli.js', import.meta.url);
+const body = await readFile(cli, 'utf8');
+if (!body.startsWith('#!')) await writeFile(cli, '#!/usr/bin/env node\n' + body);
+await chmod(cli, 0o755);
+const react = new URL('../dist/react.js', import.meta.url);
+const r = await readFile(react, 'utf8');
+if (!r.startsWith('"use client"')) await writeFile(react, '"use client";\n' + r);
+
+// Ship the root README (with package-relative links) and license.
+const rootReadme = await readFile(new URL('../../../README.md', import.meta.url), 'utf8');
+await writeFile(
+  new URL('../README.md', import.meta.url),
+  rootReadme
+    .replaceAll('packages/motion-forge/skills/', 'skills/')
+    .replaceAll('packages/motion-forge/presets', 'presets')
+    .replaceAll('](docs/media/', '](https://raw.githubusercontent.com/btahir/motion-forge/main/docs/media/')
+    .replaceAll('](docs/size.json)', '](https://github.com/btahir/motion-forge/blob/main/docs/size.json)')
+    .replaceAll('](STATUS.md)', '](https://github.com/btahir/motion-forge/blob/main/STATUS.md)')
+    .replaceAll('](LICENSE)', '](LICENSE)'),
+);
+await writeFile(new URL('../LICENSE', import.meta.url), await readFile(new URL('../../../LICENSE', import.meta.url)));

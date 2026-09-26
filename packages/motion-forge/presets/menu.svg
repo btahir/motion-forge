@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="icons">
+  <title>Menu</title>
+  <desc>Hamburger menu that folds into a close X: boolean input open, click toggles it; lines slide to the center, then rotate with a slight overshoot.</desc>
+  <g id="button">
+    <rect id="hit" x="36" y="36" width="128" height="128" rx="28" fill="#fbf8f1" fill-opacity="0"/>
+    <g stroke="#1b1a17" stroke-width="10" stroke-linecap="round">
+      <line id="top" x1="58" y1="70" x2="142" y2="70"/>
+      <line id="mid" x1="58" y1="100" x2="142" y2="100"/>
+      <line id="bot" x1="58" y1="130" x2="142" y2="130"/>
+    </g>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": { "open": false },
+    "states": {
+      "closed": {
+        "when": { "open": { "to": "opening", "blend": 60 } }
+      },
+      "opening": {
+        "duration": 460,
+        "animate": {
+          "#top": { "translateY": { "0%": 0, "40%": { "value": 30, "ease": "in-out" } },
+                    "rotate":     { "0%": 0, "38%": 0, "100%": { "value": 45, "ease": "back" } } },
+          "#bot": { "translateY": { "0%": 0, "40%": { "value": -30, "ease": "in-out" } },
+                    "rotate":     { "0%": 0, "38%": 0, "100%": { "value": -45, "ease": "back" } } },
+          "#mid": { "scaleX": { "0%": 1, "35%": { "value": 0.2, "ease": "in" } },
+                    "opacity": { "0%": 1, "22%": 1, "35%": { "value": 0, "ease": "in" } } }
+        },
+        "next": { "to": "open", "blend": 0 },
+        "when": { "!open": { "to": "closing", "blend": 60 } }
+      },
+      "open": {
+        "animate": {
+          "#top": { "translateY": 30, "rotate": 45 },
+          "#bot": { "translateY": -30, "rotate": -45 },
+          "#mid": { "scaleX": 0.2, "opacity": 0 }
+        },
+        "when": { "!open": { "to": "closing", "blend": 60 } }
+      },
+      "closing": {
+        "duration": 460,
+        "animate": {
+          "#top": { "rotate":     { "0%": 45, "42%": { "value": 0, "ease": "in-out" } },
+                    "translateY": { "0%": 30, "40%": 30, "100%": { "value": 0, "ease": "back" } } },
+          "#bot": { "rotate":     { "0%": -45, "42%": { "value": 0, "ease": "in-out" } },
+                    "translateY": { "0%": -30, "40%": -30, "100%": { "value": 0, "ease": "back" } } },
+          "#mid": { "scaleX": { "0%": 0.2, "45%": 0.2, "100%": { "value": 1, "ease": "back" } },
+                    "opacity": { "0%": 0, "45%": 0, "65%": { "value": 1, "ease": "out" } } }
+        },
+        "next": { "to": "closed", "blend": 0 },
+        "when": { "open": { "to": "opening", "blend": 60 } }
+      }
+    },
+    "interactions": [
+      { "on": "click", "target": "#button", "toggle": "open" }
+    ]
+  }
+  ]]></metadata>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="loaders">
+  <title>Typing dots</title>
+  <desc>Typing indicator: three dots bounce in a soft chat bubble; loops forever with no host code (no events or inputs needed).</desc>
+  <g id="bubble">
+    <path id="tail" d="M46 120 C 48 138 42 148 30 156 C 50 158 66 150 76 134 Z" fill="#efeae0"/>
+    <rect id="body" x="30" y="62" width="140" height="76" rx="38" fill="#efeae0"/>
+    <circle class="dot" cx="70" cy="102" r="10" fill="#1b1a17"/>
+    <circle class="dot" cx="100" cy="102" r="10" fill="#1b1a17"/>
+    <circle class="dot" cx="130" cy="102" r="10" fill="#1b1a17"/>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "states": {
+      "typing": {
+        "duration": 1400,
+        "loop": true,
+        "animate": {
+          ".dot": {
+            "translateY": { "0%": 0, "16%": { "value": -11, "ease": "out" }, "34%": { "value": 0, "ease": "in" }, "40%": { "value": 0.8, "ease": "out" }, "46%": { "value": 0, "ease": "in-out" }, "100%": 0 },
+            "opacity": { "0%": 0.28, "16%": { "value": 0.9, "ease": "out" }, "40%": { "value": 0.28, "ease": "in-out" }, "100%": 0.28 },
+            "stagger": 160
+          },
+          "#bubble": {
+            "scale": { "0%": 1, "50%": { "value": 1.025, "ease": "in-out" }, "100%": { "value": 1, "ease": "in-out" } },
+            "origin": "34 150"
+          }
+        }
+      }
+    }
+  }
+  ]]></metadata>
+</svg>

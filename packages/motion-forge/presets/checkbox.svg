@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="controls">
+  <title>Checkbox</title>
+  <desc>Rounded checkbox that fills with a spring pop and draws its check. Input: checked (boolean), click toggles it. Emits "checked" and "unchecked". Input hovered is set by the built-in hover.</desc>
+  <rect id="halo" x="30" y="30" width="140" height="140" rx="40" fill="#efeae0" opacity="0"/>
+  <g id="box">
+    <rect id="hit" x="48" y="48" width="104" height="104" rx="26" fill="#fbf8f1" fill-opacity="0"/>
+    <rect id="fill" x="48" y="48" width="104" height="104" rx="26" fill="#1b1a17" opacity="0"/>
+    <rect id="frame" x="52" y="52" width="96" height="96" rx="22" fill="none" stroke="#d8d2c6" stroke-width="8"/>
+    <path id="check" d="M73 101 L92 119 L128 81" fill="none" stroke="#fbf8f1" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": { "checked": false, "hovered": false },
+    "states": {
+      "unchecked": {
+        "animate": { "#check": { "draw": 0 } },
+        "when": { "checked": "checking" }
+      },
+      "checking": {
+        "duration": 440,
+        "emit": "checked",
+        "animate": {
+          "#box": {
+            "scale": { "0%": 1, "18%": { "value": 0.86, "ease": "in-out" }, "50%": { "value": 1.08, "ease": "out" }, "100%": { "value": 1, "ease": "spring" } },
+            "origin": "center"
+          },
+          "#fill": {
+            "scale": { "0%": 0.4, "12%": 0.4, "46%": { "value": 1, "ease": "back" } },
+            "opacity": { "0%": 0, "12%": 0, "24%": 1 },
+            "origin": "center"
+          },
+          "#frame": {
+            "stroke": { "0%": "#d8d2c6", "12%": "#d8d2c6", "34%": "#1b1a17" }
+          },
+          "#check": {
+            "draw": { "0%": 0, "30%": 0, "78%": { "value": 1, "ease": "out" } },
+            "opacity": { "0%": 1 },
+            "scale": { "0%": 1, "72%": 1, "86%": { "value": 1.12, "ease": "out" }, "100%": { "value": 1, "ease": "in-out" } },
+            "origin": "100 100"
+          }
+        },
+        "next": "checked",
+        "when": { "!checked": "unchecking" }
+      },
+      "checked": {
+        "animate": {
+          "#fill": { "scale": 1, "opacity": 1 },
+          "#frame": { "stroke": "#1b1a17" },
+          "#check": { "draw": 1, "opacity": 1 }
+        },
+        "when": { "!checked": "unchecking" }
+      },
+      "unchecking": {
+        "duration": 220,
+        "emit": "unchecked",
+        "animate": {
+          "#box": {
+            "scale": { "0%": 1, "40%": { "value": 0.94, "ease": "out" }, "100%": { "value": 1, "ease": "spring-soft" } }
+          },
+          "#check": {
+            "draw": { "0%": 1, "45%": { "value": 0, "ease": "in" } },
+            "opacity": { "0%": 1 }
+          },
+          "#fill": {
+            "scale": { "0%": 1, "25%": 1, "85%": { "value": 0, "ease": "in" } }
+          },
+          "#frame": {
+            "stroke": { "0%": "#1b1a17", "30%": "#1b1a17", "90%": "#d8d2c6" }
+          }
+        },
+        "next": "unchecked",
+        "when": { "checked": "checking" }
+      }
+    },
+    "layers": {
+      "hover": {
+        "states": {
+          "rest": { "when": { "hovered": "over" } },
+          "over": {
+            "animate": { "#halo": { "opacity": 1 } },
+            "when": { "!hovered": "rest" }
+          }
+        }
+      }
+    },
+    "interactions": [
+      { "on": "click", "target": "#box", "toggle": "checked" },
+      { "on": "hover", "target": "#box", "set": "hovered" }
+    ]
+  }
+  ]]></metadata>
+</svg>

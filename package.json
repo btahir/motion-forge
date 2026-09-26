@@ -4,7 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@11.1.1",
   "scripts": {
-    "dev": "pnpm --filter @motion-forge/site dev",
+    "dev": "pnpm --filter motion-forge build && pnpm --filter @motion-forge/site dev",
     "build": "pnpm --filter motion-forge build && pnpm --filter @motion-forge/site build",
     "build:package": "pnpm --filter motion-forge build",
     "typecheck": "pnpm -r typecheck",
@@ -12,16 +12,16 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "check": "pnpm build && pnpm typecheck && pnpm test",
-    "verify:site": "node scripts/verify-site.mjs",
-    "art": "node scripts/generate-art.mjs",
-    "verify:package": "node scripts/verify-package.mjs",
-    "benchmark": "node scripts/benchmark.mjs"
+    "check:presets": "node packages/motion-forge/dist/cli.js list --json > /dev/null && for f in packages/motion-forge/presets/*.svg; do node packages/motion-forge/dist/cli.js check $f > /dev/null || exit 1; done",
+    "size": "node scripts/size.mjs",
+    "verify:package": "node scripts/verify-package.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@playwright/test": "^1.58.0",
     "@types/node": "^24.0.0",
     "esbuild": "^0.28.2",
+    "gifenc": "^1.0.3",
     "jsdom": "^30.1.1",
     "typescript": "^5.9.0",
     "vitest": "^4.0.0"

@@ -1,0 +1,229 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 280">
+  <title>Watering streak plant</title>
+  <desc>A potted plant that grows from a seed to a flower as the watering streak goes from 0 to 30 days.</desc>
+
+  <circle id="backdrop" cx="120" cy="150" r="100" fill="#cfe8ff"/>
+  <ellipse id="groundShadow" cx="120" cy="263" rx="52" ry="6" fill="#6b4f3a" opacity="0.18"/>
+
+  <g id="plant">
+    <g id="sway">
+      <line id="stem" x1="120" y1="190" x2="120" y2="84" stroke="#1f7a4d" stroke-width="5" stroke-linecap="round"/>
+
+      <g id="leaf1" class="leaf"><path d="M120 168 C 109.2 173 91.2 170 84 151.8 C 96.6 148.2 112.8 155.4 120 168 Z" fill="#7bc47f"/><path d="M121 168 Q 102.0 163.7 86.9 153.6" fill="none" stroke="#1f7a4d" stroke-width="1.6" stroke-linecap="round" opacity="0.55"/></g>
+      <g id="leaf2" class="leaf"><path d="M120 152 C 129.9 157 146.4 154 153 137.2 C 141.4 133.8 126.6 140.4 120 152 Z" fill="#7bc47f"/><path d="M121 152 Q 136.5 148.0 150.4 138.8" fill="none" stroke="#1f7a4d" stroke-width="1.6" stroke-linecap="round" opacity="0.55"/></g>
+      <g id="leaf3" class="leaf"><path d="M120 134 C 111.3 139 96.8 136 91 121.0 C 101.2 118.0 114.2 123.8 120 134 Z" fill="#7bc47f"/><path d="M121 134 Q 105.5 130.5 93.3 122.4" fill="none" stroke="#1f7a4d" stroke-width="1.6" stroke-linecap="round" opacity="0.55"/></g>
+      <g id="leaf4" class="leaf"><path d="M120 116 C 127.5 121 140.0 118 145 104.8 C 136.2 102.2 125.0 107.2 120 116 Z" fill="#7bc47f"/><path d="M121 116 Q 132.5 113.0 143.0 106.0" fill="none" stroke="#1f7a4d" stroke-width="1.6" stroke-linecap="round" opacity="0.55"/></g>
+      <g id="leaf5" class="leaf"><path d="M120 101 C 114.3 106 104.8 103 101 92.5 C 107.7 90.5 116.2 94.3 120 101 Z" fill="#7bc47f"/><path d="M121 101 Q 110.5 98.7 102.5 93.4" fill="none" stroke="#1f7a4d" stroke-width="1.6" stroke-linecap="round" opacity="0.55"/></g>
+
+      <!-- Everything at the growing tip rides up the stem together -->
+      <g id="tip">
+        <g id="sprout" opacity="0">
+          <path d="M120 85 C 113 86 104 82 102 74 C 110 72 118 77 120 85 Z" fill="#7bc47f"/>
+          <path d="M120 85 C 127 86 136 82 138 74 C 130 72 122 77 120 85 Z" fill="#7bc47f"/>
+        </g>
+        <g id="budGrow">
+          <g id="bud">
+            <path d="M120 87 C 110 81 111 68 120 59 C 129 68 130 81 120 87 Z" fill="#7bc47f" stroke="#1f7a4d" stroke-width="2"/>
+            <path d="M120 87 C 114 84 112 78 113 74 L 120 80 L 127 74 C 128 78 126 84 120 87 Z" fill="#1f7a4d"/>
+          </g>
+        </g>
+        <g id="flower">
+          <g id="petals">
+            <ellipse class="petal" cx="120" cy="66" rx="8" ry="13" fill="#ff9eb5"/>
+            <ellipse class="petal" cx="120" cy="66" rx="8" ry="13" fill="#ff9eb5" transform="rotate(60 120 79)"/>
+            <ellipse class="petal" cx="120" cy="66" rx="8" ry="13" fill="#ff9eb5" transform="rotate(120 120 79)"/>
+            <ellipse class="petal" cx="120" cy="66" rx="8" ry="13" fill="#ff9eb5" transform="rotate(180 120 79)"/>
+            <ellipse class="petal" cx="120" cy="66" rx="8" ry="13" fill="#ff9eb5" transform="rotate(240 120 79)"/>
+            <ellipse class="petal" cx="120" cy="66" rx="8" ry="13" fill="#ff9eb5" transform="rotate(300 120 79)"/>
+          </g>
+          <circle id="flowerCenter" cx="120" cy="79" r="8" fill="#ffd166" stroke="#e0a82e" stroke-width="2"/>
+        </g>
+        <g id="sparkles">
+          <path class="sparkle" d="M96 62 L98 68 L104 70 L98 72 L96 78 L94 72 L88 70 L94 68 Z" fill="#ffd166" opacity="0"/>
+          <path class="sparkle" d="M148 56 L149.5 61 L155 62.5 L149.5 64 L148 69 L146.5 64 L141 62.5 L146.5 61 Z" fill="#ffd166" opacity="0"/>
+          <path class="sparkle" d="M144 94 L145.5 98 L150 99.5 L145.5 101 L144 105 L142.5 101 L138 99.5 L142.5 98 Z" fill="#ffd166" opacity="0"/>
+        </g>
+      </g>
+    </g>
+    <ellipse id="seed" cx="120" cy="181" rx="9.5" ry="6.5" fill="#8a5a3a" stroke="#6b4f3a" stroke-width="1.5" opacity="0"/>
+  </g>
+
+  <path id="soil" d="M72 191 Q 120 176 168 191 Z" fill="#6b4f3a"/>
+  <ellipse class="splash" cx="140" cy="186" rx="9" ry="2.6" fill="none" stroke="#5aa9e6" stroke-width="1.6" opacity="0"/>
+  <ellipse class="splash" cx="150" cy="187" rx="7" ry="2" fill="none" stroke="#5aa9e6" stroke-width="1.6" opacity="0"/>
+
+  <g id="pot">
+    <path d="M74 204 L166 204 L156 255 Q 155 260 150 260 L90 260 Q 85 260 84 255 Z" fill="#c86b3c"/>
+    <path d="M74 204 L166 204 L165 211 L75 211 Z" fill="#a9562e" opacity="0.6"/>
+    <rect x="66" y="189" width="108" height="17" rx="6" fill="#d9804f"/>
+    <rect x="74" y="193" width="40" height="4" rx="2" fill="#fff8ec" opacity="0.35"/>
+  </g>
+
+  <g id="drops">
+    <path class="drop" d="M142 72 C 138 78.6 138 84 142 84 C 146 84 146 78.6 142 72 Z" fill="#5aa9e6" opacity="0"/>
+    <path class="drop" d="M150 78 C 146 84.6 146 90 150 90 C 154 90 154 84.6 150 78 Z" fill="#5aa9e6" opacity="0"/>
+    <path class="drop" d="M136 80 C 132 86.6 132 92 136 92 C 140 92 140 86.6 136 80 Z" fill="#5aa9e6" opacity="0"/>
+    <path class="drop" d="M146 86 C 142 92.6 142 98 146 98 C 150 98 150 92.6 146 86 Z" fill="#5aa9e6" opacity="0"/>
+    <path class="drop" d="M139 70 C 135 76.6 135 82 139 82 C 143 82 143 76.6 139 70 Z" fill="#5aa9e6" opacity="0"/>
+  </g>
+
+  <g id="can" opacity="0">
+    <path d="M176 62 L 150 46" stroke="#1f7a4d" stroke-width="6" stroke-linecap="round"/>
+    <polygon points="153.6,44.6 147.7,36.3 140.3,48.3 150.4,49.8" fill="#1f7a4d" stroke="#1f7a4d" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M184 40 C 186 25 206 25 208 40" fill="none" stroke="#1f7a4d" stroke-width="5" stroke-linecap="round"/>
+    <rect x="172" y="38" width="42" height="34" rx="7" fill="#1f7a4d"/>
+    <rect x="177" y="46" width="32" height="5" rx="2.5" fill="#fff8ec" opacity="0.4"/>
+  </g>
+
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "version": 1,
+    "inputs": {
+      "streak": { "type": "number", "min": 0, "max": 30, "default": 0, "smooth": 700 }
+    },
+    "initial": "idle",
+    "states": {
+      "idle": {
+        "on": { "water": "watering" }
+      },
+      "watering": {
+        "duration": 2200,
+        "emit": "watering",
+        "allowOverflow": true,
+        "animate": {
+          "#can": {
+            "translateX": { "0": 70, "350": { "value": 0, "ease": "out" }, "1550": 0, "1900": { "value": 70, "ease": "in" } },
+            "opacity": { "0": 0, "160": 1, "1750": 1, "1900": 0 },
+            "rotate": { "0": 0, "380": 0, "620": { "value": -35, "ease": "back" }, "1300": -35, "1550": { "value": 0, "ease": "in-out" } },
+            "origin": "192 56"
+          },
+          ".drop": {
+            "translateY": {
+              "0": 0, "600": 0,
+              "950": { "value": 104, "ease": "in" },
+              "960": { "value": 0, "ease": "hold" },
+              "1300": { "value": 104, "ease": "in" }
+            },
+            "opacity": {
+              "0": 0, "600": 0, "620": 1, "930": 1, "950": 0,
+              "960": { "value": 1, "ease": "hold" },
+              "1280": 1, "1300": 0
+            },
+            "stagger": 70
+          },
+          ".splash": {
+            "scale": { "0": 0.2, "950": 0.2, "1250": { "value": 1.4, "ease": "out" }, "1300": 0.2, "1650": { "value": 1.4, "ease": "out" } },
+            "opacity": { "0": 0, "950": 0, "980": 0.9, "1250": 0, "1300": 0, "1330": 0.9, "1650": 0 },
+            "stagger": 90
+          },
+          "#plant": {
+            "rotate": { "0": 0, "1450": 0, "1560": -7, "1690": 6, "1820": -4, "1950": 2, "2100": 0 },
+            "scaleY": { "0": 1, "1450": 1, "1540": 0.92, "1680": { "value": 1.06, "ease": "out" }, "1850": 1 },
+            "scaleX": { "0": 1, "1450": 1, "1540": 1.05, "1680": { "value": 0.97, "ease": "out" }, "1850": 1 },
+            "origin": "120 190"
+          },
+          ".sparkle": {
+            "scale": { "0": 0, "1550": 0, "1750": { "value": 1.2, "ease": "out" }, "2050": 0 },
+            "opacity": { "0": 0, "1550": 0, "1650": 1, "1950": 1, "2050": 0 },
+            "stagger": 80
+          }
+        },
+        "next": "idle"
+      }
+    },
+    "bind": {
+      "#seed": {
+        "opacity": { "input": "streak", "map": { "0": 1, "1": 1, "1.6": 0 , "30": 0 } },
+        "scale": { "input": "streak", "map": { "0": 1, "1.6": 0.4 , "30": 0.4 } }
+      },
+      "#stem": {
+        "draw": { "input": "streak", "map": { "0": 0, "1": 0.12, "4": 0.28, "10": 0.55, "20": 0.85, "30": 1 } }
+      },
+      "#tip": {
+        "translateY": { "input": "streak", "map": { "0": 106, "1": 93.28, "4": 76.32, "10": 47.7, "20": 15.9, "30": 0 } }
+      },
+      "#sprout": {
+        "opacity": { "input": "streak", "map": { "0": 0, "0.3": 0, "0.8": 1, "21": 1, "24": 0 , "30": 0 } },
+        "scale": { "input": "streak", "map": { "0": 0, "0.3": 0, "2": 1, "21": 1, "24": 0.3 , "30": 0.3 } },
+        "origin": "120 85"
+      },
+      "#budGrow": {
+        "scale": { "input": "streak", "map": { "0": 0, "21": 0, "26": 1 , "30": 1 } },
+        "origin": "120 87"
+      },
+      "#leaf1": {
+        "scale": { "input": "streak", "map": { "0": 0, "3": 0, "5.5": { "value": 1, "ease": "out" } , "30": 1 } },
+        "rotate": { "input": "streak", "map": { "0": 35, "3": 35, "5.5": 0 , "30": 0 } },
+        "origin": "120 168"
+      },
+      "#leaf2": {
+        "scale": { "input": "streak", "map": { "0": 0, "6": 0, "8.5": { "value": 1, "ease": "out" } , "30": 1 } },
+        "rotate": { "input": "streak", "map": { "0": -35, "6": -35, "8.5": 0 , "30": 0 } },
+        "origin": "120 152"
+      },
+      "#leaf3": {
+        "scale": { "input": "streak", "map": { "0": 0, "10": 0, "12.5": { "value": 1, "ease": "out" } , "30": 1 } },
+        "rotate": { "input": "streak", "map": { "0": 35, "10": 35, "12.5": 0 , "30": 0 } },
+        "origin": "120 134"
+      },
+      "#leaf4": {
+        "scale": { "input": "streak", "map": { "0": 0, "15": 0, "17.5": { "value": 1, "ease": "out" } , "30": 1 } },
+        "rotate": { "input": "streak", "map": { "0": -35, "15": -35, "17.5": 0 , "30": 0 } },
+        "origin": "120 116"
+      },
+      "#leaf5": {
+        "scale": { "input": "streak", "map": { "0": 0, "20": 0, "22.5": { "value": 1, "ease": "out" } , "30": 1 } },
+        "rotate": { "input": "streak", "map": { "0": 35, "20": 35, "22.5": 0 , "30": 0 } },
+        "origin": "120 101"
+      }
+    },
+    "layers": {
+      "sway": {
+        "states": {
+          "breeze": {
+            "duration": 4000,
+            "loop": true,
+            "animate": {
+              "#sway": { "rotate": [0, 1.6, 0, -1.6, 0], "origin": "120 190", "curve": "smooth" }
+            }
+          }
+        }
+      },
+      "bloom": {
+        "initial": "closed",
+        "states": {
+          "closed": {
+            "animate": {
+              "#petals": { "scale": 0, "rotate": -50, "origin": "120 79" },
+              "#flowerCenter": { "scale": 0 }
+            },
+            "when": { "~streak >= 29.5": "opening" }
+          },
+          "opening": {
+            "duration": 1000,
+            "emit": "bloomed",
+            "animate": {
+              "#petals": {
+                "scale": { "0%": 0, "65%": { "value": 1.12, "ease": "out" }, "100%": { "value": 1, "ease": "in-out" } },
+                "rotate": { "0%": -50, "100%": { "value": 0, "ease": "out" } }
+              },
+              "#flowerCenter": {
+                "scale": { "0%": 0, "30%": 0, "75%": { "value": 1.2, "ease": "out" }, "100%": 1 }
+              }
+            },
+            "next": "open"
+          },
+          "open": {
+            "duration": 3200,
+            "loop": true,
+            "animate": {
+              "#flowerCenter": { "scale": [1, 1.08, 1], "ease": "in-out" }
+            },
+            "when": { "~streak < 29.5": "closed" }
+          }
+        }
+      }
+    }
+  }
+  ]]></metadata>
+</svg>

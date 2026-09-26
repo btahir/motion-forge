@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="controls">
+  <title>Download button</title>
+  <desc>Download button: hover nudges the arrow, click (or send "download") drops it into the tray, fills it and shows a check (emits "downloaded"); send "reset" to return. Input hovered is set by the built-in hover.</desc>
+  <defs>
+    <clipPath id="drop-clip">
+      <rect x="30" y="30" width="140" height="104"/>
+    </clipPath>
+  </defs>
+  <g id="button">
+    <rect id="face" x="30" y="30" width="140" height="140" rx="38" fill="#1b1a17"/>
+    <g clip-path="url(#drop-clip)">
+      <g id="arrow">
+        <line x1="100" y1="56" x2="100" y2="106" stroke="#fbf8f1" stroke-width="11" stroke-linecap="round"/>
+        <polyline points="81,88 100,107 119,88" fill="none" stroke="#fbf8f1" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+    <path id="tray" d="M62 120 V131 a9 9 0 0 0 9 9 H129 a9 9 0 0 0 9 -9 V120" fill="none" stroke="#fbf8f1" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+    <path class="fill" d="M100 140 H71 a9 9 0 0 1 -9 -9 V120" fill="none" stroke="#2fbf8f" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+    <path class="fill" d="M100 140 H129 a9 9 0 0 0 9 -9 V120" fill="none" stroke="#2fbf8f" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+    <path id="check" d="M78 84 L94 100 L123 70" fill="none" stroke="#2fbf8f" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": { "hovered": false },
+    "on": { "reset": "idle" },
+    "transition": { "blend": 220, "ease": "out" },
+    "states": {
+      "idle": {
+        "when": { "hovered": { "to": "hover", "blend": 260, "ease": "spring" } },
+        "on": { "download": "downloading" }
+      },
+      "hover": {
+        "animate": {
+          "#arrow": { "translateY": 5 },
+          "#button": { "scale": 1.03, "origin": "100 100" }
+        },
+        "when": { "!hovered": "idle" },
+        "on": { "download": "downloading" }
+      },
+      "downloading": {
+        "duration": 1300,
+        "animate": {
+          "#button": {
+            "scale": { "0%": 1, "8%": { "value": 0.95, "ease": "out" }, "30%": { "value": 1, "ease": "spring" } },
+            "origin": "100 100"
+          },
+          "#arrow": {
+            "translateY": { "0%": 0, "14%": { "value": -9, "ease": "out" }, "34%": { "value": 84, "ease": "in" } }
+          },
+          "#tray": {
+            "scaleY": { "0%": 1, "30%": 1, "36%": { "value": 0.8, "ease": "out" }, "56%": { "value": 1, "ease": "spring-bouncy" } },
+            "origin": "100 140"
+          },
+          ".fill": {
+            "opacity": { "0%": 0, "28%": 0, "32%": 1 },
+            "draw": { "0%": 0, "32%": 0, "68%": { "value": 1, "ease": "in-out" } }
+          },
+          "#check": {
+            "opacity": { "0%": 0, "64%": 0, "70%": 1 },
+            "draw": { "0%": 0, "64%": 0, "92%": { "value": 1, "ease": "out" } }
+          }
+        },
+        "next": "done"
+      },
+      "done": {
+        "emit": "downloaded",
+        "animate": {
+          "#arrow": { "translateY": 84 },
+          ".fill": { "opacity": 1, "draw": 1 },
+          "#check": { "opacity": 1, "draw": 1 }
+        }
+      }
+    },
+    "interactions": [
+      { "on": "hover", "target": "#button", "set": "hovered" },
+      { "on": "click", "target": "#button", "send": "download" }
+    ]
+  }
+  ]]></metadata>
+</svg>

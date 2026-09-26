@@ -1,1 +1,1 @@
-{ "extends": "../../tsconfig.json", "include": ["App.tsx"] }
+{ "extends": "../../tsconfig.json", "include": ["App.tsx", "raw.d.ts"] }

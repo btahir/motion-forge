@@ -1,13 +1,11 @@
 # Contributing
 
-Motion Forge shares one document format across core, Studio, React and CLI. Read PRODUCT.md and docs/format.md before changing semantics.
+Read `PRODUCT.md` (why) and `packages/motion-forge/skills/motion-forge/reference.md` (the format). Use Node 22+ and pnpm 11: `pnpm install`, then `pnpm dev`.
 
-Use Node 22/24 and pnpm 11. Run `pnpm install`, `pnpm build:package`, then `pnpm dev`. Core source is `packages/motion-forge/src/core`; React, Studio, presets and CLI are adjacent entrypoints. The site is `apps/site`; shared Markdown docs are `docs`.
+- **Engine:** `packages/motion-forge/src/core` (no browser globals). DOM runtime and web component in `src/dom`, React in `src/react`, rendering and previews in `src/node`, CLI and MCP in `src/cli`.
+- **Format changes** need an update to `reference.md` (and `SKILL.md` if the workflow changes), a test, and a check that every preset still passes `pnpm check:presets` and looks right in `motion-forge preview`.
+- **Diagnostics** must say where, what, and how to fix. Prefer a lint rule over a paragraph of docs.
+- **Presets:** original artwork only, shared palette, `<title>` and `<desc>`, 0 errors and 0 warnings, reviewed in `preview`. Mention the events/inputs/emits in `<desc>`.
+- **Security:** never execute document content; everything goes through `sanitize`. New SVG features need an allowlist entry and a test.
 
-Changes should include independent behavioral expectations and invalid cases where relevant. Run `pnpm check` and the browser journeys affected by your change. Check actual exported data, keyboard operation and responsive layouts. Do not mistake a snapshot of a button for proof that its action works.
-
-Keep the runtime independent of Studio code/CSS. Validate untrusted documents, preserve unrelated data, and reject unsupported imports explicitly. Never evaluate document strings or interpolate arbitrary SVG/HTML. Add schema migrations before changing persisted format semantics. Breaking format changes require a version change and migration story.
-
-For visual work, capture desktop and phone views, inspect them, then remove disposable captures. Preserve original editable artwork. Do not add external assets without provenance and license information.
-
-Use the pull-request template to explain the user-visible change, validation and remaining limitations. Keep fixes focused. Repository publishing, npm release and deployment are separate maintainer actions described in RELEASE.md.
+Run `pnpm check`, plus `pnpm test:e2e` for site changes. Publishing and deployment are maintainer actions (`RELEASE.md`).

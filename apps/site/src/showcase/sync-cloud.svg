@@ -1,0 +1,204 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <title>Sync cloud</title>
+  <desc>A cloud character that floats, blinks and watches the pointer. It holds a spinning sync badge while syncing, a progress ring fills around it, and it bounces with a checkmark when sync finishes.</desc>
+  <defs>
+    <linearGradient id="cloudGrad" gradientUnits="userSpaceOnUse" x1="120" y1="70" x2="120" y2="160">
+      <stop offset="0" stop-color="#f5f3ff"/>
+      <stop offset="1" stop-color="#c4b5fd"/>
+    </linearGradient>
+    <linearGradient id="ringGrad" gradientUnits="userSpaceOnUse" x1="215" y1="90" x2="25" y2="150">
+      <stop id="ring-s1" offset="0" stop-color="#6d28d9"/>
+      <stop id="ring-s2" offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="badgeGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop id="badge-s1" offset="0" stop-color="#8b5cf6"/>
+      <stop id="badge-s2" offset="1" stop-color="#6d28d9"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-100%" width="160%" height="300%">
+      <feGaussianBlur stdDeviation="2.5"/>
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+
+  <!-- progress ring -->
+  <circle id="ring-track" cx="120" cy="120" r="100" fill="none" stroke="#6d28d9" stroke-opacity="0.22" stroke-width="6"/>
+  <circle id="ring-glow" cx="120" cy="120" r="100" fill="none" stroke="url(#ringGrad)" stroke-width="8" stroke-linecap="round" transform="rotate(-90 120 120)" filter="url(#glow)" opacity="0.7" data-draw="0"/>
+  <circle id="ring-arc" cx="120" cy="120" r="100" fill="none" stroke="url(#ringGrad)" stroke-width="6" stroke-linecap="round" transform="rotate(-90 120 120)" data-draw="0"/>
+
+  <ellipse id="shadow" cx="120" cy="192" rx="40" ry="6" fill="#6d28d9" fill-opacity="0.45" filter="url(#soft)"/>
+
+  <!-- sparkles for the celebration -->
+  <path class="spark" d="M60 78 l2.2 5.8 5.8 2.2 -5.8 2.2 -2.2 5.8 -2.2 -5.8 -5.8 -2.2 5.8 -2.2 z" fill="#22d3ee" opacity="0"/>
+  <path class="spark" d="M182 70 l2.6 6.9 6.9 2.6 -6.9 2.6 -2.6 6.9 -2.6 -6.9 -6.9 -2.6 6.9 -2.6 z" fill="#34d399" opacity="0"/>
+  <path class="spark" d="M188 150 l1.8 4.7 4.7 1.8 -4.7 1.8 -1.8 4.7 -1.8 -4.7 -4.7 -1.8 4.7 -1.8 z" fill="#c4b5fd" opacity="0"/>
+  <path class="spark" d="M50 140 l1.6 4.2 4.2 1.6 -4.2 1.6 -1.6 4.2 -1.6 -4.2 -4.2 -1.6 4.2 -1.6 z" fill="#34d399" opacity="0"/>
+
+  <g id="char">
+    <g id="lean">
+      <g id="bounce">
+        <g id="body" fill="url(#cloudGrad)">
+          <rect x="64" y="112" width="112" height="46" rx="23"/>
+          <circle cx="92" cy="114" r="26"/>
+          <circle cx="124" cy="100" r="30"/>
+          <circle cx="154" cy="118" r="22"/>
+        </g>
+        <ellipse id="shine" cx="112" cy="86" rx="11" ry="5" fill="#fff" opacity="0.7" transform="rotate(-18 112 86)"/>
+
+        <g id="face">
+          <ellipse class="cheek" cx="92" cy="134" rx="6" ry="4" fill="#f0abfc" opacity="0.55"/>
+          <ellipse class="cheek" cx="148" cy="134" rx="6" ry="4" fill="#f0abfc" opacity="0.55"/>
+          <g class="eye">
+            <ellipse cx="104" cy="122" rx="5" ry="6.5" fill="#1e1b4b"/>
+            <circle cx="105.8" cy="119.6" r="1.8" fill="#fff"/>
+          </g>
+          <g class="eye">
+            <ellipse cx="136" cy="122" rx="5" ry="6.5" fill="#1e1b4b"/>
+            <circle cx="137.8" cy="119.6" r="1.8" fill="#fff"/>
+          </g>
+          <path class="happy-eye" d="M98.5 124 Q104 116 109.5 124" fill="none" stroke="#1e1b4b" stroke-width="3" stroke-linecap="round" opacity="0"/>
+          <path class="happy-eye" d="M130.5 124 Q136 116 141.5 124" fill="none" stroke="#1e1b4b" stroke-width="3" stroke-linecap="round" opacity="0"/>
+          <path id="mouth" d="M115 133 Q120 137 125 133" fill="none" stroke="#1e1b4b" stroke-width="2.6" stroke-linecap="round"/>
+        </g>
+
+        <g id="sync" transform="translate(120 159)" opacity="0">
+          <circle id="badge" r="17" fill="url(#badgeGrad)" stroke="#f5f3ff" stroke-width="2.5"/>
+          <g id="arrows" fill="#fff">
+            <path d="M-8.46 -3.08 A9 9 0 0 1 8.16 -3.8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M9.93 0.01 L11.42 -5.32 L4.9 -2.28 Z" stroke="#fff" stroke-width="1" stroke-linejoin="round"/>
+            <path d="M8.46 3.08 A9 9 0 0 1 -8.16 3.8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M-9.93 -0.01 L-11.42 5.32 L-4.9 2.28 Z" stroke="#fff" stroke-width="1" stroke-linejoin="round"/>
+          </g>
+          <path id="check" d="M-7 0.5 L-2 5.5 L7.5 -5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" data-draw="0"/>
+        </g>
+
+        <ellipse id="arm-l" class="arm" cx="66" cy="146" rx="8" ry="6.5" fill="#ddd6fe" stroke="#a78bfa" stroke-width="1.5"/>
+        <ellipse id="arm-r" class="arm" cx="174" cy="146" rx="8" ry="6.5" fill="#ddd6fe" stroke="#a78bfa" stroke-width="1.5"/>
+      </g>
+    </g>
+  </g>
+
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "version": 1,
+    "initial": "idle",
+    "inputs": {
+      "progress": { "type": "number", "min": 0, "max": 100, "default": 0, "smooth": 400 },
+      "lookX": { "type": "number", "min": -1, "max": 1, "default": 0, "smooth": 180 },
+      "lookY": { "type": "number", "min": -1, "max": 1, "default": 0, "smooth": 180 }
+    },
+    "transition": { "blend": 300, "ease": "out" },
+    "on": { "start": { "to": "syncing", "blend": 450, "ease": "spring" }, "reset": "idle" },
+    "states": {
+      "idle": {
+        "animate": {
+          "#sync": { "opacity": 0, "scale": 0.4 },
+          "#ring-arc": { "opacity": 0 },
+          "#ring-glow": { "opacity": 0 }
+        }
+      },
+      "syncing": {
+        "duration": 1100,
+        "loop": true,
+        "animate": {
+          "#sync": { "opacity": 1, "scale": 1 },
+          "#arrows": { "rotate": { "0%": 0, "100%": { "value": 360, "ease": "linear" } }, "origin": "center" },
+          "#arm-l": { "translateX": 33, "translateY": 10 },
+          "#arm-r": { "translateX": -33, "translateY": 10 },
+          "#face": { "translateY": 1 },
+          "#ring-track": { "stroke-opacity": 0.35 }
+        },
+        "on": { "finish": { "to": "done", "blend": 150 } },
+        "when": { "~progress >= 99.5": { "to": "done", "blend": 150 } }
+      },
+      "done": {
+        "duration": 1500,
+        "emit": "celebrated",
+        "animate": {
+          "#bounce": {
+            "translateY": { "0%": 0, "12%": { "value": 4, "ease": "out" }, "38%": { "value": -30, "ease": "out" }, "62%": { "value": 0, "ease": "in" }, "76%": { "value": -8, "ease": "out" }, "88%": { "value": 0, "ease": "in" } },
+            "scaleY": { "0%": 1, "12%": 0.86, "24%": 1.08, "38%": 1, "59%": 1, "64%": 0.9, "72%": 1.03, "80%": 1, "88%": 1, "92%": 0.96, "100%": 1 },
+            "scaleX": { "0%": 1, "12%": 1.1, "24%": 0.95, "38%": 1, "59%": 1, "64%": 1.08, "72%": 0.98, "80%": 1, "88%": 1, "92%": 1.03, "100%": 1 },
+            "origin": "120 158"
+          },
+          "#shadow": { "scaleX": { "0%": 1, "12%": 1.1, "38%": 0.6, "62%": 1.05, "76%": 0.85, "88%": 1 }, "fill-opacity": { "0%": 0.45, "38%": 0.2, "62%": 0.45, "76%": 0.3, "88%": 0.45 } },
+          "#arm-l": { "translateX": { "0%": 33, "30%": { "value": -10, "ease": "out" } }, "translateY": { "0%": 10, "30%": { "value": -40, "ease": "out" }, "50%": -35, "60%": -42, "70%": -36 } },
+          "#arm-r": { "translateX": { "0%": -33, "30%": { "value": 10, "ease": "out" } }, "translateY": { "0%": 10, "30%": { "value": -40, "ease": "out" }, "50%": -35, "60%": -42, "70%": -36 }, "delay": 40 },
+          ".eye": { "opacity": { "0%": 1, "10%": 0 } },
+          ".happy-eye": { "opacity": { "0%": 0, "10%": 1 } },
+          "#mouth": { "d": { "0%": "M115 133 Q120 137 125 133", "20%": { "value": "M112 131 Q120 142 128 131", "ease": "out" } } },
+          "#sync": { "opacity": 1, "scale": { "0%": 1, "10%": 0.85, "30%": { "value": 1.15, "ease": "spring" }, "60%": 1 } },
+          "#arrows": { "opacity": { "0%": 1, "12%": 0 }, "origin": "center" },
+          "#check": { "draw": { "0%": 0, "12%": 0, "40%": { "value": 1, "ease": "out" } } },
+          "#badge-s1": { "stop-color": { "0%": "#8b5cf6", "15%": "#34d399" } },
+          "#badge-s2": { "stop-color": { "0%": "#6d28d9", "15%": "#10b981" } },
+          "#ring-s1": { "stop-color": { "0%": "#6d28d9", "25%": "#10b981" } },
+          "#ring-s2": { "stop-color": { "0%": "#22d3ee", "25%": "#34d399" } },
+          ".spark": {
+            "opacity": { "0%": 0, "30%": 0, "40%": 1, "75%": 1, "90%": 0 },
+            "scale": { "0%": 0.2, "30%": 0.2, "45%": { "value": 1.2, "ease": "back" }, "75%": 1, "90%": 0.3 },
+            "rotate": { "30%": 0, "90%": 90 },
+            "stagger": 60
+          }
+        },
+        "next": { "to": "synced", "blend": 400 }
+      },
+      "synced": {
+        "duration": 2200,
+        "animate": {
+          "#sync": { "opacity": 1, "scale": 1 },
+          "#arrows": { "opacity": 0 },
+          "#check": { "draw": 1 },
+          "#badge-s1": { "stop-color": "#34d399" },
+          "#badge-s2": { "stop-color": "#10b981" },
+          "#ring-s1": { "stop-color": "#10b981" },
+          "#ring-s2": { "stop-color": "#34d399" },
+          ".eye": { "opacity": 0 },
+          ".happy-eye": { "opacity": 1 },
+          "#mouth": { "d": "M113 132 Q120 140 127 132" }
+        },
+        "next": { "to": "idle", "blend": 500, "ease": "in-out" }
+      }
+    },
+    "bind": {
+      "#ring-arc": { "draw": { "input": "progress", "from": 0, "to": 1 } },
+      "#ring-glow": { "draw": { "input": "progress", "from": 0, "to": 1 } },
+      "#face": {
+        "translateX": { "input": "lookX", "from": -6, "to": 6, "add": true },
+        "translateY": { "input": "lookY", "from": -4, "to": 4, "add": true }
+      },
+      "#lean": { "rotate": { "input": "lookX", "from": -5, "to": 5, "add": true }, "origin": "120 158" }
+    },
+    "interactions": [
+      { "on": "pointer", "x": "lookX", "y": "lookY" }
+    ],
+    "layers": {
+      "float": {
+        "states": {
+          "bob": {
+            "duration": 3200,
+            "loop": true,
+            "ease": "in-out",
+            "animate": {
+              "#char": { "translateY": [0, -7, 0] },
+              "#shadow": { "scale": [1, 0.86, 1], "opacity": [1, 0.7, 1] }
+            }
+          }
+        }
+      },
+      "blink": {
+        "states": {
+          "open": {
+            "duration": 5200,
+            "loop": true,
+            "animate": {
+              ".eye": { "scaleY": { "0%": 1, "86%": 1, "88%": 0.1, "90%": 1, "94%": 1, "95.5%": 0.1, "97.5%": 1, "100%": 1 } }
+            }
+          }
+        }
+      }
+    }
+  }
+  ]]></metadata>
+</svg>

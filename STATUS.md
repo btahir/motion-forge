@@ -1,48 +1,21 @@
-# Build status
+# Status
 
-## Local release readiness
+**v0.2.0, pre-release.** Rebuilt from the v0.1 visual-editor product (still in git history) into an agent-first format and toolchain. Not yet published to npm; site not yet deployed.
 
-The full initial local release in PRODUCT.md is implemented and verified. This is a complete scoped vector-animation toolkit and editor, not a claim of arbitrary commercial animation-suite compatibility. Source is available at github.com/btahir/motion-forge. npm publication, site deployment and demand validation remain separate pending steps.
+## Verified (2026-09-26, macOS, Node 24)
 
-## Delivered
+- `pnpm check`: build, strict typecheck (package, site, React example) and 46 unit/DOM/React/CLI/MCP tests pass.
+- `pnpm check:presets`: all 23 presets pass `check` with 0 errors and 0 warnings; each was reviewed visually with `preview`, and flows with `record`.
+- `pnpm test:e2e`: 7 Playwright journeys against the dev site (hero interactions, keyboard access in the gallery, playground editing, diagnostics, frames, share links, docs, reduced motion, phone overflow).
+- `pnpm verify:package`: packs the tarball (132 KB, no sources or tests), installs it into a clean project with React 19, and exercises ESM imports, types, React SSR, the Node rendering API, and the CLI (`add`, `check`, `preview`, `docs`, `init`).
+- Real-world SVG loads: a Heroicon (currentColor, class), a Figma export (gradients, fill-rule) and an Illustrator export (`<style>`, rgb(), onclick, script, external image) all load, with unsafe parts removed and reported.
+- Runtime size (esbuild, minified + gzip): ~30 KB for the web component, including validation and diagnostics. See `docs/size.json`.
+- Agent evals: two fresh agents given only the skill, reference and CLI (no presets) built three interactive animations from verbatim user prompts: a dark-theme sync-cloud mascot (~6 min, 5 visual iterations), a 0-30 watering-streak plant and an add-to-garden button. All ended at 0 errors, 0 warnings; the files are live on the landing page. Four preset-authoring agents and both evals filed friction reports that drove two engine passes (spring and fixed-duration smoothing, `~displayed` conditions, settle-on-mount, state `set`, flow rows in previews, record strips + event logs, `--bg`, additive layers/bindings, smooth curves, accurate overflow/conflict lint, `data-draw`, drag keyboard access).
 
-- Core, React player, visual Studio, original editable presets, CLI and interchange APIs.
-- Real canvas/layer/property/keyframe/easing/state/input/binding authoring, keyboard shortcuts, transactional history, local recovery and imports/exports.
-- Static demo/docs site: home, examples, Studio and nine documentation guides; 13 HTML outputs including 404.
-- README with original art and actual Studio screenshot, MIT license, contribution/security/support/release/deployment guides, changelog and attribution.
-- Structured schema, npm-shipped agent guide, raw Markdown, llms.txt/full, metadata and robots/sitemap generation.
-- GitHub CI/templates, Vercel static configuration, build/pack/site/benchmark verification scripts, Node and React examples.
+## Not done / next
 
-## Verification
-
-- 73 package unit/integration tests pass.
-- 13 browser journeys pass against the production build, including actual exported JSON/SVG/PNG, transformed-parent dragging, input-driven state transitions, reduced motion, hydration, keyboard/locking, rejected imports and recovery.
-- Axe A/AA checks pass on home/docs/examples/Studio and phone editor; this is not screen-reader certification.
-- Desktop and phone visual review completed across all main surfaces; mobile crowding/canvas size and text contrast were fixed.
-- External packed consumers pass ESM/CJS/type declarations/CLI, React 18 and 19 SSR and TypeScript, Studio import, CSS/docs/schema/skill file presence, and basic private-path/private-key scans.
-- A clean committed checkout passes frozen install, build, typecheck, unit tests and static site checks.
-- Both preview and configured-origin static metadata modes pass verification. Working source has no invented production URL.
-- Production dependency audit reports zero known vulnerabilities at September 26, 2026.
-- Reproducible measurements in docs/benchmark-results.json and docs/performance.md; measured React bundle 34,827 gzip bytes including validation and excluding React peers, without Studio or CSS.
-
-The detailed requirement audit and practical limits are in docs/VERIFICATION.md. Browser automation was Chromium on macOS; remote CI and deployed behavior remain unobserved.
-
-## Run locally
-
-```sh
-pnpm install
-pnpm build:package
-pnpm dev
-```
-
-Open http://127.0.0.1:4176, or /studio/ for the editor. Build output is reproducible and can be regenerated; local source, editable presets, final artwork and tests are retained. Verification servers/browser sessions and disposable test artifacts are cleaned up after verification.
-
-## Before public release
-
-See RELEASE.md and DEPLOYMENT.md. Repository origin is git@github.com:btahir/motion-forge.git. Confirm npm ownership, configure the real security-reporting channel, set the real production SITE_URL, and publish/deploy as explicit follow-up actions. No npm release, donation account or deployed site was created. The npm name availability check does not reserve a name.
-
-## Product showcase
-
-A 45-second silent HyperFrames showcase lives in videos/motion-forge, with editable scenes, original source recordings, capture/preview/verification scripts and final delivery assets. The README embeds a full-length GIF preview linking to the MP4 download. Real Studio footage changes Scout's fill and a body keyframe, plays the animation and exports JSON; the exported edits are verified. Engine-generated footage demonstrates wave/confirm events and the numeric intensity binding.
-
-The final composition passed HyperFrames lint, runtime, layout and contrast checks with zero errors or warnings. Scene and cut snapshots were reviewed. Render metadata and decoded-frame checks are recorded in videos/motion-forge/VERIFICATION.json. HyperFrames remains pinned to 0.8.73: the suggested 0.8.78 upgrade could not be verified because the local npm release-age policy rejected it, so the pin was restored.
+1. Publish to npm (`npm publish` from `packages/motion-forge` after `pnpm build`), then deploy the site (`SITE_URL=https://… pnpm build`, Vercel config in `vercel.json`).
+2. Runtime diet: move diagnostic text out of the runtime path (a "lean" build) to get the player under ~15 KB.
+3. Lottie export for the animation-only subset (plays anywhere Lottie does), and Lottie import.
+4. A human-friendly timeline in the playground for retiming keyframes by dragging.
+5. More presets, and community submissions validated by `check` in CI.

@@ -1,9 +1,10 @@
-# Third-party notices
+# Third-party software
 
-Project-authored code, docs and original Scout / Made it / Signal artwork are MIT licensed under LICENSE.
+Runtime entry points (`motion-forge`, `motion-forge/element`, `motion-forge/react`) have no third-party dependencies; React is a peer dependency of `motion-forge/react`.
 
-The runtime depends on Zod (MIT). React and React DOM (MIT) are optional peer dependencies for the React and Studio entrypoints. The demo site also uses Marked (MIT). Build/test tooling includes TypeScript (Apache-2.0), Vite (MIT), tsup (MIT), Vitest (MIT), Playwright (Apache-2.0), axe-core (MPL-2.0), and jsdom (MIT), plus their transitive dependencies.
+The Node/CLI side depends on:
 
-These are dependency attributions, not a replacement for each installed package's license. The lockfile identifies exact versions. Before distribution, inspect packed files and production dependencies; package-manager metadata and dependency licenses are included in installed dependency packages. No commercial animation assets, external fonts, photos, music or stock illustrations are bundled.
+- [`@resvg/resvg-js`](https://github.com/yisibl/resvg-js), MPL-2.0: rasterizes SVG for `preview`, `record` and `render --out *.png`. Used unmodified as a dependency.
+- [`gifenc`](https://github.com/mattdesl/gifenc), MIT: GIF encoding for `record --out *.gif` (bundled into `dist/cli.js` and `dist/node.js`).
 
-The optional showcase project in `videos/motion-forge` uses HyperFrames and includes its Apache-2.0 registry components, with their license retained in `THIRD_PARTY_HYPERFRAMES_LICENSE.txt`. Its composition loads GSAP 3.14.2 under the GSAP Standard License. These video-authoring tools are separate from the Motion Forge runtime and npm package.
+The site uses React, CodeMirror 6 and marked (MIT). Preset artwork and characters are original to this project and MIT licensed.

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="feedback">
+  <title>Success</title>
+  <desc>Success badge: the ring draws, fills mint, the check draws and a few dots burst, then it holds. Plays on appear and on the "play" event; "reset" returns to idle. Emits "success".</desc>
+  <g id="dots">
+    <g transform="rotate(22.5 100 100)"><circle class="dot" cx="100" cy="30" r="4" fill="#2fbf8f" opacity="0"/></g>
+    <g transform="rotate(67.5 100 100)"><circle class="dot" cx="100" cy="30" r="3" fill="#ffb020" opacity="0"/></g>
+    <g transform="rotate(112.5 100 100)"><circle class="dot" cx="100" cy="30" r="4" fill="#4c8dff" opacity="0"/></g>
+    <g transform="rotate(157.5 100 100)"><circle class="dot" cx="100" cy="30" r="3" fill="#2fbf8f" opacity="0"/></g>
+    <g transform="rotate(202.5 100 100)"><circle class="dot" cx="100" cy="30" r="4" fill="#ffb020" opacity="0"/></g>
+    <g transform="rotate(247.5 100 100)"><circle class="dot" cx="100" cy="30" r="3" fill="#4c8dff" opacity="0"/></g>
+    <g transform="rotate(292.5 100 100)"><circle class="dot" cx="100" cy="30" r="4" fill="#2fbf8f" opacity="0"/></g>
+    <g transform="rotate(337.5 100 100)"><circle class="dot" cx="100" cy="30" r="3" fill="#ffb020" opacity="0"/></g>
+  </g>
+  <g id="badge">
+    <circle id="track" cx="100" cy="100" r="60" fill="none" stroke="#d8d2c6" stroke-width="8" opacity="0.6"/>
+    <circle id="disc" cx="100" cy="100" r="64" fill="#2fbf8f" opacity="0"/>
+    <path id="ring" d="M100 40 A60 60 0 1 1 100 160 A60 60 0 1 1 100 40" fill="none" stroke="#2fbf8f" stroke-width="8" stroke-linecap="round" opacity="0"/>
+    <path id="check" d="M72 102 L91 120 L129 81" fill="none" stroke="#fbf8f1" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "initial": "idle",
+    "on": { "reset": "idle" },
+    "states": {
+      "idle": {
+        "animate": {
+          "#ring": { "draw": 0 },
+          "#check": { "draw": 0 }
+        },
+        "on": { "play": "success" }
+      },
+      "success": {
+        "duration": 1100,
+        "emit": "success",
+        "animate": {
+          "#ring": {
+            "opacity": { "0%": 1 },
+            "draw": { "0%": 0, "36%": { "value": 1, "ease": "in-out" } }
+          },
+          "#track": {
+            "opacity": { "0%": 0.6, "36%": { "value": 0, "ease": "in" } }
+          },
+          "#disc": {
+            "scale": { "0%": 0.2, "32%": 0.2, "52%": { "value": 1, "ease": "back" } },
+            "opacity": { "0%": 0, "32%": 0, "40%": 1 },
+            "origin": "center"
+          },
+          "#badge": {
+            "scale": { "0%": 1, "30%": 1, "38%": { "value": 0.94, "ease": "in-out" }, "56%": { "value": 1.08, "ease": "out" }, "80%": { "value": 1, "ease": "spring" } },
+            "origin": "center"
+          },
+          "#check": {
+            "opacity": { "0%": 1 },
+            "draw": { "0%": 0, "46%": 0, "72%": { "value": 1, "ease": "out" } },
+            "scale": { "0%": 1, "68%": 1, "78%": { "value": 1.1, "ease": "out" }, "90%": { "value": 1, "ease": "in-out" } },
+            "origin": "100 100"
+          },
+          ".dot": {
+            "translateY": { "0%": 10, "54%": 10, "92%": { "value": -6, "ease": "out" } },
+            "scale": { "0%": 0.4, "54%": 0.4, "64%": { "value": 1.2, "ease": "out" }, "92%": { "value": 0, "ease": "in" } },
+            "opacity": { "0%": 0, "54%": 0, "62%": 1, "80%": 1, "92%": 0 },
+            "stagger": 14
+          }
+        }
+      }
+    },
+    "interactions": [
+      { "on": "appear", "send": "play" }
+    ]
+  }
+  ]]></metadata>
+</svg>

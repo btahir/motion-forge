@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" data-category="illustrations">
+  <title>Empty inbox</title>
+  <desc>Empty-state illustration: a paper plane swoops in on appear (or the intro event), then loops a lazy figure eight over an open tray while clouds drift.</desc>
+  <ellipse id="shadow" cx="120" cy="204" rx="72" ry="7" fill="#d8d2c6"/>
+  <g id="cloud-a" fill="#d8d2c6" opacity="0.7">
+    <rect x="34" y="42" width="40" height="12" rx="6"/>
+    <circle cx="48" cy="42" r="8"/>
+    <circle cx="60" cy="39" r="10"/>
+  </g>
+  <g id="cloud-b" fill="#d8d2c6" opacity="0.55">
+    <rect x="174" y="116" width="32" height="10" rx="5"/>
+    <circle cx="186" cy="116" r="7"/>
+    <circle cx="196" cy="114" r="7.5"/>
+  </g>
+  <path id="trail" d="M76.0 88.0 L76.4 84.1 L77.5 80.5 L79.3 77.4 L81.9 75.0 L85.1 73.5 L88.9 73.0 L93.2 73.5 L98.0 75.0 L103.2 77.4 L108.6 80.5 L114.3 84.1 L120.0 88.0 L125.7 91.9 L131.4 95.5 L136.8 98.6 L142.0 101.0 L146.8 102.5 L151.1 103.0 L154.9 102.5 L158.1 101.0 L160.7 98.6 L162.5 95.5 L163.6 91.9 L164.0 88.0 L163.6 84.1 L162.5 80.5 L160.7 77.4 L158.1 75.0 L154.9 73.5 L151.1 73.0 L146.8 73.5 L142.0 75.0 L136.8 77.4 L131.4 80.5 L125.7 84.1 L120.0 88.0 L114.3 91.9 L108.6 95.5 L103.2 98.6 L98.0 101.0 L93.2 102.5 L88.9 103.0 L85.1 102.5 L81.9 101.0 L79.3 98.6 L77.5 95.5 L76.4 91.9Z" fill="none" stroke="#d8d2c6" stroke-width="3" stroke-dasharray="0.1 8" stroke-linecap="round"/>
+  <g id="tray">
+    <path d="M70 136 H170 Q175 136 177.5 140 L188 158 H52 L62.5 140 Q65 136 70 136Z" fill="#d8d2c6"/>
+    <path d="M60 146 H180 L188 158 H52Z" fill="#efeae0"/>
+    <path d="M52 158 H90 Q95 158 97 163 L100 170 Q102 175 107 175 H133 Q138 175 140 170 L143 163 Q145 158 150 158 H188 V186 Q188 196 178 196 H62 Q52 196 52 186Z" fill="#4c8dff"/>
+    <rect x="66" y="184" width="30" height="4" rx="2" fill="#fbf8f1" opacity="0.35"/>
+  </g>
+  <g id="plane-x">
+    <g id="plane-y">
+      <g id="plane-flip">
+        <g id="plane-pitch">
+          <g transform="translate(120 88) scale(1.35) translate(-120 -88)">
+            <polygon points="147,88 93,70 110,89" fill="#ffb020"/>
+            <polygon points="147,88 110,89 105,102" fill="#ff5a1f"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "initial": "waiting",
+    "states": {
+      "waiting": {
+        "animate": {
+          "#plane-x": { "translateX": -82, "opacity": 0 },
+          "#plane-y": { "translateY": -34 },
+          "#plane-flip": { "scale": 0.55 },
+          "#trail": { "opacity": 0 }
+        },
+        "on": { "intro": "intro" }
+      },
+      "intro": {
+        "duration": 1300,
+        "animate": {
+          "#plane-x": {
+            "translateX": { "0": -82, "1300ms": { "value": 0, "ease": "out" } },
+            "opacity": { "0": 0, "240ms": 1 }
+          },
+          "#plane-y": { "translateY": { "0": -34, "1300ms": { "value": 0, "ease": "cubic-bezier(0.45, 0, 0.55, 1)" } } },
+          "#plane-flip": { "scale": { "0": 0.55, "1300ms": { "value": 1, "ease": "out" } }, "origin": "120 88" },
+          "#plane-pitch": { "rotate": { "0": -6, "500ms": 2, "1300ms": 22 }, "origin": "120 88" },
+          "#trail": { "opacity": { "0": 0, "700ms": 0, "1300ms": 1 } }
+        },
+        "next": { "to": "float", "blend": 0 }
+      },
+      "float": {
+        "duration": 5200,
+        "loop": true,
+        "ease": "cubic-bezier(0.37, 0, 0.63, 1)",
+        "animate": {
+          "#plane-x": { "translateX": { "0%": -44, "50%": 44, "100%": -44 }, "delay": 3900 },
+          "#plane-y": { "translateY": { "0%": -15, "25%": 15, "50%": -15, "75%": 15, "100%": -15 }, "delay": 4550 },
+          "#plane-flip": { "scaleX": { "0%": 1, "40%": 1, "48%": -1, "90%": -1, "98%": 1, "100%": 1 }, "delay": 4212, "ease": "in-out", "origin": "120 88" },
+          "#plane-pitch": { "rotate": { "0%": 22, "25%": -18, "50%": 22, "75%": -18, "100%": 22 }, "origin": "120 88" }
+        },
+        "on": { "intro": "intro" }
+      }
+    },
+    "interactions": [
+      { "on": "appear", "send": "intro" }
+    ],
+    "layers": {
+      "sky": {
+        "states": {
+          "drift": {
+            "duration": 9000,
+            "loop": true,
+            "ease": "in-out",
+            "animate": {
+              "#cloud-a": { "translateX": { "0%": 0, "50%": 12, "100%": 0 } },
+              "#cloud-b": { "translateX": { "0%": 0, "40%": -10, "100%": 0 }, "translateY": { "0%": 0, "50%": -2, "100%": 0 } }
+            }
+          }
+        }
+      }
+    }
+  }
+  ]]></metadata>
+</svg>

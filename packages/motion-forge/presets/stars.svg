@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 252 72" data-category="data">
+  <title>Star rating</title>
+  <desc>Five-star rating: input rating 0-5 (smoothed, fractions fill partially) fills stars in sequence with a pop; clicking a star sets rating to its number.</desc>
+  <defs>
+    <clipPath id="c1"><rect id="r1" x="7" y="8" width="46" height="58"/></clipPath>
+    <clipPath id="c2"><rect id="r2" x="55" y="8" width="46" height="58"/></clipPath>
+    <clipPath id="c3"><rect id="r3" x="103" y="8" width="46" height="58"/></clipPath>
+    <clipPath id="c4"><rect id="r4" x="151" y="8" width="0" height="58"/></clipPath>
+    <clipPath id="c5"><rect id="r5" x="199" y="8" width="0" height="58"/></clipPath>
+  </defs>
+  <g id="s1">
+    <rect x="6" y="6" width="48" height="60" fill="#fbf8f1" fill-opacity="0"/>
+    <path d="M 30 17.5 L 35.05 30.54 L 49.02 31.32 L 38.18 40.16 L 41.76 53.68 L 30 46.1 L 18.24 53.68 L 21.82 40.16 L 10.98 31.32 L 24.95 30.54 Z" fill="#efeae0" stroke="#d8d2c6" stroke-width="2.5" stroke-linejoin="round"/>
+    <path id="f1" d="M 30 17.5 L 35.05 30.54 L 49.02 31.32 L 38.18 40.16 L 41.76 53.68 L 30 46.1 L 18.24 53.68 L 21.82 40.16 L 10.98 31.32 L 24.95 30.54 Z" fill="#ffb020" stroke="#ffb020" stroke-width="2.5" stroke-linejoin="round" clip-path="url(#c1)"/>
+  </g>
+  <g id="s2">
+    <rect x="54" y="6" width="48" height="60" fill="#fbf8f1" fill-opacity="0"/>
+    <path d="M 78 17.5 L 83.05 30.54 L 97.02 31.32 L 86.18 40.16 L 89.76 53.68 L 78 46.1 L 66.24 53.68 L 69.82 40.16 L 58.98 31.32 L 72.95 30.54 Z" fill="#efeae0" stroke="#d8d2c6" stroke-width="2.5" stroke-linejoin="round"/>
+    <path id="f2" d="M 78 17.5 L 83.05 30.54 L 97.02 31.32 L 86.18 40.16 L 89.76 53.68 L 78 46.1 L 66.24 53.68 L 69.82 40.16 L 58.98 31.32 L 72.95 30.54 Z" fill="#ffb020" stroke="#ffb020" stroke-width="2.5" stroke-linejoin="round" clip-path="url(#c2)"/>
+  </g>
+  <g id="s3">
+    <rect x="102" y="6" width="48" height="60" fill="#fbf8f1" fill-opacity="0"/>
+    <path d="M 126 17.5 L 131.05 30.54 L 145.02 31.32 L 134.18 40.16 L 137.76 53.68 L 126 46.1 L 114.24 53.68 L 117.82 40.16 L 106.98 31.32 L 120.95 30.54 Z" fill="#efeae0" stroke="#d8d2c6" stroke-width="2.5" stroke-linejoin="round"/>
+    <path id="f3" d="M 126 17.5 L 131.05 30.54 L 145.02 31.32 L 134.18 40.16 L 137.76 53.68 L 126 46.1 L 114.24 53.68 L 117.82 40.16 L 106.98 31.32 L 120.95 30.54 Z" fill="#ffb020" stroke="#ffb020" stroke-width="2.5" stroke-linejoin="round" clip-path="url(#c3)"/>
+  </g>
+  <g id="s4">
+    <rect x="150" y="6" width="48" height="60" fill="#fbf8f1" fill-opacity="0"/>
+    <path d="M 174 17.5 L 179.05 30.54 L 193.02 31.32 L 182.18 40.16 L 185.76 53.68 L 174 46.1 L 162.24 53.68 L 165.82 40.16 L 154.98 31.32 L 168.95 30.54 Z" fill="#efeae0" stroke="#d8d2c6" stroke-width="2.5" stroke-linejoin="round"/>
+    <path id="f4" d="M 174 17.5 L 179.05 30.54 L 193.02 31.32 L 182.18 40.16 L 185.76 53.68 L 174 46.1 L 162.24 53.68 L 165.82 40.16 L 154.98 31.32 L 168.95 30.54 Z" fill="#ffb020" stroke="#ffb020" stroke-width="2.5" stroke-linejoin="round" clip-path="url(#c4)"/>
+  </g>
+  <g id="s5">
+    <rect x="198" y="6" width="48" height="60" fill="#fbf8f1" fill-opacity="0"/>
+    <path d="M 222 17.5 L 227.05 30.54 L 241.02 31.32 L 230.18 40.16 L 233.76 53.68 L 222 46.1 L 210.24 53.68 L 213.82 40.16 L 202.98 31.32 L 216.95 30.54 Z" fill="#efeae0" stroke="#d8d2c6" stroke-width="2.5" stroke-linejoin="round"/>
+    <path id="f5" d="M 222 17.5 L 227.05 30.54 L 241.02 31.32 L 230.18 40.16 L 233.76 53.68 L 222 46.1 L 210.24 53.68 L 213.82 40.16 L 202.98 31.32 L 216.95 30.54 Z" fill="#ffb020" stroke="#ffb020" stroke-width="2.5" stroke-linejoin="round" clip-path="url(#c5)"/>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": {
+      "rating": { "type": "number", "min": 0, "max": 5, "default": 3, "smooth": 700 }
+    },
+    "states": {
+      "idle": {}
+    },
+    "bind": {
+      "#r1": { "width": { "input": "rating", "map": { "0": 0, "1": 46 } } },
+      "#s1": { "scale":  { "input": "rating", "map": { "0": 1, "0.72": 1, "0.9": { "value": 1.2, "ease": "out" }, "1": { "value": 1, "ease": "back" } } },
+               "rotate": { "input": "rating", "map": { "0": 0, "0.72": 0, "0.9": { "value": -12, "ease": "out" }, "1": { "value": 0, "ease": "back" } } }, "origin": "30 37" },
+      "#r2": { "width": { "input": "rating", "map": { "1": 0, "2": 46 } } },
+      "#s2": { "scale":  { "input": "rating", "map": { "1": 1, "1.72": 1, "1.9": { "value": 1.2, "ease": "out" }, "2": { "value": 1, "ease": "back" } } },
+               "rotate": { "input": "rating", "map": { "1": 0, "1.72": 0, "1.9": { "value": -12, "ease": "out" }, "2": { "value": 0, "ease": "back" } } }, "origin": "78 37" },
+      "#r3": { "width": { "input": "rating", "map": { "2": 0, "3": 46 } } },
+      "#s3": { "scale":  { "input": "rating", "map": { "2": 1, "2.72": 1, "2.9": { "value": 1.2, "ease": "out" }, "3": { "value": 1, "ease": "back" } } },
+               "rotate": { "input": "rating", "map": { "2": 0, "2.72": 0, "2.9": { "value": -12, "ease": "out" }, "3": { "value": 0, "ease": "back" } } }, "origin": "126 37" },
+      "#r4": { "width": { "input": "rating", "map": { "3": 0, "4": 46 } } },
+      "#s4": { "scale":  { "input": "rating", "map": { "3": 1, "3.72": 1, "3.9": { "value": 1.2, "ease": "out" }, "4": { "value": 1, "ease": "back" } } },
+               "rotate": { "input": "rating", "map": { "3": 0, "3.72": 0, "3.9": { "value": -12, "ease": "out" }, "4": { "value": 0, "ease": "back" } } }, "origin": "174 37" },
+      "#r5": { "width": { "input": "rating", "map": { "4": 0, "5": 46 } } },
+      "#s5": { "scale":  { "input": "rating", "map": { "4": 1, "4.72": 1, "4.9": { "value": 1.2, "ease": "out" }, "5": { "value": 1, "ease": "back" } } },
+               "rotate": { "input": "rating", "map": { "4": 0, "4.72": 0, "4.9": { "value": -12, "ease": "out" }, "5": { "value": 0, "ease": "back" } } }, "origin": "222 37" }
+    },
+    "interactions": [
+      { "on": "click", "target": "#s1", "set": { "rating": 1 } },
+      { "on": "click", "target": "#s2", "set": { "rating": 2 } },
+      { "on": "click", "target": "#s3", "set": { "rating": 3 } },
+      { "on": "click", "target": "#s4", "set": { "rating": 4 } },
+      { "on": "click", "target": "#s5", "set": { "rating": 5 } }
+    ]
+  }
+  ]]></metadata>
+</svg>

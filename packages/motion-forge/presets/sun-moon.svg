@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" data-category="controls">
+  <title>Sun and moon</title>
+  <desc>Theme toggle: set the dark input (or click) and the sun pulls in its rays and becomes a crescent moon while stars twinkle in; the backdrop shifts from day sky to night.</desc>
+  <defs>
+    <mask id="crescent" maskUnits="userSpaceOnUse" x="0" y="0" width="240" height="240">
+      <rect x="0" y="0" width="240" height="240" fill="#fff"/>
+      <circle id="bite" cx="178" cy="62" r="29" fill="#000"/>
+    </mask>
+  </defs>
+  <g id="toggle">
+    <circle id="disc" cx="120" cy="120" r="96" fill="#4c8dff"/>
+    <g id="stars">
+      <g class="star" opacity="0" transform="translate(68 80)"><path class="star-i" d="M0 -8 C1.2 -2.2 2.2 -1.2 8 0 C2.2 1.2 1.2 2.2 0 8 C-1.2 2.2 -2.2 1.2 -8 0 C-2.2 -1.2 -1.2 -2.2 0 -8Z" fill="#ffb020"/></g>
+      <g class="star" opacity="0" transform="translate(176 150)"><path class="star-i" d="M0 -7 C1 -2 2 -1 7 0 C2 1 1 2 0 7 C-1 2 -2 1 -7 0 C-2 -1 -1 -2 0 -7Z" fill="#fbf8f1"/></g>
+      <g class="star" opacity="0" transform="translate(164 70)"><circle class="star-i" r="3" fill="#fbf8f1"/></g>
+      <g class="star" opacity="0" transform="translate(80 168)"><path class="star-i" d="M0 -6 C0.9 -1.7 1.7 -0.9 6 0 C1.7 0.9 0.9 1.7 0 6 C-0.9 1.7 -1.7 0.9 -6 0 C-1.7 -0.9 -0.9 -1.7 0 -6Z" fill="#ffb020"/></g>
+      <g class="star" opacity="0" transform="translate(58 126)"><circle class="star-i" r="2.2" fill="#fbf8f1"/></g>
+    </g>
+    <circle id="halo" cx="120" cy="120" r="48" fill="#fbf8f1" opacity="0.25"/>
+    <g id="rays" stroke="#ffb020" stroke-width="8" stroke-linecap="round">
+      <line class="ray" x1="120" y1="76" x2="120" y2="62"/>
+      <line class="ray" x1="151.1" y1="88.9" x2="161" y2="79"/>
+      <line class="ray" x1="164" y1="120" x2="178" y2="120"/>
+      <line class="ray" x1="151.1" y1="151.1" x2="161" y2="161"/>
+      <line class="ray" x1="120" y1="164" x2="120" y2="178"/>
+      <line class="ray" x1="88.9" y1="151.1" x2="79" y2="161"/>
+      <line class="ray" x1="76" y1="120" x2="62" y2="120"/>
+      <line class="ray" x1="88.9" y1="88.9" x2="79" y2="79"/>
+    </g>
+    <g id="orb">
+      <g mask="url(#crescent)">
+        <circle id="orb-fill" cx="120" cy="120" r="32" fill="#ffb020"/>
+        <circle class="crater" cx="106" cy="128" r="5.5" fill="#d8d2c6" opacity="0"/>
+        <circle class="crater" cx="100" cy="112" r="3" fill="#d8d2c6" opacity="0"/>
+        <circle class="crater" cx="117" cy="142" r="3.5" fill="#d8d2c6" opacity="0"/>
+      </g>
+    </g>
+    <g id="cloud" fill="#fbf8f1">
+      <rect x="130" y="146" width="50" height="16" rx="8"/>
+      <circle cx="148" cy="146" r="11"/>
+      <circle cx="164" cy="149" r="8"/>
+    </g>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": { "dark": false },
+    "initial": "light",
+    "states": {
+      "light": {
+        "animate": {},
+        "when": { "dark": "toDark" }
+      },
+      "toDark": {
+        "duration": 950,
+        "animate": {
+          ".ray": { "draw": { "0": 1, "320ms": { "value": 0, "ease": "in" } }, "stagger": 22 },
+          "#rays": { "rotate": { "0": 0, "480ms": { "value": 45, "ease": "in" } }, "origin": "120 120" },
+          "#orb": { "scale": { "0": 1, "220ms": { "value": 0.9, "ease": "in-out" }, "560ms": { "value": 1.06, "ease": "out" }, "850ms": { "value": 1, "ease": "in-out" } }, "rotate": { "0": 0, "260ms": 0, "900ms": { "value": -12, "ease": "out" } }, "origin": "120 120" },
+          "#bite": {
+            "translateX": { "0": 0, "260ms": 0, "720ms": { "value": -42, "ease": "back" } },
+            "translateY": { "0": 0, "260ms": 0, "720ms": { "value": 44, "ease": "back" } }
+          },
+          "#orb-fill": { "fill": { "0": "#ffb020", "260ms": "#ffb020", "700ms": "#fbf8f1" } },
+          ".crater": { "opacity": { "0": 0, "560ms": 0, "850ms": 1 }, "stagger": 50 },
+          "#halo": { "fill": { "0": "#fbf8f1", "700ms": "#8b7cf6" }, "opacity": { "0": 0.25, "700ms": 0.24 }, "scale": { "0": 1, "300ms": 0.8, "800ms": { "value": 1.08, "ease": "out" } } },
+          "#disc": { "fill": { "0": "#4c8dff", "150ms": "#4c8dff", "800ms": "#1b1a17" } },
+          "#cloud": { "translateX": { "0": 0, "80ms": -3, "520ms": { "value": 46, "ease": "in" } }, "opacity": { "0": 1, "300ms": 1, "520ms": 0 } },
+          ".star": {
+            "scale": { "0": 0, "480ms": 0, "760ms": { "value": 1, "ease": "back" } },
+            "rotate": { "0": -45, "480ms": -45, "760ms": { "value": 0, "ease": "out" } },
+            "opacity": { "0": 0, "480ms": 0, "600ms": 1 },
+            "stagger": 70
+          }
+        },
+        "next": { "to": "night", "blend": 0 },
+        "when": { "!dark": "toLight" }
+      },
+      "night": {
+        "animate": {
+          ".ray": { "draw": 0 },
+          "#rays": { "rotate": 45, "origin": "120 120" },
+          "#orb": { "rotate": -12, "origin": "120 120" },
+          "#bite": { "translateX": -42, "translateY": 44 },
+          "#orb-fill": { "fill": "#fbf8f1" },
+          ".crater": { "opacity": 1 },
+          "#halo": { "fill": "#8b7cf6", "opacity": 0.24, "scale": 1.08 },
+          "#disc": { "fill": "#1b1a17" },
+          "#cloud": { "translateX": 46, "opacity": 0 },
+          ".star": { "scale": 1, "opacity": 1 }
+        },
+        "when": { "!dark": "toLight" }
+      },
+      "toLight": {
+        "duration": 950,
+        "animate": {
+          ".star": {
+            "scale": { "0": 1, "260ms": { "value": 0, "ease": "back-in" } },
+            "opacity": { "0": 1, "200ms": 1, "260ms": 0 },
+            "stagger": 40
+          },
+          ".crater": { "opacity": { "0": 1, "200ms": 0 } },
+          "#bite": {
+            "translateX": { "0": -42, "80ms": -44, "500ms": { "value": 0, "ease": "in-out" } },
+            "translateY": { "0": 44, "80ms": 46, "500ms": { "value": 0, "ease": "in-out" } }
+          },
+          "#orb": { "scale": { "0": 1, "380ms": 0.94, "560ms": { "value": 1.1, "ease": "out" }, "850ms": { "value": 1, "ease": "in-out" } }, "rotate": { "0": -12, "500ms": { "value": 0, "ease": "in-out" } }, "origin": "120 120" },
+          "#orb-fill": { "fill": { "0": "#fbf8f1", "150ms": "#fbf8f1", "500ms": "#ffb020" } },
+          "#halo": { "fill": { "0": "#8b7cf6", "450ms": "#fbf8f1" }, "opacity": { "0": 0.24, "450ms": 0.25 }, "scale": { "0": 1.08, "450ms": 0.8, "800ms": { "value": 1, "ease": "back" } } },
+          "#disc": { "fill": { "0": "#1b1a17", "700ms": "#4c8dff" } },
+          ".ray": { "draw": { "0": 0, "430ms": 0, "760ms": { "value": 1, "ease": "back" } }, "stagger": 22 },
+          "#rays": { "rotate": { "0": 45, "430ms": 45, "950ms": { "value": 90, "ease": "out" } }, "origin": "120 120" },
+          "#cloud": { "translateX": { "0": -40, "450ms": -40, "900ms": { "value": 0, "ease": "out" } }, "opacity": { "0": 0, "450ms": 0, "650ms": 1 } }
+        },
+        "next": { "to": "light", "blend": 0 },
+        "when": { "dark": "toDark" }
+      }
+    },
+    "interactions": [
+      { "on": "click", "target": "#toggle", "toggle": "dark" }
+    ],
+    "layers": {
+      "twinkle": {
+        "states": {
+          "on": {
+            "duration": 2400,
+            "loop": true,
+            "ease": "in-out",
+            "animate": {
+              ".star-i": { "scale": { "0%": 1, "50%": 0.55, "100%": 1 }, "stagger": 480 }
+            }
+          }
+        }
+      }
+    }
+  }
+  ]]></metadata>
+</svg>

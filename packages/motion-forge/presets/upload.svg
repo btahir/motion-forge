@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" data-category="progress">
+  <title>Upload</title>
+  <desc>Cloud upload: click (or send "start") to begin, set input progress (0-100) to fill the bar; at 100 it turns mint with a check (state done, emits "uploaded"); send "reset" to return to idle.</desc>
+  <defs>
+    <clipPath id="cloud-clip">
+      <path d="M61 128 A24 24 0 1 1 63.2 80.1 A34 34 0 0 1 129 72.6 A28 28 0 1 1 135 128 Z"/>
+    </clipPath>
+  </defs>
+  <g id="upload">
+    <path id="cloud" d="M61 128 A24 24 0 1 1 63.2 80.1 A34 34 0 0 1 129 72.6 A28 28 0 1 1 135 128 Z" fill="#4c8dff"/>
+    <g clip-path="url(#cloud-clip)">
+      <g id="arrow">
+        <line x1="100" y1="118" x2="100" y2="86" stroke="#fbf8f1" stroke-width="10" stroke-linecap="round"/>
+        <polyline points="86,99 100,85 114,99" fill="none" stroke="#fbf8f1" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </g>
+    <path id="check" d="M83 101 L96 114 L119 89" fill="none" stroke="#fbf8f1" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0"/>
+  </g>
+  <g id="bar" opacity="0">
+    <rect id="bar-track" x="44" y="150" width="112" height="8" rx="4" fill="#efeae0"/>
+    <rect id="bar-fill" x="44" y="150" width="0" height="8" rx="4" fill="#4c8dff"/>
+  </g>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": {
+      "progress": { "type": "number", "min": 0, "max": 100, "default": 0, "smooth": 300 }
+    },
+    "bind": {
+      "#bar-fill": { "width": { "input": "progress", "from": 0, "to": 112 } }
+    },
+    "on": { "reset": "idle" },
+    "states": {
+      "idle": {
+        "duration": 1800,
+        "loop": true,
+        "animate": {
+          "#arrow": { "translateY": { "0%": 0, "50%": { "value": -6, "ease": "in-out" }, "100%": { "value": 0, "ease": "in-out" } } }
+        },
+        "on": { "start": "uploading" }
+      },
+      "uploading": {
+        "duration": 1000,
+        "loop": true,
+        "animate": {
+          "#arrow": {
+            "translateY": {
+              "0%": 0,
+              "10%": { "value": 4, "ease": "out" },
+              "44%": { "value": -80, "ease": "ease-in" },
+              "50%": { "value": 54, "ease": "hold" },
+              "88%": { "value": 0, "ease": "out" },
+              "100%": 0
+            }
+          },
+          "#bar": { "opacity": 1 },
+          "#cloud": {
+            "scale": { "0%": 1, "12%": { "value": 0.985, "ease": "out" }, "40%": { "value": 1.015, "ease": "out" }, "100%": { "value": 1, "ease": "in-out" } },
+            "origin": "100 128"
+          }
+        },
+        "when": { "progress >= 100": "done" }
+      },
+      "done": {
+        "duration": 900,
+        "emit": "uploaded",
+        "animate": {
+          "#arrow": {
+            "translateY": { "0%": 0 },
+            "opacity": { "0%": 1, "30%": 1, "45%": { "value": 0, "ease": "in" } },
+            "scale": { "0%": 1, "30%": 1, "45%": { "value": 0.4, "ease": "in" } },
+            "origin": "100 102"
+          },
+          "#check": {
+            "opacity": { "0%": 0, "38%": 0, "44%": 1 },
+            "draw": { "0%": 0, "38%": 0, "75%": { "value": 1, "ease": "out" } }
+          },
+          "#cloud": {
+            "fill": { "0%": "#4c8dff", "30%": "#4c8dff", "55%": { "value": "#2fbf8f", "ease": "out" } },
+            "scale": { "0%": 1, "30%": 1, "48%": { "value": 1.06, "ease": "out" }, "85%": { "value": 1, "ease": "spring-bouncy" } },
+            "origin": "100 128"
+          },
+          "#bar": { "opacity": { "0%": 1, "60%": 1, "100%": { "value": 0, "ease": "in" } } },
+          "#bar-fill": { "fill": { "0%": "#4c8dff", "30%": "#4c8dff", "55%": "#2fbf8f" } }
+        }
+      }
+    },
+    "interactions": [
+      { "on": "click", "target": "#upload", "send": "start" }
+    ]
+  }
+  ]]></metadata>
+</svg>

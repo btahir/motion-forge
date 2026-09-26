@@ -1,3 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-export default defineConfig({ plugins: [react()], server: { port: 4176, strictPort: true }, preview: { port: 4176, strictPort: true } });
+import { fileURLToPath } from 'node:url';
+
+const repo = fileURLToPath(new URL('../..', import.meta.url));
+export default defineConfig({
+  plugins: [react()],
+  server: { port: 4176, strictPort: true, fs: { allow: [repo] } },
+  preview: { port: 4176, strictPort: true },
+});

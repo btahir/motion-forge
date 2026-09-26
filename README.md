@@ -1,133 +1,140 @@
 # Motion Forge
 
-**Make it move. Make it yours.**
+**Animations your agent can write, see, and ship.**
 
-An open-source toolkit for interactive vector animation. Author visually in Studio, edit the portable JSON with code or an agent, and play it in React or your own JavaScript host. No account, cloud dependency, or model API.
+Motion Forge makes interactive animation plain text. A *Motion SVG* is an ordinary SVG with a small JSON block describing states, keyframes, springs, morphs, inputs and interactions. Coding agents write it fluently, the CLI turns motion into things a model can read (diagnostics, element maps, frame-by-frame contact sheets), and a ~30 KB runtime plays it anywhere.
 
-[![Watch the Motion Forge showcase: interactive artwork and the real visual editor](https://raw.githubusercontent.com/btahir/motion-forge/main/videos/motion-forge/renders/motion-forge-preview.gif)](https://raw.githubusercontent.com/btahir/motion-forge/main/videos/motion-forge/renders/motion-forge-launch.mp4)
+![Eight Motion Forge presets reacting to clicks and data: a robot waving, a like button, a toggle, a progress ring, a gauge, a theme toggle, a notification bell and an upload cloud](docs/media/gallery.gif)
 
-[Download the 45-second showcase (MP4)](https://raw.githubusercontent.com/btahir/motion-forge/main/videos/motion-forge/renders/motion-forge-launch.mp4) · [Editable video source](https://github.com/btahir/motion-forge/tree/main/videos/motion-forge)
+<sub>Every frame above was rendered by Motion Forge’s own engine from the files in [`presets/`](packages/motion-forge/presets), driven by scripted events and inputs.</sub>
 
-See Scout respond to an event, edit its artwork and keyframes in Studio, then connect animations to app events and numeric inputs. Silent, with explanatory text.
+## Why this exists
 
-## What’s inside
+Agents can already write CSS transitions and Framer Motion code. What they can’t do is *see* motion, so illustrated, stateful animation (mascots, success moments, data widgets, onboarding art) has stayed locked in designer tools with binary formats: Rive (paid to export, closed editor) and Lottie (After Effects JSON, interactivity as a vendor extension).
 
-- **Studio:** layers, direct manipulation, keyframes, easing curves, states, typed inputs, property bindings, undo/redo and local recovery.
-- **Runtime:** deterministic sampling, manual clock, loops, reverse playback and interruptible state blends.
-- **React:** SVG player, imperative controls, callbacks, reduced motion, SSR and visibility-aware clock lifecycle.
-- **Interchange:** editable JSON, an explicit SVG import subset, static SVG/PNG frames and React component export.
-- **CLI:** validate, inspect, sample, render, schema and editable presets, with structured diagnostics.
-- **Original examples:** Scout (character), Made it (interface feedback), Signal (data-driven instrument).
+Motion Forge is built around the agent’s loop:
 
-The initial release is built and verified locally: 73 package tests, 13 production browser journeys, a clean-checkout build, and packed consumers on React 18/19. The source is on GitHub; npm publication and site deployment are still pending. See the [verification report](docs/VERIFICATION.md) and [release checklist](RELEASE.md) for evidence, limitations, and publication steps.
+| Step | What happens |
+| --- | --- |
+| **Write** | Plain SVG plus JSON: states, keyframes, easing, inputs, bindings, interactions. Any real SVG works: Figma, Illustrator, icon sets. |
+| **Check** | `motion-forge check` validates everything and lints motion: loop seams, clipping, layer conflicts, dead states, no-op tracks, with JSON paths and “did you mean”. |
+| **See** | `motion-forge preview` renders a contact sheet: every state over time, every event and toggle played through the real state machine, and input sweeps. `record` scripts clicks and data into a frame grid, GIF or MP4. |
+| **Ship** | `<motion-forge src="like.svg">`, `<MotionForge svg={…}>` in React (with SSR), or `mount(el, svg)`. Events and inputs are the API. |
 
-## Run the project
+![Contact sheet produced by motion-forge preview for the like button](docs/media/preview-like.png)
 
-Use Node 22 or 24 and pnpm 11.
+## Quick start
 
 ```sh
-pnpm install
-pnpm build:package
-pnpm dev
+npx motion-forge init                 # installs the agent skill + an AGENTS.md note
+npm i motion-forge
 ```
 
-Open `http://127.0.0.1:4176` for the site and `/studio/` for the editor. The package build creates the exports that the demo app consumes.
+Then ask your agent for what you want: “a like button that pops”, “make our mascot wave when the upload finishes”, “a gauge for CPU usage in our brand colors”. The skill tells it to start from a preset or a template, check, look at the preview, and iterate.
 
-## Use the package
+Doing it by hand:
 
-After publication, install with `npm install motion-forge`. Before publication, build and install the tarball produced by `pnpm --filter motion-forge pack`.
+```sh
+npx motion-forge list                          # 23 presets: characters, feedback, controls, loaders, data…
+npx motion-forge add like --dir src/motion     # copy one into your project
+npx motion-forge check src/motion/like.svg
+npx motion-forge preview src/motion/like.svg   # writes a PNG contact sheet
+npx motion-forge dev src/motion/like.svg       # live preview with controls, reloads on save
+```
+
+## The format in one screen
+
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <title>Like button</title>
+  <path id="heart" d="M100 160 C 40 120 …" fill="#d8d2c6"/>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": { "liked": false },
+    "states": {
+      "off": { "animate": { "#heart": { "fill": "#d8d2c6", "scale": 1 } }, "when": { "liked": "pop" } },
+      "pop": {
+        "duration": 450,
+        "animate": { "#heart": { "fill": "#ff4d6d", "scale": { "0%": 0.6, "60%": 1.25, "100%": { "value": 1, "ease": "spring" } } } },
+        "when": { "!liked": "off" },
+        "emit": "liked"
+      }
+    },
+    "interactions": [{ "on": "click", "target": "#heart", "toggle": "liked" }]
+  }
+  ]]></metadata>
+</svg>
+```
+
+It renders as a static heart anywhere SVG works (GitHub, Figma, `<img>`). With the runtime it’s a keyboard-accessible button that pops with a spring and tells your app `liked`.
+
+What the format covers: state machines with events, conditions and `next`; parallel layers (blink while waving); springs and 20+ easings; stagger; smooth curves through keyframes; path morphing between any shapes; stroke drawing; OKLab color blends; input bindings with maps, text templates and spring smoothing; click, hover, press, pointer-follow, drag (keyboard-accessible) and scroll-into-view interactions. Full reference: [`skills/motion-forge/reference.md`](packages/motion-forge/skills/motion-forge/reference.md).
+
+## Using it in an app
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/motion-forge/dist/element.js"></script>
+<motion-forge src="/like.svg"></motion-forge>
+<script>
+  const like = document.querySelector('motion-forge');
+  like.addEventListener('emit', e => console.log(e.detail.name)); // "liked"
+  like.set('liked', true);
+</script>
+```
 
 ```tsx
 import { MotionForge } from 'motion-forge/react';
-import { createPreset } from 'motion-forge/presets';
+import like from './like.svg?raw';
 
-const animation = createPreset('scout');
-
-export default function Welcome() {
-  return <MotionForge
-    document={animation}
-    title="A friendly explorer"
-    style={{ width: '100%', maxWidth: 480 }}
-  />;
-}
+<MotionForge svg={like} inputs={{ liked }} onEvent={e => e.type === 'emit' && track(e.name)} />;
 ```
-
-Keep the document reference stable. Use a `MotionForgeHandle` ref to call `play`, `pause`, `seek`, `send`, `setState` and `setInput`. React entrypoints support React 18 and 19; core/CLI do not require React.
-
-```tsx
-import { useRef } from 'react';
-import { MotionForge, type MotionForgeHandle } from 'motion-forge/react';
-import { createPreset } from 'motion-forge/presets';
-
-const scout = createPreset('scout');
-
-export function InteractiveScout() {
-  const player = useRef<MotionForgeHandle>(null);
-  return <>
-    <MotionForge ref={player} document={scout} />
-    <button onClick={() => player.current?.send('wave')}>Say hello</button>
-  </>;
-}
-```
-
-Embed the complete editor separately:
-
-```tsx
-import { ForgeStudio } from 'motion-forge/studio';
-import 'motion-forge/studio.css';
-
-export default function Editor() {
-  return <ForgeStudio storageKey="my-app:scene:v1" />;
-}
-```
-
-Or use the engine in Node:
 
 ```js
-import { ForgePlayer, renderSVG } from 'motion-forge';
-import { createPreset } from 'motion-forge/presets';
-
-const document = createPreset('scout');
-const player = new ForgePlayer(document, { autoplay: true });
-player.advance(800);
-const svg = renderSVG(document, { frame: player.getSnapshot().frame });
-player.dispose();
+import { mount } from 'motion-forge';
+const anim = mount(document.querySelector('#slot'), svgText);
+anim.send('wave');
+anim.set('progress', 72);
 ```
 
-![Motion Forge Studio with the editable Scout scene](docs/assets/studio.png)
+The runtime respects `prefers-reduced-motion`, pauses offscreen, isolates instances (ids are prefixed, Shadow DOM for the web component), and settles into the right state for the initial inputs without replaying transitions.
 
-## Agent-friendly by design
+## For agents and tools
+
+- **Skill:** `npx motion-forge init` copies [`SKILL.md`](packages/motion-forge/skills/motion-forge/SKILL.md) and the reference into `.claude/skills/`, and adds a note to `AGENTS.md` for Cursor, Codex and friends.
+- **MCP:** `{ "command": "npx", "args": ["motion-forge", "mcp"] }` exposes `motion_docs`, `motion_presets`, `motion_check`, `motion_inspect`, `motion_preview` and `motion_render` (these return images), and `motion_record`.
+- **CLI:** every command prints text an agent can act on; `--json` where structure helps. `motion-forge docs` prints the full reference.
+- **Web:** the site serves `llms.txt`, `llms-full.txt`, `reference.md` and `presets.json`.
+
+## How it compares
+
+| | Motion Forge | Lottie | Rive |
+| --- | --- | --- | --- |
+| Source | SVG + JSON text | After Effects JSON | Binary `.riv` |
+| Interactive states | Built in | dotLottie extension | Built in |
+| Authoring | Your agent, your editor, the playground | After Effects / Lottie Creator | Rive editor (export needs a paid plan) |
+| Agent can verify visually | `check`, `preview`, `record` | — | Through the editor |
+| Web runtime, gzip | ~30 KB | ~76 KB (lottie-web) | ~900 KB (canvas + wasm) |
+| License | MIT | MIT runtime | MIT runtime, closed editor |
+
+Motion Forge doesn’t import or export Lottie/Rive files, and it isn’t a designer timeline tool. It’s for the workflow where your agent authors and you direct. Sizes: [`docs/size.json`](docs/size.json) (`pnpm size`); Lottie/Rive measured from their npm builds, September 2026.
+
+## Develop
 
 ```sh
-motion-forge preset scout --output scout.forge.json
-motion-forge validate scout.forge.json
-motion-forge inspect scout.forge.json
-motion-forge sample scout.forge.json --time 800
-motion-forge render scout.forge.json --time 800 --output scout.svg
+pnpm install
+pnpm dev            # builds the package, runs the site at http://127.0.0.1:4176
+pnpm check          # build + typecheck + unit tests
+pnpm check:presets  # every preset passes check
+pnpm test:e2e       # Playwright journeys against the site
+pnpm verify:package # pack, install into a clean project, exercise every entry point + CLI
 ```
 
-The document is versioned and validated. The CLI accepts stdin, produces structured JSON diagnostics, and runs without network access. The npm package includes an [agent skill](packages/motion-forge/skills/motion-forge/SKILL.md). The static docs build generates `llms.txt`, `llms-full.txt` and a structural JSON Schema; semantic validation still runs in the actual parser.
+Layout: `packages/motion-forge` (engine, runtime, React, CLI, presets, skill) and `apps/site` (landing page, playground, docs; static, prerendered, Vercel-ready).
 
-## Documentation
+## Status
 
-[Quickstart](docs/quickstart.md) · [API](docs/api.md) · [Document format](docs/format.md) · [Studio](docs/studio.md) · [Import/export](docs/interchange.md) · [Agents/CLI](docs/agents.md) · [Accessibility](docs/accessibility.md) · [Performance](docs/performance.md) · [Troubleshooting](docs/troubleshooting.md)
-
-## Scope
-
-Motion Forge focuses on editable vector scenes, keyframes and application-driven interaction. SVG import supports basic shapes, groups, text and translate/rotate/scale, with explicit diagnostics for unsupported features. It does **not** claim arbitrary SVG fidelity, Rive/Lottie compatibility, path morphing, skeletal rigs, bitmap/video/audio animation or font shaping. Exported SVG/PNG files are static frames; JSON preserves animation and behavior.
-
-## Verify and contribute
-
-```sh
-pnpm check
-pnpm exec playwright install chromium
-pnpm test:e2e
-```
-
-`pnpm check` builds, typechecks and runs package tests. Browser tests cover actual editing journeys and exported results. See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), [SUPPORT.md](SUPPORT.md) and [RELEASE.md](RELEASE.md).
-
-The demo/docs site is a static build, prepared for Vercel through the root `vercel.json`. See [deployment instructions](DEPLOYMENT.md). Building does not publish or deploy anything.
+v0.2, pre-release: not yet published to npm, site not yet deployed. See [STATUS.md](STATUS.md) for what’s verified and what’s next.
 
 ## License
 
-[MIT](LICENSE). The original preset artwork and project-authored docs share that license. Dependency licenses remain their respective authors’ licenses; see [THIRD_PARTY.md](THIRD_PARTY.md).
+[MIT](LICENSE)
