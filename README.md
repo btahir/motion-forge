@@ -15,7 +15,7 @@ An open-source toolkit for interactive vector animation. Author visually in Stud
 - **CLI:** validate, inspect, sample, render, schema and editable presets, with structured diagnostics.
 - **Original examples:** Scout (character), Made it (interface feedback), Signal (data-driven instrument).
 
-This is a local first-release checkout. It has not been published to npm or deployed. See [STATUS.md](STATUS.md) for verification progress and the [release checklist](RELEASE.md) for remaining publication steps. No download counts or adoption claims are implied.
+The initial release is built and verified locally: 73 package tests, 13 production browser journeys, a clean-checkout build, and packed consumers on React 18/19. It has not been published or deployed. See the [verification report](docs/VERIFICATION.md) and [release checklist](RELEASE.md) for evidence, limitations, and publication steps.
 
 ## Run the project
 
@@ -89,6 +89,8 @@ player.advance(800);
 const svg = renderSVG(document, { frame: player.getSnapshot().frame });
 player.dispose();
 ```
+
+![Motion Forge Studio with the editable Scout scene](docs/assets/studio.png)
 
 ## Agent-friendly by design
 

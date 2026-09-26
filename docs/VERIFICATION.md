@@ -18,10 +18,12 @@ This is evidence for the local initial release, not publication, deployment, ado
 ## Automated checks
 
 - Strict TypeScript across package, site and React example.
-- Package unit/integration suite, including property-style invariants over timeline samples and adversarial fixtures.
+- 73 passing package unit/integration tests, including property-style invariants over timeline samples and adversarial fixtures.
 - Thirteen Chromium browser journeys: full edit/animate/save/recover/reopen, drag/nudge/lock, state/input/binding authoring, condition transitions, rejected imports, actual SVG/PNG output, easing edits, phone viewport, hydration/interactivity and reduced motion.
 - Axe WCAG A/AA checks on home, docs, examples, Studio and the phone editor pass. This is not a screen-reader certification.
 - Packed external consumer checks: ESM/CJS exports, type declarations, React 18 and 19 SSR/typechecking, Studio/CSS presence, CLI outputs, shipped docs/schema/skill and basic private-path/private-key scan.
+- Clean committed checkout: frozen-lockfile install, package/site build, typecheck, all unit tests and static-site verification passed.
+- Both preview/noindex and configured-origin canonical/sitemap modes passed static verification. The configured-origin test used a reserved example domain only; no production origin is claimed.
 - Production dependency audit reported zero known vulnerabilities at this date. This is a point-in-time registry advisory check, not a security guarantee.
 - Reproducible sampler/bundle measurements are recorded in `benchmark-results.json` and the performance guide. No browser-FPS claim is made.
 

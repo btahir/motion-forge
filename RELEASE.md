@@ -4,15 +4,15 @@ Local readiness and public release are separate. Nothing in this checklist autho
 
 ## Local gates
 
-- [ ] Audit every required surface in PRODUCT.md against actual behavior and current tests.
-- [ ] `pnpm check` succeeds from a clean install; all TypeScript declarations build.
-- [ ] Browser journeys pass on desktop/phone, including actual JSON/SVG/PNG output inspection, keyboard, inputs/states, rejected imports and recovery.
-- [ ] Visually inspect home, examples, docs and Studio; review reduced motion and accessibility output.
-- [ ] `pnpm verify:package` installs the packed artifact into an isolated consumer and verifies ESM/CJS/TypeScript/React/Studio/CSS/CLI examples.
-- [ ] `pnpm verify:site` checks rendered routes, docs text, relative links, metadata, agent files and site assets.
-- [ ] Run the reproducible performance check; record conditions and measurements without universal claims.
-- [ ] Audit production dependencies, packed files, licenses, secrets/private paths and runtime/editor separation.
-- [ ] Stop verification servers and delete disposable outputs. Preserve editable source and permanent assets.
+- [x] Audit every required surface in PRODUCT.md against actual behavior and current tests.
+- [x] `pnpm check` succeeds from a clean install; all TypeScript declarations build.
+- [x] Browser journeys pass on desktop/phone, including actual JSON/SVG/PNG output inspection, keyboard, inputs/states, rejected imports and recovery.
+- [x] Visually inspect home, examples, docs and Studio; review reduced motion and accessibility output.
+- [x] `pnpm verify:package` installs the packed artifact into an isolated consumer and verifies ESM/CJS/TypeScript/React/Studio/CSS/CLI examples.
+- [x] `pnpm verify:site` checks rendered routes, docs text, relative links, metadata, agent files and site assets.
+- [x] Run the reproducible performance check; record conditions and measurements without universal claims.
+- [x] Audit production dependencies, packed files, licenses, secrets/private paths and runtime/editor separation.
+- [x] Stop verification servers and delete disposable outputs. Preserve editable source and permanent assets.
 
 ## Before public GitHub/npm release
 
