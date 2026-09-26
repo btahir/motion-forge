@@ -1,0 +1,26 @@
+node_modules/
+dist/
+.vercel/
+.cache/
+test-results/
+playwright-report/
+coverage/
+*.tgz
+.DS_Store
+.env*
+!.env.example
+dist-server/
+examples/*/output/
+# Release docs are copied into the package from the repository's canonical sources.
+packages/motion-forge/docs/
+packages/motion-forge/README.md
+packages/motion-forge/LICENSE
+packages/motion-forge/CHANGELOG.md
+packages/motion-forge/CONTRIBUTING.md
+packages/motion-forge/SECURITY.md
+packages/motion-forge/SUPPORT.md
+packages/motion-forge/THIRD_PARTY.md
+packages/motion-forge/DEPLOYMENT.md
+packages/motion-forge/RELEASE.md
+packages/motion-forge/STATUS.md
+packages/motion-forge/schema/

@@ -1,0 +1,1 @@
+{ "name": "@motion-forge/example-node", "private": true, "type": "module", "scripts": { "start": "node index.mjs" }, "dependencies": { "motion-forge": "workspace:*" } }

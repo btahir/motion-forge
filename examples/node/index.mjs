@@ -1,0 +1,11 @@
+import { ForgePlayer, renderSVG, serializeDocument } from 'motion-forge';
+import { createPreset } from 'motion-forge/presets';
+import { mkdir, writeFile } from 'node:fs/promises';
+const document = createPreset('scout');
+const player = new ForgePlayer(document, { autoplay: true });
+player.advance(800);
+await mkdir('output', { recursive: true });
+await writeFile('output/scout.svg', renderSVG(document, { frame: player.getSnapshot().frame }));
+await writeFile('output/scout.forge.json', serializeDocument(document));
+player.dispose();
+console.log('Wrote output/scout.svg and output/scout.forge.json');

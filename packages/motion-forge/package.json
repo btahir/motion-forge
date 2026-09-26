@@ -1,0 +1,119 @@
+{
+  "name": "motion-forge",
+  "version": "0.1.0",
+  "description": "Create, edit, and ship interactive vector animations. A portable runtime, React player, visual Studio, and CLI.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Bilal Tahir",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "main": "./dist/core.cjs",
+  "module": "./dist/core.js",
+  "types": "./dist/core.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/core.d.ts",
+        "default": "./dist/core.js"
+      },
+      "require": {
+        "types": "./dist/core.d.cts",
+        "default": "./dist/core.cjs"
+      }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.js"
+      },
+      "require": {
+        "types": "./dist/react.d.cts",
+        "default": "./dist/react.cjs"
+      }
+    },
+    "./studio": {
+      "import": {
+        "types": "./dist/studio.d.ts",
+        "default": "./dist/studio.js"
+      },
+      "require": {
+        "types": "./dist/studio.d.cts",
+        "default": "./dist/studio.cjs"
+      }
+    },
+    "./presets": {
+      "import": {
+        "types": "./dist/presets.d.ts",
+        "default": "./dist/presets.js"
+      },
+      "require": {
+        "types": "./dist/presets.d.cts",
+        "default": "./dist/presets.cjs"
+      }
+    },
+    "./studio.css": "./dist/studio.css",
+    "./schema.json": "./schema/document.schema.json",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "motion-forge": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "schema",
+    "skills",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "docs",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "SUPPORT.md",
+    "THIRD_PARTY.md",
+    "DEPLOYMENT.md",
+    "RELEASE.md",
+    "STATUS.md"
+  ],
+  "scripts": {
+    "build": "tsup && node scripts/postbuild.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^4.3.0"
+  },
+  "peerDependencies": {
+    "react": ">=18 <20",
+    "react-dom": ">=18 <20"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0"
+  },
+  "keywords": [
+    "animation",
+    "svg",
+    "react",
+    "motion",
+    "keyframes",
+    "state-machine",
+    "visual-editor",
+    "interactive",
+    "typescript",
+    "agent"
+  ],
+  "engines": {
+    "node": ">=22"
+  }
+}

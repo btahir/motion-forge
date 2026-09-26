@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a reproducible Motion Forge defect.
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps and minimal document
+      description: Include an artificial fixture without private data.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Package, browser and Node versions
+    validations:
+      required: true

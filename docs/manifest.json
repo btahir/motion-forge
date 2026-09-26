@@ -1,0 +1,11 @@
+[
+  { "slug": "", "file": "quickstart", "title": "Quickstart", "description": "Install Motion Forge, play an interactive React animation, embed Studio, or work with the pure engine." },
+  { "slug": "api", "file": "api", "title": "API reference", "description": "Motion Forge document validation, sampling, player methods, React props, Studio APIs and package exports." },
+  { "slug": "format", "file": "format", "title": "Document format", "description": "Version 1 scene graphs, keyframes, easing, states, typed inputs, transitions, gradients and bindings." },
+  { "slug": "studio", "file": "studio", "title": "Studio guide", "description": "Create shapes, author motion, connect states and inputs, recover locally, and export portable source." },
+  { "slug": "interchange", "file": "interchange", "title": "Import & export", "description": "Editable JSON, the supported SVG import subset, static SVG/PNG exports and React source generation." },
+  { "slug": "agents", "file": "agents", "title": "Agents & CLI", "description": "Operate Motion Forge with local files, structured diagnostics, deterministic sampling and the CLI." },
+  { "slug": "accessibility", "file": "accessibility", "title": "Accessibility", "description": "Reduced motion, accessible SVG titles, keyboard controls and responsible motion design." },
+  { "slug": "performance", "file": "performance", "title": "Performance", "description": "Keep documents stable, understand clock ownership, and measure SVG animation in your target browser." },
+  { "slug": "troubleshooting", "file": "troubleshooting", "title": "Troubleshooting", "description": "Diagnose playback, validation, import, local recovery and package setup problems." }
+]

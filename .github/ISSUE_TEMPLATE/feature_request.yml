@@ -1,0 +1,15 @@
+name: Feature request
+description: Explain an animation or authoring workflow you want to improve.
+body:
+  - type: textarea
+    id: use-case
+    attributes:
+      label: What are you trying to create?
+    validations:
+      required: true
+  - type: textarea
+    id: gap
+    attributes:
+      label: Where does the current toolkit fall short?
+    validations:
+      required: true
