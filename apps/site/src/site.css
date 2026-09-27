@@ -486,6 +486,14 @@ section {
   justify-content: space-between;
   background: var(--card);
 }
+.demo {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin: 0 0 12px;
+}
 .sheet {
   display: block;
   border: 1px solid var(--line);

@@ -76,15 +76,15 @@ This is a complete, working like button ([`examples/like.svg`](examples/like.svg
 </svg>
 ```
 
-<img src="docs/media/like-demo.gif" width="520" alt="The like button above being clicked twice: the grey heart squashes, pops up larger in pink and settles; the second click fades it back to grey. A status line shows the state and the liked input, and notes when the file emits liked to the app.">
+<img src="docs/media/like-demo.gif" width="680" alt="The like button above clicked twice, shown at real speed and 4 times slower. The slow copy names each phase: the grey heart squashes to 0.8, turns pink and overshoots to 1.3, springs back to 1, and on the second click blends back to grey.">
 
-<sub>That file, clicked twice, rendered by Motion Forge’s own engine.</sub>
+<sub>That file, clicked twice: real speed on the left, 4× slower on the right. Rendered by Motion Forge’s own engine.</sub>
 
 Two states and one input. A click toggles `liked`; the `when` rules move between `idle` and `liked`. Entering `liked` blends the fill to pink, runs the scale keyframes (squash to 0.8, overshoot to 1.3, settle to 1 on a bouncy spring), and emits `liked` to your app. Clicking again switches back to `idle`, which blends to grey from whatever is on screen, so fast repeated clicks never jump.
 
 Without the runtime it’s a plain grey heart that renders anywhere SVG does (GitHub, Figma, `<img>`). With the runtime it’s a keyboard-accessible button.
 
-A model can’t watch a GIF, so `motion-forge preview examples/like.svg` gives it this instead: each state sampled over time, then each input change played through the real state machine.
+A model can’t watch a GIF, so `motion-forge preview examples/like.svg` gives it the same motion as a still image: each state sampled over time, then each input change played through the real state machine.
 
 ![Contact sheet from motion-forge preview for the like button: the idle pose; the liked state squashing, overshooting and settling; and flows for liked turning true and false](docs/media/preview-like.png)
 

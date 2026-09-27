@@ -58,40 +58,55 @@ console.log(`Wrote docs/media/gallery.gif (${W}×${H}, ${frames} frames)`);
   const like = loadScene(source);
   writeFileSync(new URL('preview-like.png', out), contactSheet(like, { frames: 6, cell: 130, name: 'examples/like.svg' }).png);
 
-  const W = 520, H = 300, stage = 220, sx = (W - stage) / 2, sy = 22;
-  const clicks = [700, 2700], total = 4600, step = 1000 / fps;
-  const player = new Player(like);
-  const emitted = [];
-  player.on(e => { if (e.type === 'emit') emitted.push(e.name); });
-  const tip = [sx + stage * 0.62, sy + stage * 0.62]; // where the cursor clicks, over the heart
-  const demo = GIFEncoder();
-  let lastEmitAt = -Infinity;
-  for (let t = 0; t < total; t += step) {
-    for (const c of clicks) if (c > t - step && c <= t) { const before = emitted.length; player.setInput('liked', !player.inputs.liked); if (emitted.length > before) lastEmitAt = t; }
-    const tree = renderFrameTree(like, player.frame(), { width: stage, height: stage });
-    prefixIds(tree, 'demo-');
-    tree.attrs.x = String(sx);
-    tree.attrs.y = String(sy);
+  // Two copies of the same file get the same two clicks: one at real speed, one 4× slower
+  // with each phase of the motion named, so the squash, overshoot and settle are visible.
+  const W = 680, H = 366, stage = 250, gapX = 60, top = 46;
+  const lx = (W - stage * 2 - gapX) / 2, rx = lx + stage + gapX;
+  const clicks = [500, 3900], total = 5700, step = 1000 / fps, slow = 4;
+  const real = new Player(like), slowed = new Player(like);
+  const scaleOf = p => { for (const m of p.frame().values()) if (m.has('scale')) return m.get('scale'); return 1; };
+  const phase = p => {
+    if (p.state === 'liked') {
+      const t = p.time;
+      return t < 120 ? 'squash to 0.8' : t < 330 ? 'pop up to 1.3' : t < 600 ? 'spring back to 1' : 'liked';
+    }
+    return p.transitioning ? 'blend back to grey' : 'idle';
+  };
+  const tip = [lx + stage * 0.63, top + stage * 0.63];
+  const label = (x, text) => `<text x="${x + stage / 2}" y="${top - 16}" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#45413a">${text}</text>`;
+  const place = (p, x, id) => {
+    const tree = renderFrameTree(like, p.frame(), { width: stage, height: stage });
+    prefixIds(tree, id);
+    tree.attrs.x = String(x);
+    tree.attrs.y = String(top);
     delete tree.attrs.xmlns;
-    // Cursor glides in before each click and presses (ripple) on it.
+    return `<rect x="${x}" y="${top}" width="${stage}" height="${stage}" rx="22" fill="#ffffff" stroke="#e7e0d2"/>${serializeXML(tree)}`;
+  };
+  const demo = GIFEncoder();
+  for (let t = 0; t < total; t += step) {
+    for (const c of clicks) if (c > t - step && c <= t) for (const p of [real, slowed]) p.setInput('liked', !p.inputs.liked);
+    // Cursor glides in before each click and presses (ripple) on the real-speed heart.
     const next = clicks.find(c => c + 400 > t) ?? clicks[clicks.length - 1];
     const approach = Math.max(0, Math.min(1, 1 - (next - t) / 450));
     const ease = 1 - (1 - approach) ** 3;
     const cx = tip[0] + 60 * (1 - ease), cy = tip[1] + 50 * (1 - ease);
-    const since = t - clicks.filter(c => c <= t).pop();
+    const since = t - (clicks.filter(c => c <= t).pop() ?? -Infinity);
     const ripple = since >= 0 && since < 360 ? `<circle cx="${tip[0]}" cy="${tip[1]}" r="${6 + since / 12}" fill="none" stroke="#1b1a17" stroke-opacity="${(1 - since / 360) * 0.5}" stroke-width="2"/>` : '';
     const cursor = `<path transform="translate(${cx} ${cy}) scale(${since >= 0 && since < 120 ? 0.9 : 1})" d="M0 0 L0 22 L6 17 L10 27 L14 25 L10 15 L18 15 Z" fill="#1b1a17" stroke="#fffdf8" stroke-width="1.6" stroke-linejoin="round"/>`;
-    const liked = player.inputs.liked;
-    const status = `<text x="${W / 2}" y="${H - 34}" text-anchor="middle" font-family="Menlo, monospace" font-size="15" fill="#45413a">state <tspan font-weight="700" fill="#1b1a17">${player.state}</tspan>   ·   liked = <tspan font-weight="700" fill="${liked ? '#e03a58' : '#1b1a17'}">${liked}</tspan></text>`;
-    const emitNote = t - lastEmitAt < 1300 ? `<text x="${W / 2}" y="${H - 12}" text-anchor="middle" font-family="Menlo, monospace" font-size="13" fill="#c2410c">emit "liked" → your app</text>` : '';
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><rect width="100%" height="100%" fill="#fbf8f1"/><rect x="${sx}" y="${sy}" width="${stage}" height="${stage}" rx="22" fill="#ffffff" stroke="#e7e0d2"/>${serializeXML(tree)}${ripple}${cursor}${status}${emitNote}</svg>`;
+    const moving = phase(slowed);
+    const caption = `<text x="${rx + stage / 2}" y="${top + stage + 30}" text-anchor="middle" font-family="Menlo, monospace" font-size="15" font-weight="700" fill="${moving === 'idle' || moving === 'liked' ? '#45413a' : '#c2410c'}">${moving}</text><text x="${rx + stage / 2}" y="${top + stage + 50}" text-anchor="middle" font-family="Menlo, monospace" font-size="12" fill="#787166">scale ${scaleOf(slowed).toFixed(2)}</text>`;
+    const liked = real.inputs.liked;
+    const status = `<text x="${lx + stage / 2}" y="${top + stage + 30}" text-anchor="middle" font-family="Menlo, monospace" font-size="15" fill="#45413a">liked = <tspan font-weight="700" fill="${liked ? '#e03a58' : '#1b1a17'}">${liked}</tspan></text><text x="${lx + stage / 2}" y="${top + stage + 50}" text-anchor="middle" font-family="Menlo, monospace" font-size="12" fill="#787166">state ${real.state}</text>`;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><rect width="100%" height="100%" fill="#fbf8f1"/>${label(lx, 'Real speed')}${label(rx, '4× slower')}${place(real, lx, 'real-')}${place(slowed, rx, 'slow-')}${ripple}${cursor}${status}${caption}</svg>`;
     const img = rasterize(svg);
     const palette = quantize(img.pixels, 256);
     demo.writeFrame(applyPalette(img.pixels, palette), img.width, img.height, { palette, delay: step });
-    player.advance(step);
+    real.advance(step);
+    slowed.advance(step / slow);
   }
   demo.finish();
   writeFileSync(new URL('like-demo.gif', out), Buffer.from(demo.bytes()));
+  writeFileSync(new URL('../apps/site/public/loop/like-demo.gif', import.meta.url), Buffer.from(demo.bytes()));
   console.log('Wrote docs/media/like-demo.gif and docs/media/preview-like.png');
 }
 
