@@ -19,5 +19,9 @@ Rebuilt around agents. The v0.1 visual Studio and custom JSON scene format are g
 - Complete root-click/press keyboard behavior, announce toggle values, preserve focus indicators and support lost pointer capture.
 - Preview every handled state/event pair and both boolean directions; validate render options and scripts, record exact action times, and expose recordStrip from the Node API. `check --strict` fails on warnings.
 - Reproducible runtime size comparison: `pnpm size:compare` measures pinned Lottie, dotLottie and Rive packages alongside Motion Forge (31 KB vs 76 KB / 532 KB / 916 KB gzip, JS + wasm).
+- The README and landing-page example is now a real file, `examples/like.svg`, shown verbatim (a test keeps them identical). The README adds a GIF of it being clicked and its own contact sheet; the site runs it live next to the code, and its check output and contact sheet come from the same file.
+- `preview` flow frames name the layer states a flow changes (`+80ms idle · hover/over`), so layer-only changes no longer look like nothing happened.
+- Clickable SVG elements no longer show Chrome's focus ring after a mouse click; keyboard focus still shows it.
+- Package metadata links the website and repository.
 - Add playground import, draft recovery, pause/restart/scrubbing, event logs, bounded share decoding and truthful clipboard status. Improve text contrast and keyboard scrolling.
 - Verify actual packed TypeScript exports in a clean consumer. Correct comparisons to acknowledge Rive's RML/CLI and remove unsupported comparative size claims.

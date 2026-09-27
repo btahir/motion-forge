@@ -1,5 +1,5 @@
 {
   "file": "like.svg",
-  "check": "  viewBox 0 0 200 200 · 35 elements · 22 animated\n  states:\n    idle (initial)  0ms  0 channels  when liked → liking\n    liking  760ms  43 channels  when !liked → unliking · then → liked\n    liked  0ms  5 channels  when !liked → unliking\n    unliking  300ms  6 channels  when liked → liking · then → idle\n    hover/rest  0ms  0 channels  when hovered → over\n    hover/over  0ms  1 channels  when !hovered → rest\n  inputs: liked:boolean=false, hovered:boolean=false\n  interactions: click #heart → toggle liked; hover #heart → hold hovered\n\n0 errors, 0 warnings, 0 notes",
+  "check": "  viewBox 34 38 132 132 · 3 elements · 1 animated\n  states:\n    idle (initial)  0ms  1 channels  when liked → liked\n    liked  600ms  2 channels  when !liked → idle\n  inputs: liked:boolean=false\n  interactions: click #heart → toggle liked\n\n0 errors, 0 warnings, 0 notes",
   "sheet": "/loop/like-sheet.png"
 }

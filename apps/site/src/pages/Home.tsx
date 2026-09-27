@@ -7,6 +7,7 @@ import size from '../../../../docs/size.json';
 import syncCloud from '../showcase/sync-cloud.svg?raw';
 import streakPlant from '../showcase/streak-plant.svg?raw';
 import addButton from '../showcase/add-button.svg?raw';
+import likeExample from '../../../../examples/like.svg?raw';
 
 const SHOWCASE = [
   {
@@ -34,23 +35,6 @@ const runtimeGz = size.results['web component (motion-forge/element)'].gzip;
 
 const HERO_FALLBACK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><title>Motion Forge</title><circle id="c" cx="120" cy="120" r="50" fill="#ff5a1f"/><metadata type="application/motion+json"><![CDATA[{"states":{"idle":{"duration":2000,"loop":true,"animate":{"#c":{"scale":[1,1.1,1]}}}}}]]></metadata></svg>`;
 
-const SNIPPET = `<svg viewBox="0 0 200 200">
-  <title>Like button</title>
-  <path id="heart" d="M100 160 C20 110 20 40 65 40 Q90 40 100 65 Q110 40 135 40 C180 40 180 110 100 160Z" fill="#d8d2c6"/>
-  <metadata type="application/motion+json"><![CDATA[{
-    "inputs": { "liked": false },
-    "states": {
-      "off": { "animate": { "#heart": { "fill": "#d8d2c6" } },
-               "when": { "liked": "pop" } },
-      "pop": { "duration": 450,
-               "animate": { "#heart": {
-                 "fill": "#ff4d6d",
-                 "scale": { "0%": 0.6, "60%": 1.25, "100%": { "value": 1, "ease": "spring" } } } },
-               "when": { "!liked": "off" } }
-    },
-    "interactions": [{ "on": "click", "target": "#heart", "toggle": "liked" }]
-  }]]></metadata>
-</svg>`;
 
 const FEATURES: [string, string][] = [
   ['State machines', 'Named states, events, conditions over inputs, one-shots with “next”, and parallel layers. Every switch blends from what’s on screen.'],
@@ -119,8 +103,11 @@ export function Home() {
             <li>
               <span className="step">1 · write</span>
               <h3>Plain SVG, plus intent</h3>
-              <p>States, keyframes, inputs and interactions in JSON inside the SVG. No binary, no proprietary editor.</p>
-              <Code code={SNIPPET} lang="xml" title="like.svg (trimmed)" />
+              <p>States, keyframes, inputs and interactions in JSON inside the SVG. This complete like button is two states, one input and a click. Click the heart to run this exact file.</p>
+              <div className="try">
+                <Live source={likeExample} label="Like button" />
+              </div>
+              <Code code={likeExample.trimEnd()} lang="xml" title="like.svg" />
             </li>
             <li>
               <span className="step">2 · check</span>

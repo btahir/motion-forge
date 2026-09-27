@@ -49,10 +49,51 @@ for (let i = 0; i < frames; i++) {
 }
 gif.finish();
 writeFileSync(new URL('gallery.gif', out), Buffer.from(gif.bytes()));
+console.log(`Wrote docs/media/gallery.gif (${W}×${H}, ${frames} frames)`);
 
-const like = loadScene(readFileSync(new URL('like.svg', dir), 'utf8'));
-writeFileSync(new URL('preview-like.png', out), contactSheet(like, { frames: 6, cell: 130, name: 'like.svg', states: ['liking', 'unliking'], sweep: false }).png);
-console.log(`Wrote docs/media/gallery.gif (${W}×${H}, ${frames} frames) and docs/media/preview-like.png`);
+// The README's "format in one screen" example: the exact file, clicked twice, plus the
+// contact sheet `motion-forge preview` produces for it.
+{
+  const source = readFileSync(new URL('../examples/like.svg', import.meta.url), 'utf8');
+  const like = loadScene(source);
+  writeFileSync(new URL('preview-like.png', out), contactSheet(like, { frames: 6, cell: 130, name: 'examples/like.svg' }).png);
+
+  const W = 520, H = 300, stage = 220, sx = (W - stage) / 2, sy = 22;
+  const clicks = [700, 2700], total = 4600, step = 1000 / fps;
+  const player = new Player(like);
+  const emitted = [];
+  player.on(e => { if (e.type === 'emit') emitted.push(e.name); });
+  const tip = [sx + stage * 0.62, sy + stage * 0.62]; // where the cursor clicks, over the heart
+  const demo = GIFEncoder();
+  let lastEmitAt = -Infinity;
+  for (let t = 0; t < total; t += step) {
+    for (const c of clicks) if (c > t - step && c <= t) { const before = emitted.length; player.setInput('liked', !player.inputs.liked); if (emitted.length > before) lastEmitAt = t; }
+    const tree = renderFrameTree(like, player.frame(), { width: stage, height: stage });
+    prefixIds(tree, 'demo-');
+    tree.attrs.x = String(sx);
+    tree.attrs.y = String(sy);
+    delete tree.attrs.xmlns;
+    // Cursor glides in before each click and presses (ripple) on it.
+    const next = clicks.find(c => c + 400 > t) ?? clicks[clicks.length - 1];
+    const approach = Math.max(0, Math.min(1, 1 - (next - t) / 450));
+    const ease = 1 - (1 - approach) ** 3;
+    const cx = tip[0] + 60 * (1 - ease), cy = tip[1] + 50 * (1 - ease);
+    const since = t - clicks.filter(c => c <= t).pop();
+    const ripple = since >= 0 && since < 360 ? `<circle cx="${tip[0]}" cy="${tip[1]}" r="${6 + since / 12}" fill="none" stroke="#1b1a17" stroke-opacity="${(1 - since / 360) * 0.5}" stroke-width="2"/>` : '';
+    const cursor = `<path transform="translate(${cx} ${cy}) scale(${since >= 0 && since < 120 ? 0.9 : 1})" d="M0 0 L0 22 L6 17 L10 27 L14 25 L10 15 L18 15 Z" fill="#1b1a17" stroke="#fffdf8" stroke-width="1.6" stroke-linejoin="round"/>`;
+    const liked = player.inputs.liked;
+    const status = `<text x="${W / 2}" y="${H - 34}" text-anchor="middle" font-family="Menlo, monospace" font-size="15" fill="#45413a">state <tspan font-weight="700" fill="#1b1a17">${player.state}</tspan>   ·   liked = <tspan font-weight="700" fill="${liked ? '#e03a58' : '#1b1a17'}">${liked}</tspan></text>`;
+    const emitNote = t - lastEmitAt < 1300 ? `<text x="${W / 2}" y="${H - 12}" text-anchor="middle" font-family="Menlo, monospace" font-size="13" fill="#c2410c">emit "liked" → your app</text>` : '';
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><rect width="100%" height="100%" fill="#fbf8f1"/><rect x="${sx}" y="${sy}" width="${stage}" height="${stage}" rx="22" fill="#ffffff" stroke="#e7e0d2"/>${serializeXML(tree)}${ripple}${cursor}${status}${emitNote}</svg>`;
+    const img = rasterize(svg);
+    const palette = quantize(img.pixels, 256);
+    demo.writeFrame(applyPalette(img.pixels, palette), img.width, img.height, { palette, delay: step });
+    player.advance(step);
+  }
+  demo.finish();
+  writeFileSync(new URL('like-demo.gif', out), Buffer.from(demo.bytes()));
+  console.log('Wrote docs/media/like-demo.gif and docs/media/preview-like.png');
+}
 
 // Social card (1200×630) for the site, rendered the same way.
 {

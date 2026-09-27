@@ -173,7 +173,15 @@ export function mount(target: Element | ShadowRoot, source: string | Scene, opti
       if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
       if (button && (!el.hasAttribute('role') || el === svg)) el.setAttribute('role', 'button');
       if (!el.hasAttribute('aria-label') && !el.hasAttribute('aria-labelledby')) el.setAttribute('aria-label', el.querySelector('title')?.textContent ?? it.send ?? it.toggle ?? it.hold ?? 'Activate');
-      // Keep the browser focus indicator; never remove it without a replacement.
+      // Keep the browser focus indicator for keyboard focus. Chrome's SVG stylesheet also rings
+      // SVG elements focused by a mouse click, so hide it only when focus isn't :focus-visible.
+      const styled = el as SVGElement;
+      listen(el, 'focus', () => {
+        let visible = true;
+        try { visible = el.matches(':focus-visible'); } catch { /* selector unsupported: keep the ring */ }
+        if (!visible) styled.style.setProperty('outline', 'none');
+      });
+      listen(el, 'blur', () => styled.style.removeProperty('outline'));
     };
     const boxFor = (it: RInteraction, el: Element): DOMRect => (it.withinEl !== undefined && byKey[it.withinEl] ? byKey[it.withinEl]! : it.on === 'drag' ? el : svg).getBoundingClientRect();
     const mapPointer = (it: RInteraction, e: PointerEvent, box: DOMRect) => {

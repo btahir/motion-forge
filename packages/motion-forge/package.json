@@ -5,6 +5,13 @@
   "type": "module",
   "license": "MIT",
   "author": "Bilal Tahir",
+  "homepage": "https://motion-forge-dev.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/btahir/motion-forge.git",
+    "directory": "packages/motion-forge"
+  },
+  "bugs": "https://github.com/btahir/motion-forge/issues",
   "sideEffects": [
     "./dist/element.js",
     "./dist/browser.global.js"

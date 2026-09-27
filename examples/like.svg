@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="34 38 132 132">
+  <title>Like button</title>
+  <path id="heart" d="M100 146 C94 141 60 118 60 88 C60 73 71 63 84 63 C92 63 97 67 100 73 C103 67 108 63 116 63 C129 63 140 73 140 88 C140 118 106 141 100 146 Z" fill="#d8d2c6"/>
+  <metadata type="application/motion+json"><![CDATA[
+  {
+    "inputs": { "liked": false },
+    "states": {
+      "idle": {
+        "animate": { "#heart": { "fill": "#d8d2c6" } },
+        "when": { "liked": "liked" }
+      },
+      "liked": {
+        "duration": 600,
+        "animate": {
+          "#heart": {
+            "fill": "#ff4d6d",
+            "scale": { "0%": 1, "20%": 0.8, "55%": 1.3, "100%": { "value": 1, "ease": "spring-bouncy" } }
+          }
+        },
+        "emit": "liked",
+        "when": { "!liked": "idle" }
+      }
+    },
+    "interactions": [{ "on": "click", "target": "#heart", "toggle": "liked" }]
+  }
+  ]]></metadata>
+</svg>

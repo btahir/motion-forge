@@ -466,6 +466,26 @@ section {
   border-radius: 999px;
   padding: 5px 10px;
 }
+.try {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: radial-gradient(120% 90% at 50% 20%, var(--stage) 0%, var(--stage-2) 100%);
+  margin: 0 0 16px;
+  overflow: hidden;
+}
+.try .live-stage {
+  padding: 10px;
+}
+.try .live-stage > div {
+  max-width: 170px;
+}
+.try .live-controls {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card);
+}
 .sheet {
   display: block;
   border: 1px solid var(--line);

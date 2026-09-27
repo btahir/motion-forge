@@ -2,6 +2,8 @@
 
 **Animations your agent can write, see, and ship.**
 
+[Website](https://motion-forge-dev.vercel.app) · [Playground](https://motion-forge-dev.vercel.app/playground/) · [Docs](https://motion-forge-dev.vercel.app/docs/) · [Presets](https://motion-forge-dev.vercel.app/#presets)
+
 Motion Forge makes interactive animation plain text. A *Motion SVG* is an ordinary SVG with a small JSON block describing states, keyframes, springs, morphs, inputs and interactions. Coding agents write it, the CLI turns motion into things a model can read (diagnostics, element maps, frame-by-frame contact sheets), and a ~31 KB runtime plays it on the web.
 
 ![Eight Motion Forge presets reacting to clicks and data: a robot waving, a like button, a toggle, a progress ring, a gauge, a theme toggle, a notification bell and an upload cloud](docs/media/gallery.gif)
@@ -20,8 +22,6 @@ Motion Forge is built around the agent’s loop:
 | **Check** | `motion-forge check` validates everything and lints motion: loop seams, clipping, layer conflicts, dead states, no-op tracks, with JSON paths and “did you mean”. |
 | **See** | `motion-forge preview` renders a contact sheet: every state over time, every event and toggle played through the real state machine, and input sweeps. `record` scripts clicks and data into a frame grid, GIF or MP4. |
 | **Ship** | `<motion-forge src="like.svg">`, `<MotionForge svg={…}>` in React (with SSR), or `mount(el, svg)`. Events and inputs are the API. |
-
-![Contact sheet produced by motion-forge preview for the like button](docs/media/preview-like.png)
 
 ## Quick start
 
@@ -44,20 +44,30 @@ npx motion-forge dev src/motion/like.svg       # live preview with controls, rel
 
 ## The format in one screen
 
+This is a complete, working like button ([`examples/like.svg`](examples/like.svg)):
+
 ```xml
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="34 38 132 132">
   <title>Like button</title>
-  <path id="heart" d="M100 160 C20 110 20 40 65 40 Q90 40 100 65 Q110 40 135 40 C180 40 180 110 100 160Z" fill="#d8d2c6"/>
+  <path id="heart" d="M100 146 C94 141 60 118 60 88 C60 73 71 63 84 63 C92 63 97 67 100 73 C103 67 108 63 116 63 C129 63 140 73 140 88 C140 118 106 141 100 146 Z" fill="#d8d2c6"/>
   <metadata type="application/motion+json"><![CDATA[
   {
     "inputs": { "liked": false },
     "states": {
-      "off": { "animate": { "#heart": { "fill": "#d8d2c6", "scale": 1 } }, "when": { "liked": "pop" } },
-      "pop": {
-        "duration": 450,
-        "animate": { "#heart": { "fill": "#ff4d6d", "scale": { "0%": 0.6, "60%": 1.25, "100%": { "value": 1, "ease": "spring" } } } },
-        "when": { "!liked": "off" },
-        "emit": "liked"
+      "idle": {
+        "animate": { "#heart": { "fill": "#d8d2c6" } },
+        "when": { "liked": "liked" }
+      },
+      "liked": {
+        "duration": 600,
+        "animate": {
+          "#heart": {
+            "fill": "#ff4d6d",
+            "scale": { "0%": 1, "20%": 0.8, "55%": 1.3, "100%": { "value": 1, "ease": "spring-bouncy" } }
+          }
+        },
+        "emit": "liked",
+        "when": { "!liked": "idle" }
       }
     },
     "interactions": [{ "on": "click", "target": "#heart", "toggle": "liked" }]
@@ -66,7 +76,17 @@ npx motion-forge dev src/motion/like.svg       # live preview with controls, rel
 </svg>
 ```
 
-It renders as a static heart anywhere SVG works (GitHub, Figma, `<img>`). With the runtime it’s a keyboard-accessible button that pops with a spring and tells your app `liked`.
+<img src="docs/media/like-demo.gif" width="520" alt="The like button above being clicked twice: the grey heart squashes, pops up larger in pink and settles; the second click fades it back to grey. A status line shows the state and the liked input, and notes when the file emits liked to the app.">
+
+<sub>That file, clicked twice, rendered by Motion Forge’s own engine.</sub>
+
+Two states and one input. A click toggles `liked`; the `when` rules move between `idle` and `liked`. Entering `liked` blends the fill to pink, runs the scale keyframes (squash to 0.8, overshoot to 1.3, settle to 1 on a bouncy spring), and emits `liked` to your app. Clicking again switches back to `idle`, which blends to grey from whatever is on screen, so fast repeated clicks never jump.
+
+Without the runtime it’s a plain grey heart that renders anywhere SVG does (GitHub, Figma, `<img>`). With the runtime it’s a keyboard-accessible button.
+
+A model can’t watch a GIF, so `motion-forge preview examples/like.svg` gives it this instead: each state sampled over time, then each input change played through the real state machine.
+
+![Contact sheet from motion-forge preview for the like button: the idle pose; the liked state squashing, overshooting and settling; and flows for liked turning true and false](docs/media/preview-like.png)
 
 What the format covers: state machines with events, conditions and `next`; parallel layers (blink while waving); springs and 20+ easings; stagger; smooth curves through keyframes; path morphing between any shapes; stroke drawing; OKLab color blends; input bindings with maps, text templates and spring smoothing; click, hover, press, pointer-follow, drag (keyboard-accessible) and scroll-into-view interactions. Full reference: [`skills/motion-forge/reference.md`](packages/motion-forge/skills/motion-forge/reference.md).
 

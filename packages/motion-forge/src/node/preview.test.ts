@@ -18,6 +18,15 @@ describe('agent eyes', () => {
     expect(sheet.svg).not.toContain('NaN');
     expect(sheet.rows.find(r => r.title.includes('input sweep'))?.labels).toEqual(['progress=0']);
   });
+  it('names the layer state a flow changes in each frame label', () => {
+    const s = scene({
+      inputs: { hovered: false },
+      states: { idle: {} },
+      layers: { hover: { states: { rest: { when: { hovered: 'over' } }, over: { animate: { '#c': { scale: 1.1 } }, when: { '!hovered': 'rest' } } } } },
+    });
+    const row = contactSheet(s, { frames: 3, cell: 40 }).rows.find(r => r.title.includes('hovered false → true'));
+    expect(row?.labels.at(-1)).toMatch(/idle · hover\/over$/);
+  });
   it.each(['go@-1', 'go@NaN', 'value=nope@100', 'value=@0', '@1', 'go@1@2', 'goto:@0'])('rejects malformed script %s', value => {
     expect(() => parseScript([value])).toThrow();
   });

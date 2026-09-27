@@ -120,6 +120,12 @@ export function contactSheet(scene: Scene, options: SheetOptions = {}): { svg: s
       trig.apply(player);
       // Follow the flow until it settles (or 2.4s), sampling evenly.
       const probe = create();
+      // Layers this flow changes are named in each frame label, so a hover
+      // flow reads "idle · hover/over" rather than an unchanged "idle".
+      const touched = new Set<string>();
+      probe.on(e => {
+        if (e.type === 'statechange' && e.layer !== 'main') touched.add(e.layer);
+      });
       trig.apply(probe);
       let span = 0;
       while (span < 2400) {
@@ -134,7 +140,7 @@ export function contactSheet(scene: Scene, options: SheetOptions = {}): { svg: s
         const target = Math.round((span * i) / n);
         player.advance(target - t);
         t = target;
-        cells.push({ frame: player.frame(), label: `+${target}ms ${player.state}` });
+        cells.push({ frame: player.frame(), label: [`+${target}ms ${player.state}`, ...[...touched].map(l => `${l}/${player.stateOf(l)}`)].join(' · ') });
       }
       off();
       const unique = path.filter((s, i) => s !== path[i - 1]);
