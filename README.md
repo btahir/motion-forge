@@ -113,10 +113,10 @@ The runtime respects `prefers-reduced-motion`, pauses offscreen, isolates instan
 | Interactive states | Built in | dotLottie extension | Built in |
 | Authoring | Your agent, your editor, the playground | After Effects / Lottie Creator / JSON tooling | Rive editor or CLI |
 | Visual verification | Lint, state/flow sheets, scripted recordings | Player / browser tooling | CLI capture, simulated inputs, script tests |
-| Web runtime, gzip | ~31 KB | Varies by player | Varies by renderer |
+| Web runtime, gzip (JS + wasm) | ~31 KB | 76 KB lottie-web; 532 KB dotLottie with state machines | 916 KB `@rive-app/canvas` |
 | License | MIT | MIT runtime | MIT runtime, closed editor |
 
-Agent authoring and verification are not exclusive to Motion Forge: see the [Rive CLI](https://rive.app/docs/cli/overview) and [dotLottie interactivity](https://docs.lottiefiles.com/en/format/dotlottie/interactivity). Choose it for the combination of ordinary SVG, MIT tooling and a small web runtime. It does not import/export Lottie or Rive files, and the playground scrubber is not a visual keyframe editor. Our size measurement: [`docs/size.json`](docs/size.json), reproducible with `pnpm size`; this is not a comparative performance benchmark.
+Agent authoring and verification are not exclusive to Motion Forge: see the [Rive CLI](https://rive.app/docs/cli/overview) and [dotLottie interactivity](https://docs.lottiefiles.com/en/format/dotlottie/interactivity). Choose it for the combination of ordinary SVG, MIT tooling and a small web runtime. It does not import/export Lottie or Rive files, and the playground scrubber is not a visual keyframe editor. Sizes are what a browser downloads (JS plus WebAssembly), measured from pinned npm packages (lottie-web 5.13.0, dotlottie-web 0.80.0, @rive-app/canvas 2.43.1) in [`docs/size.json`](docs/size.json); reproduce with `pnpm size:compare`. They are download sizes, not a rendering-performance benchmark: Rive's larger runtime buys a GPU/canvas renderer, bones and a full editor ecosystem.
 
 ## Develop
 

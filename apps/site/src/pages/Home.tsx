@@ -63,12 +63,14 @@ const FEATURES: [string, string][] = [
   ['Runs everywhere', `A ${kb(runtimeGz)} web component, a React component with SSR, or a vanilla mount(). Shadow DOM keeps page CSS out.`],
 ];
 
+const cmp = (name: string) => (size as { compare?: Record<string, { gzip: number }> }).compare?.[name]?.gzip ?? 0;
+
 const COMPARE: { row: string; mf: string; lottie: string; rive: string; css: string }[] = [
   { row: 'Source format', mf: 'SVG + JSON text', lottie: 'Lottie JSON / dotLottie', rive: 'RML text; .riv runtime files', css: 'CSS / JS code' },
   { row: 'Interactive states', mf: 'Built in', lottie: 'dotLottie extension', rive: 'Built in', css: 'Hand-written' },
   { row: 'Agent authoring', mf: 'Text, skill, CLI and MCP', lottie: 'JSON tooling and player APIs', rive: 'RML and CLI', css: 'CSS / JS in your project' },
   { row: 'Visual verification', mf: 'Lint, state/flow sheets, scripted recordings', lottie: 'Player / browser tooling', rive: 'CLI capture, simulated inputs and script tests', css: 'Browser tooling' },
-  { row: 'Web runtime (gzip)', mf: kb(runtimeGz), lottie: 'Varies by player', rive: 'Varies by renderer', css: 'Native CSS; JS library size varies' },
+  { row: 'Web runtime (gzip, JS + wasm)', mf: kb(runtimeGz), lottie: `${kb(cmp('lottie-web (full)'))} lottie-web; ${kb(cmp('@lottiefiles/dotlottie-web (state machines)'))} dotLottie`, rive: `${kb(cmp('@rive-app/canvas'))} @rive-app/canvas`, css: 'Native CSS; JS library size varies' },
   { row: 'Editor', mf: 'Your editor + live playground', lottie: 'After Effects / Lottie Creator', rive: 'Rive editor or CLI', css: 'Your editor' },
   { row: 'License', mf: 'MIT, format and runtime', lottie: 'MIT runtime', rive: 'MIT runtime, closed editor', css: '—' },
 ];
@@ -257,7 +259,7 @@ export function Home() {
             </tbody>
           </table>
         </div>
-        <p className="footnote">Motion Forge size measured with esbuild ({size.measured}); this is not a performance benchmark. See <a href="https://rive.app/docs/cli/overview">Rive’s CLI and RML</a> and <a href="https://docs.lottiefiles.com/en/format/dotlottie/interactivity">dotLottie interactivity</a>. Motion Forge doesn’t import Lottie or Rive files.</p>
+        <p className="footnote">Download sizes measured {size.measured} with <code>pnpm size:compare</code> from pinned npm packages; not a rendering-performance benchmark. See <a href="https://rive.app/docs/cli/overview">Rive’s CLI and RML</a> and <a href="https://docs.lottiefiles.com/en/format/dotlottie/interactivity">dotLottie interactivity</a>. Motion Forge doesn’t import Lottie or Rive files.</p>
       </section>
 
       <section className="band start">

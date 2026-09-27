@@ -18,5 +18,6 @@ Rebuilt around agents. The v0.1 visual Studio and custom JSON scene format are g
 - Isolate React SSR IDs, preserve instances on title/playback updates, report errors, and cancel stale fetches. Apply web-component initial inputs before rendering and cancel detached loads.
 - Complete root-click/press keyboard behavior, announce toggle values, preserve focus indicators and support lost pointer capture.
 - Preview every handled state/event pair and both boolean directions; validate render options and scripts, record exact action times, and expose recordStrip from the Node API. `check --strict` fails on warnings.
+- Reproducible runtime size comparison: `pnpm size:compare` measures pinned Lottie, dotLottie and Rive packages alongside Motion Forge (31 KB vs 76 KB / 532 KB / 916 KB gzip, JS + wasm).
 - Add playground import, draft recovery, pause/restart/scrubbing, event logs, bounded share decoding and truthful clipboard status. Improve text contrast and keyboard scrolling.
 - Verify actual packed TypeScript exports in a clean consumer. Correct comparisons to acknowledge Rive's RML/CLI and remove unsupported comparative size claims.

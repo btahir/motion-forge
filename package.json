@@ -14,7 +14,8 @@
     "check": "pnpm build && pnpm typecheck && pnpm test",
     "check:presets": "node packages/motion-forge/dist/cli.js list --json > /dev/null && for f in packages/motion-forge/presets/*.svg; do node packages/motion-forge/dist/cli.js check \"$f\" --strict || exit 1; done",
     "size": "node scripts/size.mjs",
-    "verify:package": "node scripts/verify-package.mjs"
+    "verify:package": "node scripts/verify-package.mjs",
+    "size:compare": "node scripts/size.mjs --compare"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",

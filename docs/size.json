@@ -1,5 +1,6 @@
 {
-  "measured": "2026-09-26",
+  "measured": "2026-09-27",
+  "method": "esbuild minified ESM bundles; gzip level 9 and brotli via node:zlib. Comparisons sum the JS and WebAssembly files each package loads in a browser.",
   "results": {
     "web component (motion-forge/element)": {
       "minified": 79590,
@@ -15,6 +16,46 @@
       "minified": 79815,
       "gzip": 31292,
       "brotli": 27984
+    }
+  },
+  "compare": {
+    "lottie-web (full)": {
+      "package": "lottie-web@5.13.0",
+      "files": [
+        "build/player/lottie.min.js"
+      ],
+      "minified": 305704,
+      "gzip": 76318,
+      "brotli": 63744
+    },
+    "lottie-web (SVG renderer only)": {
+      "package": "lottie-web@5.13.0",
+      "files": [
+        "build/player/lottie_svg.min.js"
+      ],
+      "minified": 242630,
+      "gzip": 62542,
+      "brotli": 53476
+    },
+    "@lottiefiles/dotlottie-web (state machines)": {
+      "package": "@lottiefiles/dotlottie-web@0.80.0",
+      "files": [
+        "dist/index.js",
+        "dist/dotlottie-player.wasm"
+      ],
+      "minified": 1403167,
+      "gzip": 531943,
+      "brotli": 409594
+    },
+    "@rive-app/canvas": {
+      "package": "@rive-app/canvas@2.43.1",
+      "files": [
+        "rive.js",
+        "rive.wasm"
+      ],
+      "minified": 2410925,
+      "gzip": 916350,
+      "brotli": 712754
     }
   }
 }
