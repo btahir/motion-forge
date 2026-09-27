@@ -36,7 +36,7 @@ const HERO_FALLBACK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 
 
 const SNIPPET = `<svg viewBox="0 0 200 200">
   <title>Like button</title>
-  <path id="heart" d="M100 150 C 40 110 …" fill="#d8d2c6"/>
+  <path id="heart" d="M100 160 C20 110 20 40 65 40 Q90 40 100 65 Q110 40 135 40 C180 40 180 110 100 160Z" fill="#d8d2c6"/>
   <metadata type="application/motion+json"><![CDATA[{
     "inputs": { "liked": false },
     "states": {
@@ -58,18 +58,18 @@ const FEATURES: [string, string][] = [
   ['Morph anything', 'Path morphing between shapes with different point counts, stroke drawing, polygon and color morphs in OKLab.'],
   ['Live data', 'Inputs bind straight to properties with ranges, multi-stop maps and text templates. Smoothing makes data glide.'],
   ['Interactions in the file', 'Click, hover, press, pointer-follow, drag and scroll-into-view. No host code; keyboard access included.'],
-  ['Any real SVG', 'Figma, Illustrator and icon-set exports load as-is. Unsafe parts (scripts, handlers, external URLs) are removed with a warning.'],
+  ['Start with SVG', 'Use supported vector artwork from Figma, Illustrator or icon sets. Scripts, external URLs and unsupported elements are removed with diagnostics.'],
   ['Accessible by default', 'Titles become labels, click targets become buttons, and prefers-reduced-motion freezes loops.'],
   ['Runs everywhere', `A ${kb(runtimeGz)} web component, a React component with SSR, or a vanilla mount(). Shadow DOM keeps page CSS out.`],
 ];
 
 const COMPARE: { row: string; mf: string; lottie: string; rive: string; css: string }[] = [
-  { row: 'Source format', mf: 'SVG + JSON text', lottie: 'JSON exported from After Effects', rive: 'Binary .riv', css: 'CSS / JS code' },
+  { row: 'Source format', mf: 'SVG + JSON text', lottie: 'Lottie JSON / dotLottie', rive: 'RML text; .riv runtime files', css: 'CSS / JS code' },
   { row: 'Interactive states', mf: 'Built in', lottie: 'dotLottie extension', rive: 'Built in', css: 'Hand-written' },
-  { row: 'Agents can write it', mf: 'Yes, with a skill and MCP', lottie: 'Hard (verbose, keyframe-heavy)', rive: 'Through the desktop editor’s MCP', css: 'Yes' },
-  { row: 'Agents can see it', mf: 'check, preview, record', lottie: '—', rive: 'Editor only', css: '—' },
-  { row: 'Web runtime (gzip)', mf: kb(runtimeGz), lottie: '≈76 KB (lottie-web)', rive: '≈900 KB (canvas + wasm)', css: '0–30 KB' },
-  { row: 'Editor', mf: 'Your editor + live playground', lottie: 'After Effects / Lottie Creator', rive: 'Rive editor (paid to export)', css: 'Your editor' },
+  { row: 'Agent authoring', mf: 'Text, skill, CLI and MCP', lottie: 'JSON tooling and player APIs', rive: 'RML and CLI', css: 'CSS / JS in your project' },
+  { row: 'Visual verification', mf: 'Lint, state/flow sheets, scripted recordings', lottie: 'Player / browser tooling', rive: 'CLI capture, simulated inputs and script tests', css: 'Browser tooling' },
+  { row: 'Web runtime (gzip)', mf: kb(runtimeGz), lottie: 'Varies by player', rive: 'Varies by renderer', css: 'Native CSS; JS library size varies' },
+  { row: 'Editor', mf: 'Your editor + live playground', lottie: 'After Effects / Lottie Creator', rive: 'Rive editor or CLI', css: 'Your editor' },
   { row: 'License', mf: 'MIT, format and runtime', lottie: 'MIT runtime', rive: 'MIT runtime, closed editor', css: '—' },
 ];
 
@@ -86,7 +86,7 @@ export function Home() {
             Animations your agent can <em>write</em>, <em>see</em>, and <em>ship</em>.
           </h1>
           <p className="lede">
-            Motion Forge makes interactive animation plain text: an SVG plus a small JSON state machine. Agents write it fluently, the CLI shows them every frame, and a {kb(runtimeGz)} runtime plays it anywhere, with springs, morphs, clicks, hovers and live data.
+            Motion Forge makes interactive animation plain text: an SVG plus a small JSON state machine. Agents write it, the CLI renders frames and interaction flows, and a {kb(runtimeGz)} runtime plays it on the web, with springs, morphs, clicks, hovers and live data.
           </p>
           <Command cmd="npx motion-forge init" />
           <div className="hero-actions">
@@ -108,7 +108,7 @@ export function Home() {
         <div className="wrap">
           <div className="section-head">
             <p className="eyebrow">The loop</p>
-            <h2>Agents could always write animation code. They just couldn’t see it.</h2>
+            <h2>Writing motion is only half the job. Make it easy to check.</h2>
             <p>
               A model can’t watch a timeline. So every Motion SVG comes with tools that turn motion into things a model can read: structured diagnostics, a map of the artwork, and contact sheets of every state over time.
             </p>
@@ -231,13 +231,13 @@ export function Home() {
         <div className="section-head">
           <p className="eyebrow">Where it fits</p>
           <h2>An open, text-first alternative for interactive UI motion.</h2>
-          <p>Lottie and Rive are great at what they were built for: designer-first tools with their own editors. Motion Forge is built for the workflow where your agent does the authoring and you do the directing.</p>
+          <p>Several tools now support agent authoring and interactive animation. Choose Motion Forge when you want ordinary SVG artwork, an MIT toolchain, and a compact web runtime, with no account required.</p>
         </div>
         <div className="table-scroll">
           <table className="compare">
             <thead>
               <tr>
-                <th />
+                <th>Capability</th>
                 <th>Motion Forge</th>
                 <th>Lottie</th>
                 <th>Rive</th>
@@ -257,7 +257,7 @@ export function Home() {
             </tbody>
           </table>
         </div>
-        <p className="footnote">Runtime sizes: Motion Forge measured with esbuild ({size.measured}); lottie-web 5.x and @rive-app/canvas 2.x measured from their npm builds in September 2026. Motion Forge doesn’t import Lottie or Rive files.</p>
+        <p className="footnote">Motion Forge size measured with esbuild ({size.measured}); this is not a performance benchmark. See <a href="https://rive.app/docs/cli/overview">Rive’s CLI and RML</a> and <a href="https://docs.lottiefiles.com/en/format/dotlottie/interactivity">dotLottie interactivity</a>. Motion Forge doesn’t import Lottie or Rive files.</p>
       </section>
 
       <section className="band start">

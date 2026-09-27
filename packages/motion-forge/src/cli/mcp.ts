@@ -26,7 +26,7 @@ const TOOLS = [
   {
     name: 'motion_preview',
     description: 'Render a contact sheet image: each state sampled over time, plus sweeps of bound inputs. Look at it after every change.',
-    inputSchema: { ...source, properties: { ...source.properties, frames: { type: 'number' }, states: { type: 'array', items: { type: 'string' } }, inputs: { type: 'object' } } },
+    inputSchema: { ...source, properties: { ...source.properties, frames: { type: 'number' }, states: { type: 'array', items: { type: 'string' } }, inputs: { type: 'object' }, background: { type: 'string', description: 'Frame background, e.g. #141414 for dark artwork' } } },
   },
   {
     name: 'motion_render',
@@ -72,11 +72,12 @@ async function call(name: string, args: Json): Promise<{ content: Json[]; isErro
     case 'motion_preview': {
       const scene = loadScene(readSource(args));
       if (!scene.ok) return { content: [text(formatReport(check(scene)))], isError: true };
-      const sheet = contactSheet(scene, { frames: args.frames as number | undefined, states: args.states as string[] | undefined, inputs: args.inputs as Record<string, number> | undefined });
+      const sheet = contactSheet(scene, { frames: args.frames as number | undefined, states: args.states as string[] | undefined, inputs: args.inputs as Record<string, number> | undefined, background: args.background as string | undefined });
       return { content: [text(sheet.rows.map(r => r.title).join('\n')), image(sheet.png)] };
     }
     case 'motion_render': {
       const scene = loadScene(readSource(args));
+      if (!scene.ok) return { content: [text(formatReport(check(scene)))], isError: true };
       const svg = renderSVG(scene, { state: args.state as string | undefined, time: args.time as number | undefined, inputs: args.inputs as Record<string, number> | undefined });
       return { content: [image(rasterize(svg, (args.width as number) ?? Math.max(400, scene.width)).png)] };
     }
@@ -110,6 +111,10 @@ export async function serveMCP(): Promise<void> {
       msg = JSON.parse(line);
     } catch {
       send({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } });
+      continue;
+    }
+    if (!msg || typeof msg !== 'object' || Array.isArray(msg) || msg.jsonrpc !== '2.0' || typeof msg.method !== 'string') {
+      send({ jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } });
       continue;
     }
     const { id, method, params } = msg as { id?: number | string; method: string; params?: Json };

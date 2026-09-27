@@ -2,19 +2,19 @@
   "measured": "2026-09-26",
   "results": {
     "web component (motion-forge/element)": {
-      "minified": 76294,
-      "gzip": 30005,
-      "brotli": 26900
+      "minified": 79590,
+      "gzip": 31072,
+      "brotli": 27844
     },
     "vanilla mount (motion-forge)": {
-      "minified": 73714,
-      "gzip": 29094,
-      "brotli": 26010
+      "minified": 76437,
+      "gzip": 29999,
+      "brotli": 26802
     },
     "React (motion-forge/react, excl. React)": {
-      "minified": 76580,
-      "gzip": 30218,
-      "brotli": 27082
+      "minified": 79815,
+      "gzip": 31292,
+      "brotli": 27984
     }
   }
 }

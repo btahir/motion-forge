@@ -36,10 +36,13 @@ interface LayerRuntime {
 export class Player {
   readonly scene: Scene;
   private layers: LayerRuntime[] = [];
-  private targets: Record<string, number> = {};
-  private values: Record<string, number> = {};
-  private velocity: Record<string, number> = {};
-  private tweens: Record<string, { from: number; elapsed: number }> = {};
+  private targets: Record<string, number> = Object.create(null);
+  private values: Record<string, number> = Object.create(null);
+  private velocity: Record<string, number> = Object.create(null);
+  private tweens: Record<string, { from: number; elapsed: number }> = Object.create(null);
+  private mutationDepth = 1;
+  private evaluating = false;
+  private initializing = true;
   private listeners = new Set<(e: PlayerEvent) => void>();
   private frameCache?: Frame;
   private reduced: boolean;
@@ -64,6 +67,8 @@ export class Player {
       this.enter(rt);
     }
     if (!this.hold) this.settle();
+    this.initializing = false;
+    this.mutationDepth = 0;
   }
 
   /**
@@ -107,7 +112,7 @@ export class Player {
     return [...(this.scene.layers[0]?.states.keys() ?? [])];
   }
   get inputs(): Record<string, number | boolean> {
-    const out: Record<string, number | boolean> = {};
+    const out: Record<string, number | boolean> = Object.create(null);
     for (const input of this.scene.inputs.values()) out[input.name] = input.type === 'boolean' ? !!this.targets[input.name] : this.targets[input.name]!;
     return out;
   }
@@ -116,13 +121,32 @@ export class Player {
   }
   /** True when something is still moving (loops, blends, smoothing, unfinished one-shots). */
   get active(): boolean {
-    if (this.reduced) return this.transitioning;
     for (const l of this.layers) {
       if (l.blend) return true;
-      if (l.state.channels.length && (l.state.loop === Infinity || l.t < l.state.completeAt)) return true;
+      if (l.state.loop !== Infinity && !l.completed) return true;
+      if (!this.reduced && l.state.channels.length && l.state.loop === Infinity) return true;
     }
     for (const input of this.scene.inputs.values()) if (this.values[input.name] !== this.targets[input.name] || this.velocity[input.name]) return true;
     return false;
+  }
+
+  /** Update a live preference without restarting the state machine. */
+  setReducedMotion(reduced: boolean): void {
+    if (this.reduced === reduced) return;
+    this.reduced = reduced;
+    if (reduced) {
+      for (const input of this.scene.inputs.keys()) {
+        this.values[input] = this.targets[input]!;
+        this.velocity[input] = 0;
+        delete this.tweens[input];
+      }
+      for (const rt of this.layers) {
+        rt.blend = undefined;
+        rt.t = rt.state.loop === Infinity ? 0 : rt.state.completeAt;
+      }
+    }
+    this.frameCache = undefined;
+    this.evaluateConditions();
   }
 
   on(listener: (e: PlayerEvent) => void): () => void {
@@ -137,7 +161,7 @@ export class Player {
     rt.completed = false;
     rt.t = 0;
     if (this.reduced && rt.state.loop !== Infinity) rt.t = rt.state.completeAt;
-    if (rt.state.set) for (const [k, v] of Object.entries(rt.state.set)) this.setInput(k, v);
+    if (rt.state.set) for (const [k, v] of Object.entries(rt.state.set)) this.setInput(k, v, this.initializing);
     for (const name of rt.state.emit) this.emit({ type: 'emit', name, state: rt.state.name });
   }
 
@@ -149,8 +173,13 @@ export class Player {
     rt.state = to;
     rt.blend = transition.blend > 0 && !this.reduced ? { from: snapshot, elapsed: 0, duration: transition.blend, ease: transition.ease } : undefined;
     this.frameCache = undefined;
-    this.emit({ type: 'statechange', layer: rt.layer.name, from, to: to.name });
-    this.enter(rt);
+    this.mutationDepth++;
+    try {
+      this.emit({ type: 'statechange', layer: rt.layer.name, from, to: to.name });
+      this.enter(rt);
+    } finally {
+      this.mutationDepth--;
+    }
   }
 
   /** Send an event to every layer. Returns true if any layer changed state. */
@@ -199,30 +228,42 @@ export class Player {
   }
 
   private evaluateConditions() {
-    if (this.hold) return;
-    for (let guard = 0; guard < 8; guard++) {
-      let changed = false;
-      for (const rt of this.layers) {
-        for (const w of rt.state.when) {
-          if (w.transition.to !== rt.state.name && w.test(this.targets, this.values)) {
-            this.go(rt, w.transition);
-            changed = true;
-            break;
+    if (this.hold || this.mutationDepth || this.evaluating) return;
+    this.evaluating = true;
+    try {
+      for (let guard = 0; guard < 8; guard++) {
+        let changed = false;
+        for (const rt of this.layers) {
+          for (const w of rt.state.when) {
+            if (w.transition.to !== rt.state.name && w.test(this.targets, this.values)) {
+              this.go(rt, w.transition);
+              changed = true;
+              break;
+            }
           }
         }
+        if (!changed) return;
       }
-      if (!changed) return;
+    } finally {
+      this.evaluating = false;
     }
   }
 
   /** Advance the clock. Large steps are subdivided so completions/transitions stay ordered. */
   advance(ms: number): void {
-    if (!(ms > 0)) return;
+    if (!(ms > 0) || !Number.isFinite(ms)) return;
     let remaining = ms;
     while (remaining > 0) {
-      const step = Math.min(remaining, 50);
+      let step = Math.min(remaining, 50);
+      // Stop at completion boundaries so advance(125) and small frame steps
+      // spend the same amount of time in each state.
+      for (const rt of this.layers) {
+        const until = rt.state.completeAt - rt.t;
+        if (!rt.completed && rt.state.loop !== Infinity && until > 0) step = Math.min(step, until);
+      }
       remaining -= step;
       this.elapsed += step;
+      this.frameCache = undefined;
       for (const input of this.scene.inputs.values()) {
         const target = this.targets[input.name]!;
         const cur = this.values[input.name]!;
@@ -272,6 +313,7 @@ export class Player {
   seek(ms: number, layer?: string): void {
     const rt = layer ? this.layers.find(l => l.layer.name === layer) : this.layers[0];
     if (!rt) return;
+    if (!Number.isFinite(ms)) return;
     rt.t = Math.max(0, ms);
     rt.blend = undefined;
     rt.completed = rt.state.loop !== Infinity && rt.t >= rt.state.completeAt;
@@ -357,7 +399,7 @@ export class Player {
       const v = this.values[name]!;
       if (def.type === 'boolean') return v >= 0.5 ? 'true' : 'false';
       const d = digits !== undefined ? Number(digits) : def.max - def.min >= 10 ? 0 : 2;
-      return v.toFixed(d);
+      return v.toFixed(Math.min(100, Math.max(0, d)));
     });
   }
 }

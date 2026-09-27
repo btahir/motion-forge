@@ -13,6 +13,7 @@ export class MotionForgeElement extends HTMLElement {
   private root: ShadowRoot;
   private loadId = 0;
   private source?: string;
+  private controller?: AbortController;
 
   constructor() {
     super();
@@ -28,8 +29,10 @@ export class MotionForgeElement extends HTMLElement {
   }
   /** Set Motion SVG source directly. */
   set svg(source: string) {
+    this.cancelLoad();
+    this.removeAttribute('src');
     this.source = source;
-    this.start(source);
+    if (this.isConnected) this.start(source);
   }
   get svg(): string | undefined {
     return this.source;
@@ -38,46 +41,66 @@ export class MotionForgeElement extends HTMLElement {
   connectedCallback() {
     if (this.instance) return;
     const inline = this.querySelector('svg');
-    if (this.source) this.start(this.source);
+    if (this.getAttribute('src')) void this.load(this.getAttribute('src')!);
+    else if (this.source) this.start(this.source);
     else if (inline && !this.getAttribute('src')) {
       this.source = new XMLSerializer().serializeToString(inline);
       this.start(this.source);
-    } else if (this.getAttribute('src')) void this.load(this.getAttribute('src')!);
+    }
   }
   disconnectedCallback() {
+    this.cancelLoad();
     this.instance?.destroy();
     this.instance = undefined;
   }
   attributeChangedCallback(name: string, old: string | null, value: string | null) {
     if (old === value || !this.isConnected) return;
-    if (name === 'src' && value) void this.load(value);
+    if (name === 'src') {
+      this.cancelLoad();
+      this.source = undefined;
+      this.instance?.destroy();
+      this.instance = undefined;
+      if (value) void this.load(value);
+    }
     else if (name === 'state' && value) this.instance?.goto(value, 250);
     else if (name === 'inputs') this.applyInputs();
     else if (name === 'paused') value === null ? this.instance?.play() : this.instance?.pause();
   }
 
   private async load(src: string) {
+    this.cancelLoad();
     const id = ++this.loadId;
+    const controller = this.controller = new AbortController();
     try {
-      const res = await fetch(src);
+      const res = await fetch(src, { signal: controller.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const text = await res.text();
-      if (id !== this.loadId) return;
+      if (id !== this.loadId || !this.isConnected) return;
       this.source = text;
       this.start(text);
     } catch (e) {
-      this.dispatchEvent(new CustomEvent('error', { detail: e }));
+      if (id === this.loadId && this.isConnected) this.dispatchEvent(new CustomEvent('error', { detail: e }));
+    }
+  }
+
+  private cancelLoad() {
+    this.loadId++;
+    this.controller?.abort();
+    this.controller = undefined;
+  }
+
+  private inputValues(): Record<string, number | boolean> {
+    try {
+      const value: unknown = JSON.parse(this.getAttribute('inputs') ?? '{}');
+      if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+      return Object.fromEntries(Object.entries(value).filter(([, v]) => typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v))));
+    } catch {
+      return {};
     }
   }
 
   private applyInputs() {
-    const raw = this.getAttribute('inputs');
-    if (!raw || !this.instance) return;
-    try {
-      for (const [k, v] of Object.entries(JSON.parse(raw) as Record<string, number | boolean>)) this.instance.set(k, v);
-    } catch {
-      /* ignore malformed attribute */
-    }
+    for (const [k, v] of Object.entries(this.inputValues())) this.instance?.set(k, v);
   }
 
   private start(source: string) {
@@ -87,6 +110,7 @@ export class MotionForgeElement extends HTMLElement {
     const state = this.getAttribute('state') ?? undefined;
     this.instance = mount(holder, source, {
       state,
+      inputs: this.inputValues(),
       autoplay: !this.hasAttribute('paused'),
       onEvent: (e: PlayerEvent) => {
         this.dispatchEvent(new CustomEvent('motion', { detail: e }));
@@ -99,7 +123,6 @@ export class MotionForgeElement extends HTMLElement {
     this.root.querySelector('slot')?.remove();
     this.root.querySelector('div')?.remove();
     this.root.append(holder);
-    this.applyInputs();
     if (!this.instance.scene.ok) console.warn('[motion-forge]', this.instance.scene.diagnostics.filter(d => d.level === 'error').map(d => `${d.at ?? ''} ${d.message}`).join('\n'));
   }
 

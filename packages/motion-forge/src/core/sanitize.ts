@@ -54,6 +54,7 @@ function safePaintValue(value: string): string | undefined {
   const v = value.trim();
   if (!/url\(/i.test(v)) return /[<>{}\\]|expression|javascript:/i.test(v) ? undefined : v;
   const m = /^url\(\s*['"]?#([\w.:-]+)['"]?\s*\)(\s+.*)?$/i.exec(v);
+  if (m?.[2] && /url\(|[<>{}\\]|expression|javascript:/i.test(m[2])) return;
   return m ? `url(#${m[1]})${m[2] ?? ''}` : undefined;
 }
 
@@ -121,8 +122,10 @@ export interface SanitizeResult {
 export function sanitize(input: XElement): SanitizeResult {
   const issues: Diagnostic[] = [];
   const warn = (code: string, message: string, hint?: string) => issues.push({ level: 'warning', code, message, hint });
-  if (input.name !== 'svg' && !input.name.endsWith(':svg')) {
-    return { root: input, issues: [{ level: 'error', code: 'svg.root', message: `Root element must be <svg>, found <${input.name}>` }] };
+  if (input.name !== 'svg' && input.name !== 'svg:svg') {
+    // Invalid input must never become raw HTML in React/SSR, even if a caller
+    // renders an invalid scene to show diagnostics alongside it.
+    return { root: { type: 'el', name: 'svg', attrs: { viewBox: '0 0 100 100' }, children: [] }, issues: [{ level: 'error', code: 'svg.root', at: '<root>', message: `Root element must be <svg>, found <${input.name}>`, hint: 'Provide an SVG document, not HTML or a foreign namespace.' }] };
   }
   let motionSource: string | undefined;
   let css = '';

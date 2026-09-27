@@ -172,7 +172,7 @@ Conditions (`when`) test the target value the moment it is set: `"progress >= 10
 ]
 ```
 
-Clickable targets become keyboard-focusable buttons automatically; drag targets become sliders (arrow keys, Home/End). `pointer` maps over the whole artwork (or `within`) and resets inputs to their defaults when the pointer leaves.
+Clickable targets (including the SVG root) become keyboard-focusable buttons automatically; boolean toggles announce `aria-pressed`. Press targets accept Enter/Space down and up, and release on blur. Hover targets also respond to focus/blur. Drag targets become sliders (arrow keys, Home/End). `pointer` maps over the whole artwork (or `within`) and resets inputs to their defaults when the pointer leaves.
 
 ### Layers
 
@@ -191,12 +191,11 @@ Animated `translateX/Y`, `rotate`, `scale`, `skew` are applied around the elemen
 ## Using it
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/motion-forge/dist/element.js"></script>
-<motion-forge src="/like.svg"></motion-forge>
-<script>
+<motion-forge src="/like.svg" inputs='{"liked":true}'></motion-forge>
+<script type="module">
+  import 'https://cdn.jsdelivr.net/npm/motion-forge/dist/element.js';
   const el = document.querySelector('motion-forge');
   el.addEventListener('statechange', e => console.log(e.detail.to));
-  el.set('liked', true); el.send('wave');
 </script>
 ```
 
@@ -214,7 +213,17 @@ anim.send('wave'); anim.set('progress', 72);
 
 ## Checklist before you ship an animation
 
-1. `motion-forge check file.svg` has 0 errors and you understood every warning.
+1. `motion-forge check file.svg` has 0 errors and you understood every warning. Use `check --strict file.svg` to fail CI on warnings as well.
 2. `motion-forge preview file.svg` and look at the PNG: every state row, every input sweep. Things should stay inside their frames, rest poses should look finished, and loops should end where they start.
-3. The preview also plays every event and boolean toggle through the real state machine ("flow" rows). For custom sequences, `motion-forge record file.svg --send wave@600 --set level=90@1500` prints an event log and writes a PNG grid of frames you can read (`--out x.gif` for people).
+3. The preview exercises each event from each state that handles it (including layer-wide handlers), and both directions of every boolean toggle. These scenarios start directly in the stated source state; they do not prove every possible path is reachable. Conditions use best-effort inferred inputs. Numeric sweeps hold the selected/watching main state so you can inspect its binding. For full paths, interruptions and combinations, `motion-forge record file.svg --send wave@600 --set level=90@1500` prints an event log and writes a PNG grid (`--out x.gif` for people). Script actions run at their exact timestamps; images sample at the selected frame rate.
 4. Motion has purpose: one clear idea per state, 150-400ms for UI feedback, 1-4s for ambient loops, easing that matches physics (`out` arriving, `in` leaving).
+
+## Runtime and tooling limits
+
+- The loader sanitizes a supported SVG subset, not every possible editor export. Scripts, external URLs, SMIL and unsupported elements are removed. Review diagnostics and the rendered result. Source is limited to 2 MB and XML nesting to 128 levels; invalid roots produce an empty safe SVG with errors.
+- Text precision (`{value:2}`) accepts 0–100 decimal places. Invalid precision is diagnosed.
+- Recordings accept positive durations up to 20,000ms and frame rates up to 120fps. Script times must be non-negative and before the recording end. Malformed script values and invalid numeric options fail with errors.
+- Raster output is limited to 32 megapixels and 16,384px per side. Use `preview --state name --cell 120` for large files. Preview accepts 1–24 frames per state; `--frames 1` also works for input sweeps.
+- The runtime follows changes to `prefers-reduced-motion` when set to `auto` (the default). SVG viewBox clipping is the default; use `overflow="visible"` on the SVG for intended exits. `allowOverflow` only suppresses the lint warning.
+- React SSR prefixes IDs and accessible references per instance. React `onError` reports fetch and validation failures. The web component accepts initial values through its `inputs` attribute; set them before connection to start in the settled state without animating there.
+- The playground can open/download SVGs, save a local browser draft, pause/scrub/restart the main state, and show a bounded event log. Scrubbing inspects a state; Play resumes state-machine behavior. It does not edit keyframes visually.

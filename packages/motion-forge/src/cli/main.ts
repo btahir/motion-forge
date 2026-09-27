@@ -25,7 +25,7 @@ function parseArgs(argv: string[]): Args {
     if (a.startsWith('--')) {
       const [k, inline] = a.slice(2).split(/=(.*)/s);
       const next = argv[i + 1];
-      const value = inline ?? (next !== undefined && !next.startsWith('--') ? (i++, next) : 'true');
+      const value = inline ?? (['help', 'version', 'json', 'strict', 'force'].includes(k!) ? 'true' : next !== undefined && !next.startsWith('--') ? (i++, next) : 'true');
       (out.flags[k!] ??= []).push(value);
     } else if (a === '-h') (out.flags.help ??= []).push('true');
     else out._.push(a);
@@ -84,7 +84,7 @@ Create
   init [--dir .]                        Install the agent skill (.claude/skills) and AGENTS.md notes
 
 Verify (use these after every edit)
-  check <file> [--json]                 Validate and lint; exits 1 on errors
+  check <file> [--json] [--strict]      Validate and lint; strict also fails on warnings
   preview <file> [--out f.png]          Contact sheet: every state over time, every event/toggle flow,
           [--frames 8] [--state s]      and input sweeps. Open the PNG and look at it.
           [--set k=v] [--cell 200] [--bg '#0b1020']   (--bg: preview on your app's background)
@@ -130,7 +130,7 @@ export async function main(argv: string[]): Promise<number> {
         if (!file) throw new UsageError('Usage: motion-forge check <file.svg>');
         const report = check(readSource(file));
         process.stdout.write((flag(args, 'json') ? JSON.stringify(report, null, 2) : formatReport(report, file)) + '\n');
-        return report.ok ? 0 : 1;
+        return report.ok && (!flag(args, 'strict') || report.counts.warnings === 0) ? 0 : 1;
       }
       case 'preview': {
         const file = rest[0];

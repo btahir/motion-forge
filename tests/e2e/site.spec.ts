@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 const watchErrors = (page: Page) => {
   const errors: string[] = [];
@@ -89,5 +90,61 @@ test('phone layout has no horizontal overflow', async ({ page }) => {
     await page.goto(route);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow, route).toBeLessThanOrEqual(1);
+  }
+});
+
+test('playground: import, pause, scrub, inspect events and restore a draft', async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.goto('/playground/');
+  const stage = (await page.locator('.pg-live .live-stage').boundingBox())!;
+  const artwork = (await page.locator('.pg-live .live-stage svg').boundingBox())!;
+  expect(artwork.y + artwork.height).toBeLessThanOrEqual(stage.y + stage.height);
+  await page.locator('input[type=file]').setInputFiles({ name: 'review.svg', mimeType: 'image/svg+xml', buffer: Buffer.from('<svg viewBox="0 0 100 100"><title>Imported review</title><circle id="c" cx="50" cy="50" r="10"/><metadata type="application/motion+json">{"transition":0,"states":{"idle":{"duration":1000,"loop":true,"animate":{"#c":{"rotate":[0,360]}},"on":{"go":"done"}},"done":{"animate":{"#c":{"fill":"#ff0000"}}}}}</metadata></svg>') });
+  await expect(page.locator('.cm-content')).toContainText('Imported review');
+  await page.getByRole('button', { name: 'Pause', exact: true }).click();
+  await page.getByRole('slider', { name: 'Animation time' }).fill('500');
+  await expect(page.locator('.timeline output')).toContainText('500 / 1000ms');
+  const shape = page.locator('.pg-live svg [id$="c"]');
+  await expect(shape).toHaveAttribute('transform', /rotate\(180\)/);
+  await page.waitForTimeout(200);
+  await expect(shape).toHaveAttribute('transform', /rotate\(180\)/);
+  await page.getByRole('button', { name: 'send go' }).click();
+  await page.locator('.event-log summary').click();
+  await expect(page.locator('.event-log')).toContainText('idle → done');
+  await expect.poll(() => page.evaluate(() => localStorage.getItem('motion-forge:playground-draft:v1'))).toContain('Imported review');
+  await page.reload();
+  await expect(page.locator('.cm-content')).toContainText('Imported review');
+  expect(errors).toEqual([]);
+});
+
+test('playground: malformed share links show a recoverable error', async ({ page }) => {
+  await page.goto('/playground/#src=bad');
+  await expect(page.locator('.pg-notice')).toContainText('Could not open share link');
+  await expect(page.locator('.cm-content')).toBeVisible();
+});
+
+test('runtime follows changes to reduced-motion preferences without remounting', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/playground/#preset=spinner');
+  const svg = page.locator('.pg-live svg');
+  await expect(svg).toBeVisible();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.waitForTimeout(100);
+  const still = await svg.innerHTML();
+  await page.waitForTimeout(200);
+  expect(await svg.innerHTML()).toBe(still);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect.poll(() => svg.innerHTML()).not.toBe(still);
+});
+
+test('public pages pass automated accessibility checks in both themes', async ({ page }) => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
+    for (const route of ['/', '/playground/', '/docs/']) {
+      await page.goto(route);
+      if (route === '/playground/') await page.locator('.cm-content').waitFor();
+      const results = await new AxeBuilder({ page }).analyze();
+      expect(results.violations.map(v => ({ id: v.id, targets: v.nodes.map(n => n.target) })), `${colorScheme} ${route}`).toEqual([]);
+    }
   }
 });

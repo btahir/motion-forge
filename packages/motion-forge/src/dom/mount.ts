@@ -72,7 +72,7 @@ export function mount(target: Element | ShadowRoot, source: string | Scene, opti
   svg.setAttribute('width', '100%');
   svg.setAttribute('height', '100%');
   svg.style.display = 'block';
-  svg.style.overflow = 'visible';
+  svg.style.overflow = scene.root.attrs.overflow ?? 'hidden';
   svg.style.userSelect = 'none';
   svg.style.touchAction = scene.interactions.some(i => i.on === 'drag') ? 'none' : '';
   const interactive = !options.disableInteractions && scene.interactions.length > 0;
@@ -107,18 +107,24 @@ export function mount(target: Element | ShadowRoot, source: string | Scene, opti
   let last = 0;
   let visible = true;
   let destroyed = false;
+  let ticking = false;
   const tick = (now: number) => {
     raf = 0;
     if (destroyed) return;
     const dt = last ? Math.min(now - last, 100) : 16;
     last = now;
-    if (playing) player.advance(dt);
-    write();
-    if (playing && visible && player.active) raf = requestAnimationFrame(tick);
+    ticking = true;
+    try {
+      if (playing && visible) player.advance(dt);
+      write();
+    } finally {
+      ticking = false;
+    }
+    if (!destroyed && playing && visible && player.active) raf = requestAnimationFrame(tick);
     else last = 0;
   };
   const wake = () => {
-    if (!raf && !destroyed) raf = requestAnimationFrame(tick);
+    if (!raf && !destroyed && !ticking && visible) raf = requestAnimationFrame(tick);
   };
   const unsubscribe = player.on(e => {
     options.onEvent?.(e);
@@ -128,10 +134,24 @@ export function mount(target: Element | ShadowRoot, source: string | Scene, opti
   wake();
 
   const cleanups: (() => void)[] = [unsubscribe];
+  if (reduceQuery && (options.reducedMotion === undefined || options.reducedMotion === 'auto')) {
+    const change = () => {
+      player.setReducedMotion(reduceQuery.matches);
+      write();
+      wake();
+    };
+    reduceQuery.addEventListener('change', change);
+    cleanups.push(() => reduceQuery.removeEventListener('change', change));
+  }
   if (options.pauseOffscreen !== false && typeof IntersectionObserver === 'function') {
     const io = new IntersectionObserver(entries => {
       visible = entries.some(e => e.isIntersecting);
       if (visible) wake();
+      else {
+        if (raf) cancelAnimationFrame(raf);
+        raf = 0;
+        last = 0;
+      }
     });
     io.observe(svg);
     cleanups.push(() => io.disconnect());
@@ -148,6 +168,12 @@ export function mount(target: Element | ShadowRoot, source: string | Scene, opti
       if (it.toggle) player.setInput(it.toggle, !player.getInput(it.toggle));
       if (it.set) for (const [k, v] of Object.entries(it.set)) player.setInput(k, v);
       wake();
+    };
+    const control = (el: Element, it: RInteraction, button = true) => {
+      if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+      if (button && (!el.hasAttribute('role') || el === svg)) el.setAttribute('role', 'button');
+      if (!el.hasAttribute('aria-label') && !el.hasAttribute('aria-labelledby')) el.setAttribute('aria-label', el.querySelector('title')?.textContent ?? it.send ?? it.toggle ?? it.hold ?? 'Activate');
+      // Keep the browser focus indicator; never remove it without a replacement.
     };
     const boxFor = (it: RInteraction, el: Element): DOMRect => (it.withinEl !== undefined && byKey[it.withinEl] ? byKey[it.withinEl]! : it.on === 'drag' ? el : svg).getBoundingClientRect();
     const mapPointer = (it: RInteraction, e: PointerEvent, box: DOMRect) => {
@@ -166,17 +192,17 @@ export function mount(target: Element | ShadowRoot, source: string | Scene, opti
         const html = el as SVGElement;
         switch (it.on) {
           case 'click':
-            if (el !== svg) {
-              html.style.cursor = 'pointer';
-              if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
-              if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
-              if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', el.querySelector('title')?.textContent ?? it.send ?? it.toggle ?? 'Activate');
-              html.style.outline = 'none';
-            } else html.style.cursor = 'pointer';
+            control(el, it);
+            html.style.cursor = 'pointer';
+            if (it.toggle) {
+              const sync = () => el.setAttribute('aria-pressed', String(!!player.getInput(it.toggle!)));
+              sync();
+              cleanups.push(player.on(e => { if (e.type === 'input' && e.name === it.toggle) sync(); }));
+            }
             listen(el, 'click', () => fire(it));
             listen(el, 'keydown', e => {
               const k = (e as KeyboardEvent).key;
-              if (k === 'Enter' || k === ' ') {
+              if (e.target === el && !(e as KeyboardEvent).repeat && (k === 'Enter' || k === ' ')) {
                 e.preventDefault();
                 fire(it);
               }
@@ -184,12 +210,14 @@ export function mount(target: Element | ShadowRoot, source: string | Scene, opti
             break;
           case 'hover':
           case 'press': {
+            control(el, it, it.on === 'press');
             const [down, up] = it.on === 'hover' ? ['pointerenter', 'pointerleave'] : ['pointerdown', 'pointerup'];
             if (it.on === 'press') html.style.cursor = 'pointer';
-            listen(el, down!, () => {
+            const activate = () => {
               if (it.hold) player.setInput(it.hold, true);
               fire({ ...it, hold: undefined });
-            });
+            };
+            listen(el, down!, activate);
             const release = () => {
               if (it.hold) player.setInput(it.hold, false);
               if (it.leave) player.send(it.leave);
@@ -199,6 +227,17 @@ export function mount(target: Element | ShadowRoot, source: string | Scene, opti
             if (it.on === 'press') {
               listen(el, 'pointerleave', release);
               listen(el, 'pointercancel', release);
+              listen(el, 'keydown', e => {
+                const key = e as KeyboardEvent;
+                if (e.target === el && !key.repeat && (key.key === 'Enter' || key.key === ' ')) {
+                  e.preventDefault();
+                  activate();
+                }
+              });
+              listen(el, 'keyup', e => {
+                if (e.target === el && ['Enter', ' '].includes((e as KeyboardEvent).key)) { e.preventDefault(); release(); }
+              });
+              listen(el, 'blur', release);
             }
             if (it.on === 'hover') {
               listen(el, 'focus', () => {
@@ -230,6 +269,7 @@ export function mount(target: Element | ShadowRoot, source: string | Scene, opti
               el.setAttribute('role', 'slider');
               el.setAttribute('aria-valuemin', String(def.min));
               el.setAttribute('aria-valuemax', String(def.max));
+              el.setAttribute('aria-orientation', it.x ? 'horizontal' : 'vertical');
               if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', input);
               const sync = () => el.setAttribute('aria-valuenow', String(Math.round(Number(player.getInput(input)) * 100) / 100));
               sync();
@@ -265,6 +305,7 @@ export function mount(target: Element | ShadowRoot, source: string | Scene, opti
             };
             listen(el, 'pointerup', end);
             listen(el, 'pointercancel', end);
+            listen(el, 'lostpointercapture', end);
             break;
           }
           case 'appear': {

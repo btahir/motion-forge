@@ -52,6 +52,7 @@ export function escapeAttr(text: string): string {
 const NAME = /[A-Za-z_:][-\w:.]*/y;
 
 export function parseXML(source: string): XElement {
+  if (source.length > 2_000_000) throw new XMLError('SVG exceeds the 2 MB source limit', 1, 1);
   let i = 0;
   const len = source.length;
 
@@ -142,13 +143,14 @@ export function parseXML(source: string): XElement {
     const tagStart = i;
     i++;
     const name = readName();
-    const attrs: Record<string, string> = {};
+    const attrs: Record<string, string> = Object.create(null);
     for (;;) {
       skipSpace();
       if (i >= len) fail('Unterminated start tag', tagStart);
       const c = source[i];
       if (c === '>' || (c === '/' && source[i + 1] === '>')) break;
       const attrName = readName();
+      if (Object.hasOwn(attrs, attrName)) fail(`Duplicate attribute ${attrName}`);
       skipSpace();
       if (source[i] !== '=') {
         attrs[attrName] = '';
@@ -173,6 +175,7 @@ export function parseXML(source: string): XElement {
       attrs[attrName] = decodeEntities(value);
     }
     const element: XElement = { type: 'el', name, attrs, children: [] };
+    if (stack.length > 128) fail('SVG exceeds the 128-level nesting limit', tagStart);
     const parent = stack[stack.length - 1]!;
     if (parent === root && root.children.some(n => n.type === 'el')) fail('Only one root element is allowed', tagStart);
     parent.children.push(element);

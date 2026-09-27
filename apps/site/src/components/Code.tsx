@@ -41,7 +41,7 @@ export function Code({ code, lang = 'text', title, className = '', copy = true }
           {copy && <CopyButton text={code} />}
         </figcaption>
       )}
-      <pre>
+      <pre tabIndex={0} aria-label={typeof title === 'string' ? title : 'Code example'}>
         <code dangerouslySetInnerHTML={{ __html: highlight(code, lang) }} />
       </pre>
     </figure>

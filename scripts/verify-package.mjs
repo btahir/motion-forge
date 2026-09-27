@@ -17,7 +17,7 @@ try {
   assert(!/src\//.test(listing), 'no TypeScript sources in the package');
   assert(!/\.test\./.test(listing), 'no tests in the package');
   await writeFile(join(temp, 'package.json'), JSON.stringify({ name: 'consumer', private: true, type: 'module' }));
-  run('npm', ['install', '--no-audit', '--no-fund', join(temp, tarball), 'react@19', 'react-dom@19']);
+  run('npm', ['install', '--no-audit', '--no-fund', join(temp, tarball), 'react@19', 'react-dom@19', 'typescript@5.9', '@types/react@19', '@types/react-dom@19', '@types/node@22']);
   const pkg = join(temp, 'node_modules/motion-forge');
   const manifest = JSON.parse(await readFile(join(pkg, 'package.json'), 'utf8'));
   for (const target of Object.values(manifest.exports)) {
@@ -48,6 +48,25 @@ assert.match(renderToString(createElement(MotionForge, { svg: src })), /<svg/);
 console.log('smoke ok');`,
   );
   assert.equal(run('node', ['smoke.mjs']).trim(), 'smoke ok');
+
+  // Check declarations through the packed public exports, not workspace aliases.
+  await writeFile(join(temp, 'consumer.tsx'), `import { createRef } from 'react';
+import { MotionForge, type MotionForgeHandle } from 'motion-forge/react';
+import { loadScene, mount, Player } from 'motion-forge';
+import { recordStrip, type ScriptStep } from 'motion-forge/node';
+import { defineMotionForge } from 'motion-forge/element';
+const scene = loadScene('<svg viewBox="0 0 10 10"/>');
+const steps: ScriptStep[] = [{ at: 0, set: ['progress', 1] }];
+recordStrip(scene, { script: steps });
+new Player(scene).setReducedMotion(true);
+defineMotionForge();
+const instance = mount(document.createElement('div'), scene);
+instance.destroy();
+const ref = createRef<MotionForgeHandle>();
+const element = <MotionForge ref={ref} svg="<svg/>" inputs={{ progress: 1 }} onError={error => console.error(error.message)} />;
+void element;
+`);
+  run(join(temp, 'node_modules/.bin/tsc'), ['--noEmit', '--strict', '--module', 'NodeNext', '--moduleResolution', 'NodeNext', '--target', 'ES2022', '--jsx', 'react-jsx', 'consumer.tsx']);
 
   // The CLI as an agent would call it.
   const cli = join(temp, 'node_modules/.bin/motion-forge');

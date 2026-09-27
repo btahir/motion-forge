@@ -1,6 +1,7 @@
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState, type CSSProperties } from 'react';
-import type { PlayerEvent } from '../core/player';
-import { renderSVG } from '../core/render';
+import { forwardRef, useEffect, useId, useImperativeHandle, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { Player, type PlayerEvent } from '../core/player';
+import { prefixIds, renderFrameTree } from '../core/render';
+import { serializeXML } from '../core/xml';
 import { loadScene, type Scene } from '../core/scene';
 import { mount, type MotionInstance } from '../dom/mount';
 
@@ -17,6 +18,8 @@ export interface MotionForgeProps {
   reducedMotion?: boolean | 'auto';
   onEvent?: (event: PlayerEvent) => void;
   onStateChange?: (state: string) => void;
+  /** Fetch or validation failure. */
+  onError?: (error: Error) => void;
   className?: string;
   style?: CSSProperties;
   /** Accessible label; defaults to the file's <title>. */
@@ -40,39 +43,55 @@ export const MotionForge = forwardRef<MotionForgeHandle, MotionForgeProps>(funct
   const instance = useRef<MotionInstance | undefined>(undefined);
   const callbacks = useRef(props);
   callbacks.current = props;
-  const [fetched, setFetched] = useState<string>();
-  const source = svg ?? fetched;
+  const id = useId();
+  const [fetched, setFetched] = useState<{ src: string; text: string }>();
+  const source = svg ?? (fetched?.src === src ? fetched?.text : undefined);
 
   useEffect(() => {
-    if (!src || svg) return;
+    if (!src || svg !== undefined) return;
     let alive = true;
-    fetch(src)
+    const controller = new AbortController();
+    fetch(src, { signal: controller.signal })
       .then(r => (r.ok ? r.text() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then(t => alive && setFetched(t))
-      .catch(e => console.warn('[motion-forge] could not load', src, e));
+      .then(t => alive && setFetched({ src, text: t }))
+      .catch(e => {
+        if (alive) callbacks.current.onError?.(e instanceof Error ? e : new Error(String(e)));
+      });
     return () => {
       alive = false;
+      controller.abort();
     };
   }, [src, svg]);
 
   const scene: Scene | undefined = useMemo(() => (source ? loadScene(source) : undefined), [source]);
   // Server and first client render share this static markup, so hydration matches.
   const initialMarkup = useMemo(() => {
-    if (!scene) return '';
+    if (!scene?.ok) return '';
     try {
-      return renderSVG(scene, { state, inputs }).replace(/ width="[^"]*" height="[^"]*"/, ' width="100%" height="100%" style="display:block"');
+      const tree = renderFrameTree(scene, new Player(scene, { state, inputs, reducedMotion: reducedMotion === true }).frame());
+      prefixIds(tree, `mf-${id}-`);
+      tree.attrs.width = '100%';
+      tree.attrs.height = '100%';
+      tree.attrs.style = 'display:block';
+      tree.attrs.role = scene.interactions.length ? 'group' : 'img';
+      if (title ?? scene.title) tree.attrs['aria-label'] = (title ?? scene.title)!;
+      return serializeXML(tree);
     } catch {
       return '';
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scene]);
+  }, [scene, id]);
 
   useEffect(() => {
     if (!scene || !host.current) return;
+    if (!scene.ok) {
+      callbacks.current.onError?.(new Error(scene.diagnostics.filter(d => d.level === 'error').map(d => `${d.at ?? ''}: ${d.message}`).join('\n')));
+      return;
+    }
     const inst = mount(host.current, scene, {
       state: callbacks.current.state,
       inputs: callbacks.current.inputs,
-      autoplay,
+      autoplay: callbacks.current.autoplay,
       reducedMotion,
       onEvent: e => {
         callbacks.current.onEvent?.(e);
@@ -85,7 +104,21 @@ export const MotionForge = forwardRef<MotionForgeHandle, MotionForgeProps>(funct
       inst.destroy();
       instance.current = undefined;
     };
-  }, [scene, autoplay, reducedMotion, title]);
+  }, [scene, reducedMotion]);
+
+  useEffect(() => {
+    const inst = instance.current;
+    if (inst) autoplay === false ? inst.pause() : inst.play();
+  }, [autoplay, scene]);
+
+  useEffect(() => {
+    const svg = instance.current?.svg;
+    if (svg) {
+      const label = title ?? scene?.title;
+      if (label) svg.setAttribute('aria-label', label);
+      else svg.removeAttribute('aria-label');
+    }
+  }, [title, scene]);
 
   useEffect(() => {
     if (!inputs || !instance.current) return;

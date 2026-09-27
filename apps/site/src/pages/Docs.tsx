@@ -6,7 +6,7 @@ import { highlight } from '../components/Code';
 const renderer = new marked.Renderer();
 renderer.code = ({ text, lang }) => {
   const l = lang === 'xml' || lang === 'html' ? 'xml' : lang === 'sh' || lang === 'bash' ? 'sh' : lang === 'jsonc' || lang === 'json' || lang === 'js' || lang === 'tsx' ? 'json' : 'text';
-  return `<figure class="code"><pre><code>${highlight(text, l as 'xml')}</code></pre></figure>`;
+  return `<figure class="code"><pre tabindex="0" aria-label="Code example"><code>${highlight(text, l as 'xml')}</code></pre></figure>`;
 };
 const slug = (s: string) => s.toLowerCase().replace(/<[^>]+>/g, '').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
 renderer.heading = ({ tokens, depth }) => {

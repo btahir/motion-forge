@@ -5,6 +5,8 @@ import { CopyButton } from '../components/Code';
 import { presetByName, presets } from '../presets';
 
 const DEFAULT = 'scout';
+const MAX_SOURCE = 2_000_000;
+const DRAFT_KEY = 'motion-forge:playground-draft:v1';
 
 async function pack(text: string): Promise<string> {
   const stream = new Blob([text]).stream().pipeThrough(new CompressionStream('deflate-raw'));
@@ -14,10 +16,26 @@ async function pack(text: string): Promise<string> {
   return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 async function unpack(code: string): Promise<string> {
+  if (code.length > MAX_SOURCE) throw new Error('This share link is too large. Open the SVG file instead.');
   const bin = atob(code.replace(/-/g, '+').replace(/_/g, '/'));
   const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
   const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
-  return new Response(stream).text();
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > MAX_SOURCE) throw new Error('Shared SVG exceeds the 2 MB limit.');
+      chunks.push(value);
+    }
+  } finally { await reader.cancel(); }
+  const combined = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) { combined.set(chunk, offset); offset += chunk.length; }
+  return new TextDecoder().decode(combined);
 }
 
 function Filmstrip({ source, report }: { source: string; report: CheckReport }) {
@@ -71,6 +89,10 @@ export function Playground() {
   const [presetName, setPresetName] = useState(DEFAULT);
   const [tab, setTab] = useState<'check' | 'frames'>('check');
   const [shareUrl, setShareUrl] = useState('');
+  const [shareCopied, setShareCopied] = useState(false);
+  const [notice, setNotice] = useState('');
+  const [ready, setReady] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
   const editorHost = useRef<HTMLDivElement>(null);
   const editor = useRef<{ set(text: string): void } | undefined>(undefined);
   const latest = useRef(source);
@@ -79,26 +101,46 @@ export function Playground() {
 
   // Load from URL hash.
   useEffect(() => {
+    let revision = 0;
     const apply = async () => {
+      const own = ++revision;
       const hash = new URLSearchParams(location.hash.slice(1));
       const name = hash.get('preset');
       const src = hash.get('src');
       let text: string | undefined;
-      if (src) text = await unpack(src).catch(() => undefined);
+      if (src) {
+        try { text = await unpack(src); }
+        catch (e) { if (own === revision) setNotice(`Could not open share link: ${(e as Error).message}`); }
+      }
       else if (name && presetByName(name)) {
         text = presetByName(name)!.source;
         setPresetName(name);
+      } else if (!location.hash) {
+        try {
+          const draft = localStorage.getItem(DRAFT_KEY);
+          if (draft && draft.length <= MAX_SOURCE) { text = draft; setNotice('Restored your local draft.'); setPresetName(''); }
+        } catch { /* Storage may be disabled. Editing still works. */ }
       }
+      if (own !== revision) return;
       if (text) {
         setSource(text);
         setLive(text);
         editor.current?.set(text);
       }
+      setReady(true);
     };
     void apply();
     addEventListener('hashchange', apply);
-    return () => removeEventListener('hashchange', apply);
+    return () => { revision++; removeEventListener('hashchange', apply); };
   }, []);
+
+  useEffect(() => {
+    setShareUrl('');
+    setShareCopied(false);
+    if (!ready || source.length > MAX_SOURCE) return;
+    const timer = setTimeout(() => { try { localStorage.setItem(DRAFT_KEY, source); } catch { /* Optional local persistence. */ } }, 500);
+    return () => clearTimeout(timer);
+  }, [source, ready]);
 
   // Debounce the live preview.
   useEffect(() => {
@@ -142,17 +184,21 @@ export function Playground() {
             syntaxHighlighting(style),
             keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
             EditorView.lineWrapping,
+            EditorView.contentAttributes.of({ 'aria-label': 'Motion SVG source' }),
             EditorView.updateListener.of(u => {
               if (u.docChanged) setSource(u.state.doc.toString());
             }),
           ],
         }),
       });
+      view.scrollDOM.tabIndex = 0;
+      view.scrollDOM.setAttribute('aria-label', 'Scrollable source code');
       editor.current = { set: text => view!.dispatch({ changes: { from: 0, to: view!.state.doc.length, insert: text } }) };
     })();
     return () => {
       destroyed = true;
       view?.destroy();
+      editor.current = undefined;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -163,15 +209,33 @@ export function Playground() {
     setPresetName(name);
     setSource(p.source);
     setLive(p.source);
+    setNotice('');
     editor.current?.set(p.source);
     history.replaceState(null, '', `#preset=${name}`);
   };
 
   const share = async () => {
-    const url = `${location.origin}/playground/#src=${await pack(source)}`;
-    history.replaceState(null, '', url);
-    setShareUrl(url);
-    void navigator.clipboard?.writeText(url).catch(() => undefined);
+    try {
+      if (source.length > MAX_SOURCE) throw new Error('SVG exceeds the 2 MB limit.');
+      const url = `${location.origin}/playground/#src=${await pack(source)}`;
+      if (latest.current !== source) return;
+      history.replaceState(null, '', url);
+      setShareUrl(url);
+      try { await navigator.clipboard.writeText(url); setShareCopied(true); }
+      catch { setShareCopied(false); }
+    } catch (e) { setNotice(`Could not share: ${(e as Error).message}`); }
+  };
+
+  const openFile = async (file?: File) => {
+    if (!file) return;
+    try {
+      if (file.size > MAX_SOURCE) throw new Error('SVG exceeds the 2 MB limit.');
+      const text = await file.text();
+      setPresetName(''); setSource(text); setLive(text); editor.current?.set(text);
+      setNotice(`Opened ${file.name}. Changes save locally in this browser.`);
+      history.replaceState(null, '', location.pathname);
+    } catch (e) { setNotice(`Could not open file: ${(e as Error).message}`); }
+    if (fileInput.current) fileInput.current.value = '';
   };
 
   const download = () => {
@@ -185,10 +249,12 @@ export function Playground() {
   const icon = { error: '✖', warning: '▲', info: '·' } as const;
   return (
     <main className="playground">
+      <h1 className="sr-only">Motion SVG playground</h1>
       <div className="pg-bar">
         <label className="pg-select">
           <span>Preset</span>
           <select value={presetName} onChange={e => choose(e.target.value)}>
+            <option value="" disabled>Custom SVG</option>
             {presets.map(p => (
               <option key={p.name} value={p.name}>
                 {p.title} ({p.name})
@@ -198,14 +264,17 @@ export function Playground() {
         </label>
         <div className="pg-actions">
           <span className={`pg-status ${report.ok ? 'ok' : 'bad'}`}>{report.ok ? `valid · ${report.counts.warnings} warnings` : `${report.counts.errors} errors`}</span>
+          <input ref={fileInput} type="file" accept=".svg,image/svg+xml" hidden aria-label="Open SVG file" onChange={e => void openFile(e.target.files?.[0])}/>
+          <button className="btn small" onClick={() => fileInput.current?.click()}>Open SVG</button>
           <button className="btn small" onClick={download}>
             Download .svg
           </button>
           <button className="btn small primary" onClick={() => void share()}>
-            {shareUrl ? 'Link copied' : 'Share link'}
+            {shareUrl ? shareCopied ? 'Link copied' : 'Link ready' : 'Share link'}
           </button>
         </div>
       </div>
+      {(notice || shareUrl) && <div className="pg-notice" role="status">{notice}{shareUrl && <label>Share URL <input aria-label="Share URL" readOnly value={shareUrl} onFocus={e => e.target.select()} /></label>}</div>}
       <div className="pg-grid">
         <section className="pg-editor" aria-label="Source">
           <div ref={editorHost} className="cm-host">
@@ -213,7 +282,7 @@ export function Playground() {
           </div>
         </section>
         <section className="pg-preview" aria-label="Preview">
-          {report.ok ? <Live key={live} source={live} className="pg-live" /> : <div className="pg-broken">Fix the errors to see it move. The last valid version isn’t kept on purpose, so what you see always matches the file.</div>}
+          {report.ok ? <Live key={live} source={live} transport className="pg-live" /> : <div className="pg-broken">Fix the errors to see it move. The last valid version isn’t kept on purpose, so what you see always matches the file.</div>}
           <div className="pg-tabs">
             <button className={tab === 'check' ? 'on' : ''} onClick={() => setTab('check')}>
               Check

@@ -635,7 +635,9 @@ export function normalizeMotion(raw: unknown): NormalizeResult {
           }
           const kind = PROPS[prop]!;
           if (prop === 'text' && typeof spec === 'string') {
-            const refs = [...spec.matchAll(/\{(\w[\w-]*)(?::(\d+))?\}/g)].map(m => m[1]!);
+            const placeholders = [...spec.matchAll(/\{(\w[\w-]*)(?::(\d+))?\}/g)];
+            for (const m of placeholders) if (m[2] !== undefined && Number(m[2]) > 100) error(at, 'Text precision must be between 0 and 100', 'Use a placeholder such as {progress:0} or {value:2}.');
+            const refs = placeholders.map(m => m[1]!);
             for (const r of refs) if (!inputs.has(r)) error(at, `Template references unknown input "${r}"`, suggest(r, inputNames) ? `Did you mean "${suggest(r, inputNames)}"?` : undefined);
             if (!refs.length) warning(at, 'Text template has no {input} placeholders');
             bindings.push({ selector, prop, kind, map: [], template: spec, origin, at });

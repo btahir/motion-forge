@@ -2,10 +2,11 @@ import { createServer } from 'node:http';
 import { existsSync, readFileSync, watch } from 'node:fs';
 import { basename, join } from 'node:path';
 import { packageRoot } from './paths';
+import { escapeText } from '../core/xml';
 
 const PAGE = (name: string) => `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${name} · motion-forge dev</title>
+<title>${escapeText(name)} · motion-forge dev</title>
 <style>
 :root{color-scheme:light dark;--bg:#f5f3ee;--panel:#fffdf9;--ink:#1d1a16;--muted:#6f6a61;--line:#e3ddd2;--accent:#ff5a1f}
 @media (prefers-color-scheme:dark){:root{--bg:#141311;--panel:#1c1a17;--ink:#f3efe7;--muted:#a39d92;--line:#2e2b26}}
@@ -15,14 +16,14 @@ aside{border-left:1px solid var(--line);background:var(--panel);padding:18px;ove
 .row{display:flex;flex-wrap:wrap;gap:6px}button{font:inherit;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:6px 10px;cursor:pointer}button:hover{border-color:var(--accent)}button.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
 label{display:grid;grid-template-columns:90px 1fr 44px;align-items:center;gap:8px;margin:6px 0;font-size:13px}input[type=range]{accent-color:var(--accent)}
 pre{white-space:pre-wrap;font:12px/1.5 ui-monospace,monospace;color:var(--muted);margin:0}.err{color:#e5484d}.muted{color:var(--muted);font-size:12px}
-</style></head><body><main><div id="stage"></div></main><aside><h1>${name}</h1><div class="muted" id="meta">watching for changes…</div>
+</style></head><body><main><div id="stage"></div></main><aside><h1>${escapeText(name)}</h1><div class="muted" id="meta">watching for changes…</div>
 <h2>Playback</h2><div class="row"><button id="play">Pause</button><button id="restart">Restart state</button></div>
 <h2>States</h2><div class="row" id="states"></div><h2>Events</h2><div class="row" id="events"></div><h2>Inputs</h2><div id="inputs"></div><h2>Check</h2><pre id="report"></pre></aside>
 <script src="/runtime.js"></script><script>
 const $=id=>document.getElementById(id);let inst,values={};
 async function load(){const src=await (await fetch('/file?'+Date.now())).text();const MF=window.MotionForge;
  if(inst){values=Object.assign({},inst.player.inputs);inst.destroy()}
- const report=MF.check(src);$('report').textContent=MF.formatReport(report,${JSON.stringify(name)});$('report').className=report.ok?'':'err';
+ const report=MF.check(src);$('report').textContent=MF.formatReport(report,${JSON.stringify(name).replace(/</g, '\\u003c')});$('report').className=report.ok?'':'err';
  inst=MF.mount($('stage'),src,{inputs:values,reducedMotion:false,onEvent:()=>sync()});const vb=inst.scene.viewBox;$('stage').style.aspectRatio=vb.width+'/'+vb.height;
  $('meta').textContent=new Date().toLocaleTimeString()+' · '+(report.ok?'valid':report.counts.errors+' errors');build()}
 function build(){const s=inst.scene;$('states').replaceChildren(...s.layers.flatMap(l=>[...l.states.keys()].map(n=>{const b=document.createElement('button');b.textContent=(l.name==='main'?'':l.name+'/')+n;b.dataset.state=n;b.dataset.layer=l.name;b.onclick=()=>{inst.player.goto(n,{layer:l.name,blend:250});inst.play();sync()};return b})));
@@ -52,7 +53,7 @@ export async function startDevServer(file: string, port: number): Promise<void> 
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
       res.end(PAGE(basename(file)));
     } else if (url.pathname === '/file') {
-      res.writeHead(200, { 'content-type': 'image/svg+xml; charset=utf-8', 'cache-control': 'no-store' });
+      res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
       res.end(readFileSync(file));
     } else if (url.pathname === '/runtime.js') {
       res.writeHead(200, { 'content-type': 'text/javascript; charset=utf-8' });

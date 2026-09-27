@@ -118,6 +118,18 @@ function lineColumn(text: string, offset: number) {
 
 /** Parses, sanitizes and compiles a Motion SVG. Never throws; inspect `ok` and `diagnostics`. */
 export function loadScene(source: string, options: LoadOptions = {}): Scene {
+  try {
+    return compileScene(source, options);
+  } catch (error) {
+    // Malformed expressions or pathological geometry must not crash a host app.
+    const scene = compileScene('<svg viewBox="0 0 100 100"/>', {});
+    scene.ok = false;
+    scene.diagnostics = [{ level: 'error', code: 'motion.compile', at: '<root>', message: `Could not compile animation: ${error instanceof Error ? error.message : String(error)}`, hint: 'Simplify the SVG or motion expression and run check again.' }];
+    return scene;
+  }
+}
+
+function compileScene(source: string, options: LoadOptions): Scene {
   const diagnostics: Diagnostic[] = [];
   let parsed: XElement;
   try {

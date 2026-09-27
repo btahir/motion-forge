@@ -139,6 +139,7 @@ export function prefixIds(root: XElement, prefix: string): void {
   const rewrite = (el: XElement) => {
     for (const [k, v] of Object.entries(el.attrs)) {
       if (k === 'id') el.attrs.id = prefix + v;
+      else if (['aria-labelledby', 'aria-describedby', 'aria-controls', 'aria-owns', 'aria-activedescendant', 'aria-details', 'aria-errormessage'].includes(k)) el.attrs[k] = v.split(/\s+/).map(id => ids.has(id) ? prefix + id : id).join(' ');
       else if (k === 'href' && v.startsWith('#') && ids.has(v.slice(1))) el.attrs.href = '#' + prefix + v.slice(1);
       else if (v.includes('url(#')) el.attrs[k] = v.replace(/url\(#([^)]+)\)/g, (m, id: string) => (ids.has(id) ? `url(#${prefix}${id})` : m));
     }
@@ -155,6 +156,8 @@ export interface RenderOptions extends PlayerOptions {
   height?: number;
   /** Strip xmlns for inline embedding. */
   inline?: boolean;
+  /** Unique prefix for inline copies (including server-rendered React instances). */
+  idPrefix?: string;
 }
 
 export function renderFrameTree(scene: Scene, frame: Frame, options: { width?: number; height?: number } = {}): XElement {
@@ -172,5 +175,8 @@ export function renderSVG(scene: Scene, options: RenderOptions = {}): string {
   // A named state is shown as-is; otherwise conditions settle from the given inputs.
   const player = new Player(scene, { hold: options.state !== undefined, ...options });
   if (options.time) player.seek(options.time);
-  return serializeXML(renderFrameTree(scene, player.frame(), options));
+  const tree = renderFrameTree(scene, player.frame(), options);
+  if (options.idPrefix) prefixIds(tree, options.idPrefix);
+  if (options.inline) delete tree.attrs.xmlns;
+  return serializeXML(tree);
 }

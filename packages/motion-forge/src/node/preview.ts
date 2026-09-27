@@ -4,14 +4,23 @@ import { Player } from '../core/player';
 import { prefixIds, renderFrameTree } from '../core/render';
 import type { Frame } from '../core/sample';
 import type { Scene } from '../core/scene';
-import { escapeText, serializeXML } from '../core/xml';
+import { escapeAttr, escapeText, serializeXML } from '../core/xml';
+
+function positive(value: number, name: string, max: number): number {
+  if (!Number.isFinite(value) || value <= 0 || value > max) throw new Error(`${name} must be greater than 0 and at most ${max}`);
+  return value;
+}
 
 export function rasterize(svg: string, width?: number): { png: Buffer; width: number; height: number; pixels: Uint8Array } {
+  if (width !== undefined) positive(width, 'width', 16384);
   const r = new Resvg(svg, {
     fitTo: width ? { mode: 'width', value: Math.round(width) } : { mode: 'original' },
     font: { loadSystemFonts: true, defaultFontFamily: 'Helvetica', sansSerifFamily: 'Helvetica', monospaceFamily: 'Menlo' },
     background: 'rgba(0,0,0,0)',
   });
+  const w = width ?? r.width;
+  const h = r.height * w / r.width;
+  if (![w, h].every(n => Number.isFinite(n) && n > 0 && n <= 16384) || w * h > 32_000_000) throw new Error('Image exceeds the 32 megapixel / 16384px limit. Use fewer states or a smaller cell/width.');
   const img = r.render();
   return { png: img.asPng(), width: img.width, height: img.height, pixels: img.pixels };
 }
@@ -47,8 +56,10 @@ export interface SheetOptions {
 
 /** Builds a contact sheet: every state as a row of frames, plus input sweeps. */
 export function contactSheet(scene: Scene, options: SheetOptions = {}): { svg: string; png: Buffer; rows: { title: string; labels: string[] }[] } {
-  const frames = Math.max(1, Math.min(24, options.frames ?? 8));
-  const cellW = options.cell ?? 200;
+  const frames = Math.floor(positive(options.frames ?? 8, 'frames', 24));
+  if (frames < 1) throw new Error('frames must be at least 1');
+  const cellW = positive(options.cell ?? 200, 'cell', 4096);
+  for (const name of options.states ?? []) if (!scene.layers.some(l => l.states.has(name))) throw new Error(`Unknown state "${name}"`);
   const cellH = Math.round((cellW * scene.viewBox.height) / scene.viewBox.width);
   const rows: Row[] = [];
   const reachedBy = conditionInputs(scene);
@@ -77,26 +88,38 @@ export function contactSheet(scene: Scene, options: SheetOptions = {}): { svg: s
     }
   }
   if (options.flows !== false) {
-    const triggers: { label: string; apply: (p: Player) => void }[] = [];
-    for (const ev of [...scene.events].slice(0, 6)) triggers.push({ label: `send ${ev}`, apply: p => p.send(ev) });
-    for (const input of [...scene.inputs.values()].filter(i => i.type === 'boolean').slice(0, 4)) {
-      const to = !(options.inputs?.[input.name] ?? input.default);
-      triggers.push({ label: `${input.name} → ${to}`, apply: p => p.setInput(input.name, to) });
+    const triggers: { label: string; setup?: (p: Player) => void; inputs?: Record<string, number | boolean>; apply: (p: Player) => void }[] = [];
+    for (const layer of scene.layers) {
+      for (const st of layer.states.values()) {
+        if (options.states && !options.states.includes(st.name)) continue;
+        for (const ev of new Set([...st.on.keys(), ...layer.on.keys()])) {
+          triggers.push({ label: `send ${ev} from ${layer.name}/${st.name}`, inputs: reachedBy.get(`${layer.name}/${st.name}`), setup: p => {
+            p.goto(st.name, { layer: layer.name });
+            // Show a meaningful source pose: resetting success should start
+            // from the completed checkmark, not its blank opening frame.
+            p.seek(st.loop === Infinity ? st.duration / 2 : st.completeAt, layer.name);
+          }, apply: p => { p.send(ev); } });
+        }
+      }
+    }
+    for (const input of [...scene.inputs.values()].filter(i => i.type === 'boolean')) {
+      for (const to of [true, false]) triggers.push({ label: `${input.name} ${!to} → ${to}`, inputs: { [input.name]: !to }, apply: p => p.setInput(input.name, to) });
     }
     for (const trig of triggers) {
-      const player = new Player(scene, { inputs: options.inputs });
-      if (options.states?.[0]) player.goto(options.states[0]);
-      player.advance(300);
+      const create = () => {
+        const p = new Player(scene, { inputs: { ...options.inputs, ...trig.inputs } });
+        trig.setup?.(p);
+        return p;
+      };
+      const player = create();
       const path: string[] = [player.state];
       const off = player.on(e => {
-        if (e.type === 'statechange' && e.layer === 'main') path.push(e.to);
+        if (e.type === 'statechange') path.push(e.layer === 'main' ? e.to : `${e.layer}/${e.to}`);
       });
       const cells: Cell[] = [{ frame: player.frame(), label: 'before' }];
       trig.apply(player);
       // Follow the flow until it settles (or 2.4s), sampling evenly.
-      const probe = new Player(scene, { inputs: options.inputs });
-      if (options.states?.[0]) probe.goto(options.states[0]);
-      probe.advance(300);
+      const probe = create();
       trig.apply(probe);
       let span = 0;
       while (span < 2400) {
@@ -128,7 +151,7 @@ export function contactSheet(scene: Scene, options: SheetOptions = {}): { svg: s
       const cells: Cell[] = [];
       const n = Math.min(frames, 6);
       for (let i = 0; i < n; i++) {
-        const v = input.min + ((input.max - input.min) * i) / (n - 1);
+        const v = input.min + ((input.max - input.min) * i) / Math.max(1, n - 1);
         // Each cell settles its own conditions (a bloom layer opens at the top of the range).
         const cellPlayer = new Player(scene, { inputs: { ...base, [input.name]: v } });
         cellPlayer.hold = true;
@@ -179,11 +202,13 @@ const escapeAttrValue = (v: string) => v.replace(/[<>"&]/g, '');
 /** Best-effort inputs that make a state's entry condition true, e.g. "progress >= 100" → { progress: 100 }. */
 function conditionInputs(scene: Scene): Map<string, Record<string, number | boolean>> {
   const out = new Map<string, Record<string, number | boolean>>();
+  const defaults = Object.fromEntries([...scene.inputs].map(([name, input]) => [name, input.default]));
   for (const layer of scene.layers) {
     for (const st of layer.states.values()) {
       for (const w of st.when) {
         const key = `${layer.name}/${w.transition.to}`;
         if (out.has(key)) continue;
+        if (w.test(defaults, defaults)) { out.set(key, {}); continue; }
         const values: Record<string, number | boolean> = {};
         for (const part of w.source.split('&&')) {
           const cmp = /^\s*~?([A-Za-z_][\w-]*)\s*(>=|<=|==|>|<)\s*(-?[\d.]+)\s*$/.exec(part);
@@ -227,13 +252,16 @@ export interface ScriptStep {
 /** Parses "wave@800" (event) and "level=90@1500" (input) and "goto:idle@0" steps. */
 export function parseScript(items: string[]): ScriptStep[] {
   return items.map((item): ScriptStep => {
+    if (typeof item !== 'string' || !item.trim() || item.split('@').length > 2) throw new Error(`Invalid script step "${item}"`);
     const [what, when] = item.split('@');
     const at = Number(when ?? 0);
-    if (!Number.isFinite(at)) throw new Error(`Bad time in "${item}"`);
-    if (what!.startsWith('goto:')) return { at, goto: what!.slice(5) };
+    if (!Number.isFinite(at) || at < 0 || when === '') throw new Error(`Bad time in "${item}"; use non-negative milliseconds`);
+    if (!what || (what.startsWith('goto:') && !what.slice(5))) throw new Error(`Missing event/state in "${item}"`);
+    if (what.startsWith('goto:')) return { at, goto: what.slice(5) };
     if (what!.includes('=')) {
       const [k, v] = what!.split('=');
       const value: number | boolean = v === 'true' ? true : v === 'false' ? false : Number(v);
+      if (!k || !v || what!.split('=').length !== 2 || (typeof value === 'number' && !Number.isFinite(value))) throw new Error(`Bad input in "${item}"; use name=number or name=true/false`);
       return { at, set: [k!, value] as [string, number | boolean] };
     }
     return { at, send: what };
@@ -264,7 +292,8 @@ export interface RecordResult {
  * calling `onFrame` at each frame time. The shared core of record and strip.
  */
 function simulate(scene: Scene, options: RecordOptions, onFrame: (player: Player, t: number, index: number) => void): { duration: number; frames: number; log: string[] } {
-  const fps = options.fps ?? 30;
+  const fps = positive(options.fps ?? 30, 'fps', 120);
+  if (options.state && !scene.layers[0]?.states.has(options.state)) throw new Error(`Unknown state "${options.state}"`);
   const player = new Player(scene, { state: options.state, inputs: options.inputs });
   let duration = options.duration;
   if (duration === undefined) {
@@ -272,12 +301,13 @@ function simulate(scene: Scene, options: RecordOptions, onFrame: (player: Player
     const scriptEnd = options.script?.length ? Math.max(...options.script.map(s => s.at)) + 1500 : 0;
     duration = Math.max(scriptEnd, st ? (st.loop === Infinity ? st.duration : st.completeAt + 400) : 1000, 600);
   }
-  duration = Math.min(duration, 20000);
-  const total = Math.max(1, Math.round((duration / 1000) * fps));
-  const script = [...(options.script ?? [])];
+  positive(duration, 'duration', 20000);
+  const total = Math.max(1, Math.ceil((duration / 1000) * fps));
+  const script = [...(options.script ?? [])].sort((a, b) => a.at - b.at);
+  for (const step of script) if (!Number.isFinite(step.at) || step.at < 0 || step.at >= duration) throw new Error(`Script time ${step.at}ms must be within the recording (0 to less than ${duration}ms)`);
   const log: string[] = [`0ms    start in ${player.state}`];
   let now = 0;
-  const stamp = () => `${Math.round(now)}ms`.padEnd(7);
+  const stamp = () => `${Math.round(player.elapsed)}ms`.padEnd(7);
   player.on(e => {
     if (e.type === 'statechange') log.push(`${stamp()}${e.layer !== 'main' ? `${e.layer}: ` : ''}${e.from} → ${e.to}`);
     else if (e.type === 'emit') log.push(`${stamp()}emit "${e.name}"`);
@@ -286,28 +316,35 @@ function simulate(scene: Scene, options: RecordOptions, onFrame: (player: Player
       if (st && st.channels.length && st.duration > 0) log.push(`${stamp()}${e.state} finished`);
     }
   });
-  for (let i = 0; i < total; i++) {
-    now = (i * 1000) / fps;
-    while (script.length && script[0]!.at <= now) {
+  const advanceTo = (target: number) => {
+    while (script.length && script[0]!.at <= target) {
       const s = script.shift()!;
+      player.advance(s.at - now);
+      now = s.at;
       log.push(`${stamp()}${s.send ? `send "${s.send}"` : s.set ? `set ${s.set[0]} = ${s.set[1]}` : `goto ${s.goto}`}`);
       if (s.send && !player.send(s.send)) log.push(`${stamp()}  (no transition for "${s.send}" in ${player.state})`);
       if (s.set) player.setInput(s.set[0], s.set[1]);
       if (s.goto) player.goto(s.goto, { blend: 200 });
     }
+    player.advance(target - now);
+    now = target;
+  };
+  for (let i = 0; i < total; i++) {
+    advanceTo((i * 1000) / fps);
     onFrame(player, now, i);
-    player.advance(1000 / fps);
   }
+  // Account for actions in the final frame interval in the event log too.
+  advanceTo(duration);
   return { duration, frames: total, log };
 }
 
 function withBackground(svg: string, scene: Scene, background?: string): string {
   if (!background) return svg;
-  return svg.replace(/(<svg[^>]*>)/, `$1<rect x="${scene.viewBox.x}" y="${scene.viewBox.y}" width="${scene.viewBox.width}" height="${scene.viewBox.height}" fill="${background}"/>`);
+  return svg.replace(/(<svg[^>]*>)/, (_, root: string) => `${root}<rect x="${scene.viewBox.x}" y="${scene.viewBox.y}" width="${scene.viewBox.width}" height="${scene.viewBox.height}" fill="${escapeAttr(background)}"/>`);
 }
 
 export function recordFrames(scene: Scene, options: RecordOptions = {}, onFrame: (rgba: Uint8Array, width: number, height: number, index: number) => void): RecordResult {
-  const width = options.width ?? Math.min(480, scene.width);
+  const width = positive(options.width ?? Math.min(480, scene.width), 'width', 4096);
   let w = 0, h = 0;
   const res = simulate(scene, options, (player, _t, i) => {
     const img = rasterize(withBackground(serializeXML(renderFrameTree(scene, player.frame(), { width })), scene, options.background), width);

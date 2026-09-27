@@ -2,7 +2,7 @@
 
 **Animations your agent can write, see, and ship.**
 
-Motion Forge makes interactive animation plain text. A *Motion SVG* is an ordinary SVG with a small JSON block describing states, keyframes, springs, morphs, inputs and interactions. Coding agents write it fluently, the CLI turns motion into things a model can read (diagnostics, element maps, frame-by-frame contact sheets), and a ~30 KB runtime plays it anywhere.
+Motion Forge makes interactive animation plain text. A *Motion SVG* is an ordinary SVG with a small JSON block describing states, keyframes, springs, morphs, inputs and interactions. Coding agents write it, the CLI turns motion into things a model can read (diagnostics, element maps, frame-by-frame contact sheets), and a ~31 KB runtime plays it on the web.
 
 ![Eight Motion Forge presets reacting to clicks and data: a robot waving, a like button, a toggle, a progress ring, a gauge, a theme toggle, a notification bell and an upload cloud](docs/media/gallery.gif)
 
@@ -10,13 +10,13 @@ Motion Forge makes interactive animation plain text. A *Motion SVG* is an ordina
 
 ## Why this exists
 
-Agents can already write CSS transitions and Framer Motion code. What they can’t do is *see* motion, so illustrated, stateful animation (mascots, success moments, data widgets, onboarding art) has stayed locked in designer tools with binary formats: Rive (paid to export, closed editor) and Lottie (After Effects JSON, interactivity as a vendor extension).
+Agents can already write animation code. The hard part is checking what that code does across states, interruptions and changing data. Motion Forge combines editable SVG artwork, declarative behavior and visual checks in an MIT toolchain that runs locally without an account.
 
 Motion Forge is built around the agent’s loop:
 
 | Step | What happens |
 | --- | --- |
-| **Write** | Plain SVG plus JSON: states, keyframes, easing, inputs, bindings, interactions. Any real SVG works: Figma, Illustrator, icon sets. |
+| **Write** | Plain SVG plus JSON: states, keyframes, easing, inputs, bindings, interactions. Import supported vector artwork from Figma, Illustrator or icon sets; sanitization reports removed content. |
 | **Check** | `motion-forge check` validates everything and lints motion: loop seams, clipping, layer conflicts, dead states, no-op tracks, with JSON paths and “did you mean”. |
 | **See** | `motion-forge preview` renders a contact sheet: every state over time, every event and toggle played through the real state machine, and input sweeps. `record` scripts clicks and data into a frame grid, GIF or MP4. |
 | **Ship** | `<motion-forge src="like.svg">`, `<MotionForge svg={…}>` in React (with SSR), or `mount(el, svg)`. Events and inputs are the API. |
@@ -47,7 +47,7 @@ npx motion-forge dev src/motion/like.svg       # live preview with controls, rel
 ```xml
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <title>Like button</title>
-  <path id="heart" d="M100 160 C 40 120 …" fill="#d8d2c6"/>
+  <path id="heart" d="M100 160 C20 110 20 40 65 40 Q90 40 100 65 Q110 40 135 40 C180 40 180 110 100 160Z" fill="#d8d2c6"/>
   <metadata type="application/motion+json"><![CDATA[
   {
     "inputs": { "liked": false },
@@ -73,12 +73,11 @@ What the format covers: state machines with events, conditions and `next`; paral
 ## Using it in an app
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/motion-forge/dist/element.js"></script>
-<motion-forge src="/like.svg"></motion-forge>
-<script>
+<motion-forge src="/like.svg" inputs='{"liked": true}'></motion-forge>
+<script type="module">
+  import 'https://cdn.jsdelivr.net/npm/motion-forge/dist/element.js';
   const like = document.querySelector('motion-forge');
   like.addEventListener('emit', e => console.log(e.detail.name)); // "liked"
-  like.set('liked', true);
 </script>
 ```
 
@@ -102,21 +101,22 @@ The runtime respects `prefers-reduced-motion`, pauses offscreen, isolates instan
 
 - **Skill:** `npx motion-forge init` copies [`SKILL.md`](packages/motion-forge/skills/motion-forge/SKILL.md) and the reference into `.claude/skills/`, and adds a note to `AGENTS.md` for Cursor, Codex and friends.
 - **MCP:** `{ "command": "npx", "args": ["motion-forge", "mcp"] }` exposes `motion_docs`, `motion_presets`, `motion_check`, `motion_inspect`, `motion_preview` and `motion_render` (these return images), and `motion_record`.
-- **CLI:** every command prints text an agent can act on; `--json` where structure helps. `motion-forge docs` prints the full reference.
+- **CLI:** every command prints text an agent can act on; `--json` where structure helps. `check --strict` also fails on warnings for CI. `motion-forge docs` prints the full reference.
+- **Playground:** open an SVG, edit it live, pause/scrub/restart its main state, inspect an event log, and share or download it. Drafts save locally in your browser.
 - **Web:** the site serves `llms.txt`, `llms-full.txt`, `reference.md` and `presets.json`.
 
 ## How it compares
 
 | | Motion Forge | Lottie | Rive |
 | --- | --- | --- | --- |
-| Source | SVG + JSON text | After Effects JSON | Binary `.riv` |
+| Source | SVG + JSON text | Lottie JSON / dotLottie | RML text; `.riv` runtime files |
 | Interactive states | Built in | dotLottie extension | Built in |
-| Authoring | Your agent, your editor, the playground | After Effects / Lottie Creator | Rive editor (export needs a paid plan) |
-| Agent can verify visually | `check`, `preview`, `record` | — | Through the editor |
-| Web runtime, gzip | ~30 KB | ~76 KB (lottie-web) | ~900 KB (canvas + wasm) |
+| Authoring | Your agent, your editor, the playground | After Effects / Lottie Creator / JSON tooling | Rive editor or CLI |
+| Visual verification | Lint, state/flow sheets, scripted recordings | Player / browser tooling | CLI capture, simulated inputs, script tests |
+| Web runtime, gzip | ~31 KB | Varies by player | Varies by renderer |
 | License | MIT | MIT runtime | MIT runtime, closed editor |
 
-Motion Forge doesn’t import or export Lottie/Rive files, and it isn’t a designer timeline tool. It’s for the workflow where your agent authors and you direct. Sizes: [`docs/size.json`](docs/size.json) (`pnpm size`); Lottie/Rive measured from their npm builds, September 2026.
+Agent authoring and verification are not exclusive to Motion Forge: see the [Rive CLI](https://rive.app/docs/cli/overview) and [dotLottie interactivity](https://docs.lottiefiles.com/en/format/dotlottie/interactivity). Choose it for the combination of ordinary SVG, MIT tooling and a small web runtime. It does not import/export Lottie or Rive files, and the playground scrubber is not a visual keyframe editor. Our size measurement: [`docs/size.json`](docs/size.json), reproducible with `pnpm size`; this is not a comparative performance benchmark.
 
 ## Develop
 
@@ -125,7 +125,7 @@ pnpm install
 pnpm dev            # builds the package, runs the site at http://127.0.0.1:4176
 pnpm check          # build + typecheck + unit tests
 pnpm check:presets  # every preset passes check
-pnpm test:e2e       # Playwright journeys against the site
+pnpm test:e2e       # Playwright + accessibility checks against the production build
 pnpm verify:package # pack, install into a clean project, exercise every entry point + CLI
 ```
 

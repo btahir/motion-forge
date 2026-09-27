@@ -2,12 +2,12 @@
 
 ## Thesis
 
-Coding agents are becoming the main way software gets built, and they can write animation code, but they can't *see* motion. So illustrated, stateful, interactive animation (mascots, success moments, data widgets, onboarding art, micro-interactions) still lives in designer tools with binary or export-only formats. Motion Forge is the open, text-first format and toolchain that lets an agent author that kind of motion, verify it visually, and ship it, with a human directing.
+Motion Forge makes illustrated, stateful animation easy to author as SVG and verify locally: diagnostic checks, state/flow contact sheets and scripted recordings use the same engine as the browser runtime. The intended advantage is the combination of ordinary SVG, MIT tooling, no account requirement and a compact web runtime. Agent authoring itself is not unique: Rive now offers RML and a CLI with headless verification. Adoption and comparative workflow quality remain unproven.
 
 ## Principles
 
 1. **Agent-first.** The primary user is a coding agent acting for a developer. Every surface must be legible to a model: text formats, actionable diagnostics with paths and suggestions, and images of motion over time.
-2. **It's just SVG.** Artwork is ordinary SVG (any real export loads); motion is JSON in the same file. Files render statically anywhere and diff cleanly.
+2. **Start from SVG.** Artwork uses a supported, sanitized subset of SVG; motion is JSON in the same file. Export compatibility needs visual checking, especially CSS, fonts, filters and references. Files render statically in SVG viewers and diff cleanly.
 3. **Eyes for agents.** `check` (validation + motion lint), `preview` (contact sheets of states, flows and sweeps), `record` (scripted playback as frame grids/GIF/MP4), `inspect` (element map with bounds). If an agent can't see a problem, the tool should surface it.
 4. **Interaction is declarative.** States, events, conditions, bindings and pointer interactions live in the file, so it works with zero host code and exposes a clean events/inputs API.
 5. **Small, safe runtime.** Web component, React and vanilla; sanitized (no scripts, handlers or external URLs); accessible (titles, keyboard, reduced motion); isolated instances.

@@ -62,6 +62,11 @@ describe('cli', () => {
   it('prints the reference with docs', () => {
     expect(run(['docs']).out).toContain('# Motion SVG reference');
   });
+  it('can fail CI on warnings with --strict', () => {
+    const svg = '<svg><script>alert(1)</script></svg>';
+    expect(run(['check', '-'], svg).code).toBe(0);
+    expect(run(['check', '-', '--strict'], svg).code).toBe(1);
+  });
   it('speaks MCP over stdio', async () => {
     const proc = spawn('node', [CLI, 'mcp']);
     let buffer = '';
@@ -79,9 +84,11 @@ describe('cli', () => {
     send({ jsonrpc: '2.0', method: 'notifications/initialized' });
     send({ jsonrpc: '2.0', id: 2, method: 'tools/list' });
     send({ jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'motion_preview', arguments: { path: join(dir, 'new.svg') } } });
+    proc.stdin.write('null\n');
+    send({ jsonrpc: '2.0', id: 4, method: 'tools/call', params: { name: 'motion_render', arguments: { svg: '<html><img src="x"/></html>' } } });
     await new Promise<void>(res => {
       const t = setInterval(() => {
-        if (lines.length >= 3) {
+        if (lines.length >= 5) {
           clearInterval(t);
           res();
         }
@@ -92,5 +99,7 @@ describe('cli', () => {
     expect(byId[1].result.serverInfo.name).toBe('motion-forge');
     expect(byId[2].result.tools.map((t: { name: string }) => t.name)).toContain('motion_preview');
     expect(byId[3].result.content.some((c: { type: string }) => c.type === 'image')).toBe(true);
+    expect(byId.null.error.code).toBe(-32600);
+    expect(byId[4].result.isError).toBe(true);
   }, 20000);
 });
